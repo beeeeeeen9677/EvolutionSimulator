@@ -23,7 +23,7 @@ public partial struct AnimalMoveSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         uint randSeed = (uint)Random.Range(1, 114514);
-        Debug.Log(randSeed);
+        //Debug.Log(randSeed);
         new MoveAnimalJob
         {
             deltaTime = SystemAPI.Time.DeltaTime,

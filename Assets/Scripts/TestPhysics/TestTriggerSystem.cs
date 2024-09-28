@@ -53,6 +53,8 @@ public partial struct TestTriggerSystem : ISystem
                     entityManager.DestroyEntity(hit.Entity);
                     //Debug.Log(hit.Entity);
                 }
+
+                hits.Dispose();
             }
         }
 
@@ -97,16 +99,11 @@ public partial struct TestTriggerSystem : ISystem
 
         ecb.Playback(entityManager);
 
+
+        hits.Dispose();
+
         */
     }
 }
 
-public enum CollisionLayer
-{
-    // LayerName = 1 << n  // n is layer number
 
-    // Layer is in bitwise
-    // << is left shift operator (for bit)
-    Player = 1 << 6, 
-    TestCollectable = 1 <<7,
-}

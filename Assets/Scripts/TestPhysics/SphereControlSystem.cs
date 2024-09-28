@@ -8,6 +8,13 @@ using UnityEngine;
 
 public partial struct SphereControlSystem : ISystem
 {
+    private void OnCreate(ref SystemState state)
+    {
+        state.RequireForUpdate<SphereComponent>();
+    }
+
+
+
     float xSpeed;
     float zSpeed;
     private void OnUpdate(ref SystemState state)
