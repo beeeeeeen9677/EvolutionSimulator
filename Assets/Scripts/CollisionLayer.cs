@@ -11,4 +11,8 @@ public enum CollisionLayer
     // << is left shift operator (for bit)
     Player = 1 << 6,
     TestCollectable = 1 << 7,
+
+
+    Animal = 1 << 8,
+    Grass = 1 << 9,
 }

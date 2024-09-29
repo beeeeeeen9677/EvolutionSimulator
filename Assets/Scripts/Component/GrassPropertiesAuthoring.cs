@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Entities;
@@ -18,6 +19,7 @@ public class GrassPropertiesAuthoring : MonoBehaviour
             {
                 currentSize = authoring.currentSize,
                 maxSize = authoring.maxSize,
+                activated = false,
             });
         }
     }
@@ -28,4 +30,5 @@ public struct GrassProperties : IComponentData
 {
     public float currentSize;
     public float maxSize;
+    public bool activated; // true: eatable
 }

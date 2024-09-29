@@ -40,7 +40,7 @@ public partial struct InitAnimalConfigSystem : ISystem
 
             SystemAPI.SetComponent(newSpawnedAnimal, new LocalTransform
             {
-                Position = new float3(UnityEngine.Random.Range(-fieldSize, fieldSize), 0.5f, UnityEngine.Random.Range(-50, 50)),
+                Position = new float3(UnityEngine.Random.Range(-fieldSize, fieldSize), 1f, UnityEngine.Random.Range(-fieldSize, fieldSize)),
                 Rotation = quaternion.identity,
                 Scale = 1
             });
@@ -51,6 +51,15 @@ public partial struct InitAnimalConfigSystem : ISystem
             {
                 speed = UnityEngine.Random.Range(1, 10)
             });
+
+
+            float maxEnergy = UnityEngine.Random.Range(10, 40);
+            SystemAPI.SetComponent(newSpawnedAnimal, new Energy
+            {
+                maxEnergy = maxEnergy,
+                currentEnergy = maxEnergy
+            });
+
         }
     }
 }

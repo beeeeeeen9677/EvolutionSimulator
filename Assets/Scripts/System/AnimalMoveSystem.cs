@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Entities;
+using Unity.Transforms;
 using UnityEngine;
 
 [BurstCompile]
@@ -22,6 +23,7 @@ public partial struct AnimalMoveSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
+        var localTransformTypeHandle = state.GetComponentTypeHandle<LocalTransform>(true);
         uint randSeed = (uint)Random.Range(1, 114514);
         //Debug.Log(randSeed);
         new MoveAnimalJob
@@ -29,6 +31,7 @@ public partial struct AnimalMoveSystem : ISystem
             deltaTime = SystemAPI.Time.DeltaTime,
             //random = new Unity.Mathematics.Random(randSeed)
             randomSeed = randSeed,
+
         }.ScheduleParallel();
     }
 }
@@ -44,6 +47,18 @@ public partial struct MoveAnimalJob : IJobEntity
     //[BurstCompile]
     public void Execute(AnimalAspect animal)
     {
-        animal.Move(deltaTime, randomSeed);
+        if (animal.IsTargetExist())
+        {
+
+            float heading = MathHelpers.GetHeading(animal._localTransform.ValueRO.Position, animal.targetPosition);
+            //Debug.Log(animal.targetPosition);
+            animal.FaceTarget(heading);
+        }
+        else
+        {
+            animal.TurnRandomly(randomSeed);
+        }
+
+        animal.MoveForward(deltaTime);
     }
 }
