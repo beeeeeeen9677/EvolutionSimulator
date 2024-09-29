@@ -7,9 +7,10 @@ public class InitAnimalConfigAuthoring : MonoBehaviour
 {
     public GameObject animalPrefab;
     public int initAnimalNumber; // number to spawn initially
+    public int fieldSize;
 
 
-    public class Baker : Baker<InitAnimalConfigAuthoring>
+    public class InitAnimalConfigBaker : Baker<InitAnimalConfigAuthoring>
     {
         public override void Bake(InitAnimalConfigAuthoring authoring)
         {
@@ -17,7 +18,8 @@ public class InitAnimalConfigAuthoring : MonoBehaviour
             AddComponent(entity, new InitAnimalConfig
             {
                 animalPrefab = GetEntity(authoring.animalPrefab, TransformUsageFlags.Dynamic),
-                initAnimalNumber = authoring.initAnimalNumber
+                initAnimalNumber = authoring.initAnimalNumber,
+                fieldSize = authoring.fieldSize,
             });
         }
     }
@@ -27,4 +29,5 @@ public struct InitAnimalConfig : IComponentData
 {
     public Entity animalPrefab; 
     public int initAnimalNumber; // number to spawn initially
+    public int fieldSize;
 }

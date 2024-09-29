@@ -24,6 +24,13 @@ public partial struct InitAnimalConfigSystem : ISystem
 
         InitAnimalConfig initAnimalConfig = SystemAPI.GetSingleton<InitAnimalConfig>(); 
 
+        int fieldSize = initAnimalConfig.fieldSize;
+
+        // avoid invalid input
+        if(fieldSize <= 0)
+        {
+            fieldSize = 50;
+        }
 
 
         for(int i = 0; i< initAnimalConfig.initAnimalNumber; i++)
@@ -33,7 +40,7 @@ public partial struct InitAnimalConfigSystem : ISystem
 
             SystemAPI.SetComponent(newSpawnedAnimal, new LocalTransform
             {
-                Position = new float3(UnityEngine.Random.Range(-50, 50), 0.5f, UnityEngine.Random.Range(-50, 50)),
+                Position = new float3(UnityEngine.Random.Range(-fieldSize, fieldSize), 0.5f, UnityEngine.Random.Range(-50, 50)),
                 Rotation = quaternion.identity,
                 Scale = 1
             });

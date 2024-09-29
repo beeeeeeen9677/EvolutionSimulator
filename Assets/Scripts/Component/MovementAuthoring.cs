@@ -7,7 +7,7 @@ public class MovementAuthoring : MonoBehaviour
 {
    // public float speed;
 
-    public class Baker : Baker<MovementAuthoring>
+    public class MovementBaker : Baker<MovementAuthoring>
     {
         public override void Bake(MovementAuthoring authoring)
         {

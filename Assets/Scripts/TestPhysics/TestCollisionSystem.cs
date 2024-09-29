@@ -103,7 +103,7 @@ public partial struct TestCollisionSystem : ISystem
         entities.Dispose();
     }
 
-    public unsafe Entity SphereCast(float3 RayFrom, float3 RayTo, BlobAssetReference<Collider> sphereCollider)
+    public unsafe Entity SphereCast(float3 RayFrom, float3 RayTo, BlobAssetReference<Collider> physicsColliderBlob)
     {
         // Set up Entity Query to get PhysicsWorldSingleton
         // If doing this in SystemBase or ISystem, call GetSingleton<PhysicsWorldSingleton>()/SystemAPI.GetSingleton<PhysicsWorldSingleton>() directly.
@@ -136,7 +136,7 @@ public partial struct TestCollisionSystem : ISystem
 
         ColliderCastInput input = new ColliderCastInput()
         {
-            Collider = (Collider*)sphereCollider.GetUnsafePtr(),
+            Collider = (Collider*)physicsColliderBlob.GetUnsafePtr(),
             Orientation = quaternion.identity,
             Start = RayFrom,
             End = RayTo
@@ -149,7 +149,7 @@ public partial struct TestCollisionSystem : ISystem
             return hit.Entity;
         }
 
-        sphereCollider.Dispose();
+        physicsColliderBlob.Dispose();
 
         return Entity.Null;
     }
