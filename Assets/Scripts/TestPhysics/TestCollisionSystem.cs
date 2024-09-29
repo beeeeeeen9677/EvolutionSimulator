@@ -7,6 +7,7 @@ using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.Extensions;
 using Unity.Transforms;
+using Unity.VisualScripting;
 using UnityEngine;
 using Collider = Unity.Physics.Collider;
 using SphereCollider = Unity.Physics.SphereCollider;
@@ -78,10 +79,10 @@ public partial struct TestCollisionSystem : ISystem
 
 
                 //BlobAssetReference<Collider> colliderBlob = physicsCollider.Value;
-                
 
-                //Entity collidedEntity = SphereCast(entityPosition, entityPosition, colliderBlob);
-                Entity collidedEntity = SphereCast(entityPosition, entityPosition, 0.5f);
+
+                //Entity collidedEntity = ColliderCast(entityPosition, entityPosition, physicsCollider);
+                Entity collidedEntity = ColliderCast(entityPosition, entityPosition, 0.5f);
 
 
                 //colliderBlob.Dispose();
@@ -103,7 +104,7 @@ public partial struct TestCollisionSystem : ISystem
         entities.Dispose();
     }
 
-    public unsafe Entity SphereCast(float3 RayFrom, float3 RayTo, BlobAssetReference<Collider> physicsColliderBlob)
+    public unsafe Entity ColliderCast(float3 RayFrom, float3 RayTo, PhysicsCollider physicsCollider)
     {
         // Set up Entity Query to get PhysicsWorldSingleton
         // If doing this in SystemBase or ISystem, call GetSingleton<PhysicsWorldSingleton>()/SystemAPI.GetSingleton<PhysicsWorldSingleton>() directly.
@@ -134,6 +135,29 @@ public partial struct TestCollisionSystem : ISystem
 
 
 
+        /*
+        // copy the physics collider value
+        PhysicsCollider newPhysicsCollider = new PhysicsCollider
+        {
+            Value = physicsCollider.Value
+        };
+        */
+
+
+
+        BlobAssetReference<Collider> physicsColliderBlob = physicsCollider.Value;
+
+        // change filter
+        physicsColliderBlob.Value.SetCollisionFilter(new CollisionFilter
+        {
+            BelongsTo = (uint)CollisionLayer.Player,
+            CollidesWith = (uint)CollisionLayer.TestCollectable,
+            GroupIndex = 0
+        });
+
+    
+
+
         ColliderCastInput input = new ColliderCastInput()
         {
             Collider = (Collider*)physicsColliderBlob.GetUnsafePtr(),
@@ -144,18 +168,31 @@ public partial struct TestCollisionSystem : ISystem
 
         ColliderCastHit hit = new ColliderCastHit();
         bool haveHit = collisionWorld.CastCollider(input, out hit);
+
+
+        // reset filter
+        physicsColliderBlob.Value.SetCollisionFilter(new CollisionFilter
+        {
+            BelongsTo = (uint)CollisionLayer.Player,
+            CollidesWith = ~0u, // all 1s, so all layers, collide with everything
+            GroupIndex = 0
+        });
+
+
+
+
         if (haveHit)
         {
             return hit.Entity;
         }
 
-        physicsColliderBlob.Dispose();
+        //physicsColliderBlob.Dispose();
 
         return Entity.Null;
     }
 
     // overload
-    public unsafe Entity SphereCast(float3 RayFrom, float3 RayTo, float radius)
+    public unsafe Entity ColliderCast(float3 RayFrom, float3 RayTo, float radius)
     {
         // Set up Entity Query to get PhysicsWorldSingleton
         // If doing this in SystemBase or ISystem, call GetSingleton<PhysicsWorldSingleton>()/SystemAPI.GetSingleton<PhysicsWorldSingleton>() directly.
