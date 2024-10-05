@@ -83,7 +83,7 @@ public partial struct SensorTriggerSystem : ISystem
             {
                 // refresh target position
                 animal.targetPosition = SystemAPI.GetComponentRO<LocalTransform>(animal.GetTargetEntity()).ValueRO.Position;
-                Debug.Log(animal.targetPosition);
+                //Debug.Log(animal.targetPosition);
 
             }
 

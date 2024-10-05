@@ -11,11 +11,19 @@ public readonly partial struct GrassAspect : IAspect
     public readonly RefRW<GrassProperties> _grassProperties;
 
     private float maxSize => _grassProperties.ValueRO.maxSize;
-    private float currentSize
+
+    public float currentSize
     {
         get => _grassProperties.ValueRO.currentSize;
-        set => _grassProperties.ValueRW.currentSize = value;
+        private set => _grassProperties.ValueRW.currentSize = value;
     }
+
+    public float provideEnergy
+    {
+        get => _grassProperties.ValueRO.provideEnergy;
+        private set => _grassProperties.ValueRW.provideEnergy = value;
+    }
+
     public bool activated
     {
         get => _grassProperties.ValueRO.activated;
@@ -39,5 +47,14 @@ public readonly partial struct GrassAspect : IAspect
 
 
         //Debug.Log("GrassSize: " + currentSize);
+    }
+
+
+
+    // call when this grass was eaten by others
+    public void WasEaten()
+    {
+        activated = false;
+        currentSize = 0;
     }
 }

@@ -97,7 +97,7 @@ public readonly partial struct AnimalAspect : IAspect
         //rotateResult = random.NextFloat(-maxTurnAngle, maxTurnAngle) + _localTransform.ValueRO.Rotation.value.y;
         //Debug.Log("New: "+rotateResult);
         //_localTransform.ValueRW.Rotation = quaternion.Euler(0, rotateResult, 0);
-        //_physicsVelocity.ValueRW.Linear = _localTransform.ValueRO.Forward() * moveSpeed * deltaTime * 100;
+        //_physicsVelocity.ValueRW.Linear = _localTransform.ValueRO.Forward() * moveSpeed * deltaTime * 500;
 
     }
 
@@ -106,13 +106,27 @@ public readonly partial struct AnimalAspect : IAspect
     public void ConsumeEnergy(float deltaTime)
     {
         // consume energy
+        ModifyEnergy(-deltaTime);
+        /*
         currentEnergy -= deltaTime;
         currentEnergy = Mathf.Clamp(currentEnergy, 0, maxEnergy);
+        */
         //Debug.Log("AnimalEnergy: " + currentEnergy);
     }
 
+
+    // for increase / decrease energy with clamp checking
+    private void ModifyEnergy(float value)
+    {
+        currentEnergy += value;
+        currentEnergy = Mathf.Clamp(currentEnergy, 0, maxEnergy);
+    }
+
+
+
     public float GetEnergy() { return currentEnergy; }  
 
+    // check if any target is being locked on
     public bool IsTargetExist()
     {
         return targetEntity != Entity.Null;
@@ -126,5 +140,20 @@ public readonly partial struct AnimalAspect : IAspect
     public float GetSensorSize()
     {
         return sensorSize; 
+    }
+
+    public void EatTarget(float obtainedEnergy)
+    {
+        //Debug.Log("Eat");
+        ModifyEnergy(obtainedEnergy);
+        /*
+        currentEnergy += obtainedEnergy;
+        currentEnergy = Mathf.Clamp(currentEnergy, 0, maxEnergy);
+        */
+    }
+
+    public void ClearTarget()
+    {
+        targetEntity = Entity.Null;
     }
 }

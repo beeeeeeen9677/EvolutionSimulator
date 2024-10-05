@@ -49,6 +49,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentSize: 0
   maxSize: 1
+  provideEnergy: 10
 --- !u!33 &2886462709284655733
 MeshFilter:
   m_ObjectHideFlags: 0
