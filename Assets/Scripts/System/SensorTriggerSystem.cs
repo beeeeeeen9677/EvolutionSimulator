@@ -57,22 +57,27 @@ public partial struct SensorTriggerSystem : ISystem
                 {
                     //Debug.Log("Scaned Target: " + hit.Entity.Index);
 
+
+                    // check grass
                     if (!SystemAPI.HasComponent<GrassProperties>(hit.Entity))
                     {
                         Debug.Log("Missing GrassProperties Component");
-                        break;
+                        continue;
                     }
 
-                    GrassAspect grass = SystemAPI.GetAspect<GrassAspect>(hit.Entity);
+                    var grass = SystemAPI.GetComponentRO<GrassProperties>(hit.Entity);
+
+                    // this grass is not activated
+                    if (!grass.ValueRO.activated)
+                        continue; // check next detected entity
 
 
-                    // not eatable
-                    if (!grass.activated)
-                        continue; // check next scaned entity
+
 
 
 
                     // if eatable, set as target
+                    Debug.Log("Target Found   " + animal.entity.Index);
                     animal.SetTargetEntity(hit.Entity);
                     animal.targetPosition = SystemAPI.GetComponent<LocalTransform>(hit.Entity).Position;
                     //Debug.Log(animal.targetPosition + "" + hit.Entity.Index+ ""+ SystemAPI.HasComponent<GrassProperties>(hit.Entity));
@@ -81,6 +86,30 @@ public partial struct SensorTriggerSystem : ISystem
             }
             else
             {
+                // check status of locked target 
+
+                // target is a grass
+                if (SystemAPI.HasComponent<GrassProperties>(animal.GetTargetEntity()))
+                {
+                    var grass = SystemAPI.GetComponentRO<GrassProperties>(animal.GetTargetEntity());
+
+                    // if this grass is not activated now
+                    if (!grass.ValueRO.activated)
+                    {
+                        Debug.Log("Target lost   " + animal.entity.Index);
+
+                        //reset target
+                        animal.ClearTarget();
+
+                        continue;
+                    }
+                }
+
+
+
+
+
+
                 // refresh target position
                 animal.targetPosition = SystemAPI.GetComponentRO<LocalTransform>(animal.GetTargetEntity()).ValueRO.Position;
                 //Debug.Log(animal.targetPosition);
