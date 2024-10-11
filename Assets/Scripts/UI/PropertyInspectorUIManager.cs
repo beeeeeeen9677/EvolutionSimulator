@@ -10,6 +10,7 @@ using UnityEngine.UI;
 public class PropertyInspectorUIManager : MonoBehaviour
 {
     #region Variables
+
     [SerializeField]
     private GameObject inspectorPanel;
     [SerializeField]
@@ -21,14 +22,17 @@ public class PropertyInspectorUIManager : MonoBehaviour
 
     [SerializeField]
     private GameObject propertyContainerPrefab;
-    [SerializeField]
-    private GameObject propertyValuePrefab; // put in property container, stores the value of that property
+    //[SerializeField] private GameObject propertyValuePrefab; // put in property container, stores the value of that property
 
 
 
     private Entity selectedEntity;
     private EntityManager entityManager;
+
+    private Action OnSelectedEntityLost;
     #endregion
+
+
 
 
 
@@ -52,19 +56,30 @@ public class PropertyInspectorUIManager : MonoBehaviour
         selectedEntity = entity;
 
         inspectorPanel.SetActive(true); // open inspector
+        ClearAllChild(inspectorScrollViewContent);
+
+
+        // add different properties onto inspector
+        InspectEntityID();
+        InspectPosition();
+        InspectEnergy();
+        InspectMovement();
+        InspectSensor();
+        InspectTarget();
     }
 
 
     private void CloseInspectorAndResetTarget()
     {
         selectedEntity = Entity.Null;
-
+        ClearAllChild(inspectorScrollViewContent);
         inspectorPanel.SetActive(false);
     }
 
+
+    // Deprecated
     private void UpdateInspectorUI()
     {
-        return;
         ClearAllChild(inspectorScrollViewContent);
 
         // check if entity is destroyed
@@ -111,6 +126,146 @@ public class PropertyInspectorUIManager : MonoBehaviour
     }
 
 
+    private PropertyContainer CreateNewPropertyContainer(string propertyName)
+    {
+        GameObject newPropertyContainerObj = Instantiate(propertyContainerPrefab, inspectorScrollViewContent);
+        PropertyContainer propertyContainer = newPropertyContainerObj.GetComponent<PropertyContainer>();
+        propertyContainer.SetPropertyName(propertyName);
+
+        OnSelectedEntityLost += propertyContainer.StopUpdatng;
+
+        return propertyContainer;
+    }
+
+    /*
+    private void AddPropertyValueToContainer(PropertyContainer propertyContainer, string valueText)
+    {
+        propertyContainer.SetValueText(valueText);
+    }
+
+    public void SetValueUpdateDelegate(PropertyContainer propertyContainer, UpadateContainerValue func)
+    {
+        propertyContainer.SetValueUpdateDelegate(func);
+    }
+    */
+
+
+    //public delegate string UpadateContainerValue();
+
+
+    private void InspectEntityID()
+    {
+        PropertyContainer propertyContainer = CreateNewPropertyContainer("Entity ID");
+
+        /*
+        UpadateContainerValue newValueUpdate = () => { 
+            return $"value: {selectedEntity.Index}"; 
+        };
+
+        SetValueUpdateDelegate(propertyContainer, newValueUpdate);
+        */
+
+        propertyContainer.valueUpdateFunc = () => {
+            return $"value: {selectedEntity.Index}";
+        };
+    }
+
+
+    private void InspectPosition()
+    {
+        PropertyContainer propertyContainer = CreateNewPropertyContainer("Position");
+
+        /*
+        UpadateContainerValue newValueUpdate = () => {
+            return $"{((Vector3)entityManager.GetComponentData<LocalTransform>(selectedEntity).Position).ToString("F1")}";
+        };
+
+        SetValueUpdateDelegate(propertyContainer, newValueUpdate);
+        */
+        propertyContainer.valueUpdateFunc = () => {
+            return $"{((Vector3)entityManager.GetComponentData<LocalTransform>(selectedEntity).Position).ToString("F1")}";
+        };
+    }
+
+
+    private void InspectEnergy()
+    {
+        PropertyContainer propertyContainer = CreateNewPropertyContainer("Energy");
+
+        /*
+        UpadateContainerValue newValueUpdate = () => {
+            return $"current: {entityManager.GetComponentData<Energy>(selectedEntity).currentEnergy.ToString("0.0")}\n" +
+            $"max: {entityManager.GetComponentData<Energy>(selectedEntity).maxEnergy.ToString("0.0")}";
+        };
+
+        SetValueUpdateDelegate(propertyContainer, newValueUpdate);
+        */
+
+        propertyContainer.valueUpdateFunc = () => {
+            return $"current: {entityManager.GetComponentData<Energy>(selectedEntity).currentEnergy.ToString("0.0")}\n" +
+                       $"max: {entityManager.GetComponentData<Energy>(selectedEntity).maxEnergy.ToString("0.0")}";
+        };
+    }
+
+
+    private void InspectMovement()
+    {
+        PropertyContainer propertyContainer = CreateNewPropertyContainer("Movement");
+
+        /*
+        UpadateContainerValue newValueUpdate = () => {
+            return $"current: {entityManager.GetComponentData<Movement>(selectedEntity).speed.ToString("0.0")}";
+        };
+
+        SetValueUpdateDelegate(propertyContainer, newValueUpdate);
+        */
+        propertyContainer.valueUpdateFunc = () => {
+            return $"current: {entityManager.GetComponentData<Movement>(selectedEntity).speed.ToString("0.0")}";
+        };
+    }
+
+
+    private void InspectSensor()
+    {
+        PropertyContainer propertyContainer = CreateNewPropertyContainer("Sensor");
+
+        /*
+        UpadateContainerValue newValueUpdate = () => {
+            return $"size: {entityManager.GetComponentData<AnimalSensor>(selectedEntity).size.ToString("0.0")}";
+        };
+
+        SetValueUpdateDelegate(propertyContainer, newValueUpdate);
+        */
+        propertyContainer.valueUpdateFunc = () => {
+            return $"size: {entityManager.GetComponentData<AnimalSensor>(selectedEntity).size.ToString("0.0")}";
+        };
+    }
+
+
+    private void InspectTarget()
+    {
+        PropertyContainer propertyContainer = CreateNewPropertyContainer("Target");
+        //AddPropertyValueToContainer(propertyContainer,
+        //    $"position: {entityManager.GetComponentData<LocalTransform>(entityManager.GetComponentData<Target>(selectedEntity).targetEntity).Position}");
+
+
+        /*
+        UpadateContainerValue newValueUpdate = () => {
+            return $"id: {entityManager.GetComponentData<Target>(selectedEntity).targetEntity.Index}";
+        };
+
+        SetValueUpdateDelegate(propertyContainer, newValueUpdate);
+        */
+
+        propertyContainer.valueUpdateFunc = () => {
+            return $"id: {entityManager.GetComponentData<Target>(selectedEntity).targetEntity.Index}";
+        };
+    }
+
+
+    // old version
+    /*
+     * 
     private GameObject CreateNewPropertyContainer(string propertyName)
     {
         GameObject newPropertyContainer = Instantiate(propertyContainerPrefab, inspectorScrollViewContent);
@@ -179,7 +334,10 @@ public class PropertyInspectorUIManager : MonoBehaviour
         //    $"position: {entityManager.GetComponentData<LocalTransform>(entityManager.GetComponentData<Target>(selectedEntity).targetEntity).Position}");
     }
 
+    */
 
+
+    
     private void Update()
     {
         // if the UI panel is not opened or no selected Entity
@@ -187,7 +345,24 @@ public class PropertyInspectorUIManager : MonoBehaviour
             return;
 
 
-        UpdateInspectorUI();
+        //UpdateInspectorUI();  // deprecated
+        CheckTargetEntityValidity();
+
+    }
+
+    private void CheckTargetEntityValidity()
+    {
+        // check if entity is destroyed
+        if (!entityManager.Exists(selectedEntity))
+            selectedEntity = Entity.Null;
+
+        // check if any entity is selected
+        if (selectedEntity == Entity.Null)
+        {
+            OnSelectedEntityLost?.Invoke();
+            OnSelectedEntityLost = null;
+            ClearAllChild(inspectorScrollViewContent);
+        }
     }
 
 
