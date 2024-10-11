@@ -7,11 +7,19 @@ using Unity.Transforms;
 using UnityEngine;
 using Collider = Unity.Physics.Collider;
 
+
+
+// checking Collision
 public partial struct EatingSystem : ISystem
 {
+    //private PhysicsWorldSingleton physicsWorldSingleton;
+
+
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<Target>(); 
+        state.RequireForUpdate<Target>();
+        //state.RequireForUpdate<PhysicsWorld>();
+        //physicsWorldSingleton = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
     }
 
     public void OnDestroy(ref SystemState state)
@@ -30,6 +38,9 @@ public partial struct EatingSystem : ISystem
                 // current animal no locked target, check next animal
                 continue;
             }
+
+
+
 
 
             float3 entityPosition = transform.ValueRO.Position;
@@ -70,7 +81,7 @@ public partial struct EatingSystem : ISystem
                 // eat the grass
                 animal.EatTarget(obtainedEnergy);
 
-                // the grass was eaten
+                // set isActivated to false
                 grass.WasEaten();
 
                 // clear locked target
@@ -84,10 +95,10 @@ public partial struct EatingSystem : ISystem
 
     public unsafe Entity ColliderCast(float3 RayFrom, float3 RayTo, PhysicsCollider physicsCollider)
     {
-        // Set up Entity Query to get PhysicsWorldSingleton
         // If doing this in SystemBase or ISystem, call GetSingleton<PhysicsWorldSingleton>()/SystemAPI.GetSingleton<PhysicsWorldSingleton>() directly.
-        //EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp).WithAll<PhysicsWorldSingleton>();
         /*
+        // Set up Entity Query to get PhysicsWorldSingleton
+
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp).WithAll<PhysicsWorldSingleton>();
 
         EntityQuery singletonQuery = World.DefaultGameObjectInjectionWorld.EntityManager.CreateEntityQuery(builder);
@@ -97,7 +108,8 @@ public partial struct EatingSystem : ISystem
         */
 
 
-        var collisionWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().CollisionWorld;
+        CollisionWorld collisionWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().CollisionWorld;
+        //CollisionWorld collisionWorld = physicsWorldSingleton.CollisionWorld;
 
         /*
         var filter = new CollisionFilter()

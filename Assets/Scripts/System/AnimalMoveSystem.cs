@@ -23,7 +23,7 @@ public partial struct AnimalMoveSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        var localTransformTypeHandle = state.GetComponentTypeHandle<LocalTransform>(true);
+        //var localTransformTypeHandle = state.GetComponentTypeHandle<LocalTransform>(true);
         uint randSeed = (uint)Random.Range(1, 114514);
         //Debug.Log(randSeed);
         new MoveAnimalJob

@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 664051740}
   - component: {fileID: 664051739}
   - component: {fileID: 664051738}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -223,7 +223,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -0.5, z: 0}
-  m_LocalScale: {x: 250, y: 1, z: 250}
+  m_LocalScale: {x: 1500, y: 1, z: 1500}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -275,7 +275,7 @@ MonoBehaviour:
   animalPrefab: {fileID: 3302597946754029742, guid: 197a0ef542d16e940ac3db124350a93b,
     type: 3}
   initAnimalNumber: 2
-  fieldSize: 40
+  fieldSize: 50
 --- !u!1 &1232810080
 GameObject:
   m_ObjectHideFlags: 0

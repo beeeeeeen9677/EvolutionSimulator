@@ -35,9 +35,13 @@ public partial struct EnergyHandleJob : IJobEntity
     {
         animal.ConsumeEnergy(deltaTime);
 
-        if(animal.GetEnergy() <= 0)//dead
+        // dead if no more energy
+        if (animal.GetEnergy() <= 0)
         {
             ecb.DestroyEntity(sortKey, animal.entity);
+            //animal.entity = Entity.Null;
+
+            // add ToBeDestroyed Component and System later
         }
     }
 }

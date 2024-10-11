@@ -84,14 +84,28 @@ public partial struct SensorTriggerSystem : ISystem
                     break;
                 }
             }
+            // target exist
             else
             {
                 // check status of locked target 
+                Entity targetEntity = animal.GetTargetEntity();
+
+                /*
+                // check if target entity was destroyed
+                if (!SystemAPI.Exists(targetEntity))
+                {
+                    // if destroyed, set target to null
+                    animal.ClearTarget();
+                    continue;
+                }
+                */
+
+
 
                 // target is a grass
-                if (SystemAPI.HasComponent<GrassProperties>(animal.GetTargetEntity()))
+                if (SystemAPI.HasComponent<GrassProperties>(targetEntity))
                 {
-                    var grass = SystemAPI.GetComponentRO<GrassProperties>(animal.GetTargetEntity());
+                    var grass = SystemAPI.GetComponentRO<GrassProperties>(targetEntity);
 
                     // if this grass is not activated now
                     if (!grass.ValueRO.activated)
@@ -111,7 +125,7 @@ public partial struct SensorTriggerSystem : ISystem
 
 
                 // refresh target position
-                animal.targetPosition = SystemAPI.GetComponentRO<LocalTransform>(animal.GetTargetEntity()).ValueRO.Position;
+                animal.targetPosition = SystemAPI.GetComponentRO<LocalTransform>(targetEntity).ValueRO.Position;
                 //Debug.Log(animal.targetPosition);
 
             }
