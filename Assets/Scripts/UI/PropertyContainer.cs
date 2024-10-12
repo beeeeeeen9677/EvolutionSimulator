@@ -53,11 +53,12 @@ public class PropertyContainer : MonoBehaviour
         }
         catch(ArgumentException ex)
         {
-            StopUpdatng();
+            StopUpdating();
+            Debug.Log("PropertyContainer: " + ex.Message);
         }
     }
 
-    public void StopUpdatng()
+    public void StopUpdating()
     {
         stopUpdate = true;
     }

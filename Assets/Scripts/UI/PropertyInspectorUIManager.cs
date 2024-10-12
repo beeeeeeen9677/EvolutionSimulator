@@ -26,8 +26,8 @@ public class PropertyInspectorUIManager : MonoBehaviour
 
 
 
-    private Entity selectedEntity;
-    private EntityManager entityManager;
+    public static Entity selectedEntity { get; private set; }
+    public static EntityManager entityManager { get; private set; }
 
     private Action OnSelectedEntityLost;
     #endregion
@@ -66,6 +66,7 @@ public class PropertyInspectorUIManager : MonoBehaviour
         InspectMovement();
         InspectSensor();
         InspectTarget();
+        InspectAge();
     }
 
 
@@ -77,7 +78,8 @@ public class PropertyInspectorUIManager : MonoBehaviour
     }
 
 
-    // Deprecated
+    // Deprecated UpdateInspectorUI()
+    /*
     private void UpdateInspectorUI()
     {
         ClearAllChild(inspectorScrollViewContent);
@@ -94,14 +96,8 @@ public class PropertyInspectorUIManager : MonoBehaviour
 
         //Debug.Log("UI: " + entity.Index);
 
-        /*
-        animalInspectorText.text = 
-            $"Entity: {entity.Index}\n" +
-            $"Energy: {World.DefaultGameObjectInjectionWorld.EntityManager.GetComponentData<Energy>(entity).currentEnergy.ToString("0.0")}\n" +
-            $"Speed: {World.DefaultGameObjectInjectionWorld.EntityManager.GetComponentData<Movement>(entity).speed}"
-            ;
-
-        */
+        
+        
 
 
         
@@ -124,7 +120,7 @@ public class PropertyInspectorUIManager : MonoBehaviour
         }
         
     }
-
+    */
 
     private PropertyContainer CreateNewPropertyContainer(string propertyName)
     {
@@ -132,7 +128,7 @@ public class PropertyInspectorUIManager : MonoBehaviour
         PropertyContainer propertyContainer = newPropertyContainerObj.GetComponent<PropertyContainer>();
         propertyContainer.SetPropertyName(propertyName);
 
-        OnSelectedEntityLost += propertyContainer.StopUpdatng;
+        OnSelectedEntityLost += propertyContainer.StopUpdating;
 
         return propertyContainer;
     }
@@ -152,6 +148,9 @@ public class PropertyInspectorUIManager : MonoBehaviour
 
     //public delegate string UpadateContainerValue();
 
+
+
+    #region Inspect Property Methods
 
     private void InspectEntityID()
     {
@@ -214,13 +213,13 @@ public class PropertyInspectorUIManager : MonoBehaviour
 
         /*
         UpadateContainerValue newValueUpdate = () => {
-            return $"current: {entityManager.GetComponentData<Movement>(selectedEntity).speed.ToString("0.0")}";
+            return $"speed: {entityManager.GetComponentData<Movement>(selectedEntity).speed.ToString("0.0")}";
         };
 
         SetValueUpdateDelegate(propertyContainer, newValueUpdate);
         */
         propertyContainer.valueUpdateFunc = () => {
-            return $"current: {entityManager.GetComponentData<Movement>(selectedEntity).speed.ToString("0.0")}";
+            return $"speed: {entityManager.GetComponentData<Movement>(selectedEntity).speed.ToString("0.0")}";
         };
     }
 
@@ -258,10 +257,33 @@ public class PropertyInspectorUIManager : MonoBehaviour
         */
 
         propertyContainer.valueUpdateFunc = () => {
-            return $"id: {entityManager.GetComponentData<Target>(selectedEntity).targetEntity.Index}";
+
+            Entity tempTargetEntity = entityManager.GetComponentData<Target>(selectedEntity).targetEntity;
+
+            int tempTargetID = entityManager.GetComponentData<Target>(selectedEntity).targetEntity.Index;
+
+            return "id: " + (tempTargetID == 0 ? "empty" : tempTargetID.ToString());
+            //+ "\n" + entityManager.GetComponentData<LocalTransform>(tempTargetEntity).Position;
         };
     }
 
+
+    private void InspectAge()
+    {
+        PropertyContainer propertyContainer = CreateNewPropertyContainer("Age");
+        
+        propertyContainer.valueUpdateFunc = () => {
+            AgeStage ageStage = entityManager.GetComponentData<AgeStage>(selectedEntity);
+            return $"age: {(int)entityManager.GetComponentData<Age>(selectedEntity).currentAge}\n" +
+            $"stage: {ageStage.currentStage.ToString()}\n" +
+            $"cutoff: {ageStage.matureThreshold} / {ageStage.agingThreshold}";
+        };
+    }
+
+
+
+
+    #endregion
 
     // old version
     /*
@@ -337,7 +359,7 @@ public class PropertyInspectorUIManager : MonoBehaviour
     */
 
 
-    
+
     private void Update()
     {
         // if the UI panel is not opened or no selected Entity
@@ -360,7 +382,6 @@ public class PropertyInspectorUIManager : MonoBehaviour
         if (selectedEntity == Entity.Null)
         {
             OnSelectedEntityLost?.Invoke();
-            OnSelectedEntityLost = null;
             ClearAllChild(inspectorScrollViewContent);
         }
     }
@@ -368,7 +389,9 @@ public class PropertyInspectorUIManager : MonoBehaviour
 
     private void ClearAllChild(Transform container)
     {
-        foreach(Transform child in container)
+        OnSelectedEntityLost = null; // clear all subscrition
+
+        foreach (Transform child in container)
         {
             Destroy(child.gameObject);
         }
