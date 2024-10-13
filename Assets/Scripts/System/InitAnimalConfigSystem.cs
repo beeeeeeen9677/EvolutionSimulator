@@ -49,7 +49,7 @@ public partial struct InitAnimalConfigSystem : ISystem
             // assign random value to speed
             SystemAPI.SetComponent(newSpawnedAnimal, new Movement
             {
-                speed = UnityEngine.Random.Range(1, 10)
+                speed = UnityEngine.Random.Range(1, 6)
             });
 
 

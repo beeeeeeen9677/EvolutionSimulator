@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 
-public partial struct AgeIncreaseSystem : ISystem
+public partial struct GrowUpSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<Age>();
+        state.RequireForUpdate<Cell>();
     }
 
     public void OnUpdate(ref SystemState state)
@@ -26,5 +27,7 @@ public partial struct IncreaseAgeJob : IJobEntity
     public void Execute(AgeAspect animal)
     {
         animal.IncreaseAge(deltaTime);
+
+        animal.UpdateNumberOfCell(deltaTime);
     }
 }

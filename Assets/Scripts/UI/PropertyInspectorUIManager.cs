@@ -67,6 +67,7 @@ public class PropertyInspectorUIManager : MonoBehaviour
         InspectSensor();
         InspectTarget();
         InspectAge();
+        InspectCell();
     }
 
 
@@ -219,7 +220,13 @@ public class PropertyInspectorUIManager : MonoBehaviour
         SetValueUpdateDelegate(propertyContainer, newValueUpdate);
         */
         propertyContainer.valueUpdateFunc = () => {
-            return $"speed: {entityManager.GetComponentData<Movement>(selectedEntity).speed.ToString("0.0")}";
+            float originalSpeed = entityManager.GetComponentData<Movement>(selectedEntity).speed;
+            int numberOfCell = entityManager.GetComponentData<Cell>(selectedEntity).numberOfCell;
+            return
+            // actual speed
+            $"current: {(originalSpeed * numberOfCell * 0.00001f).ToString("0.0")}\n" +
+            // original speed
+            $"original: {originalSpeed.ToString("0.0")}";
         };
     }
 
@@ -279,6 +286,18 @@ public class PropertyInspectorUIManager : MonoBehaviour
             $"cutoff: {ageStage.matureThreshold} / {ageStage.agingThreshold}";
         };
     }
+
+
+    private void InspectCell()
+    {
+        PropertyContainer propertyContainer = CreateNewPropertyContainer("Cell");
+
+        propertyContainer.valueUpdateFunc = () => {
+
+            return $"number: {entityManager.GetComponentData<Cell>(selectedEntity).numberOfCell}";
+        };
+    }
+
 
 
 

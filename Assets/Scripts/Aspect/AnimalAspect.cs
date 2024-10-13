@@ -14,6 +14,9 @@ public readonly partial struct AnimalAspect : IAspect
     public readonly RefRW<LocalTransform> _localTransform;
     public readonly RefRW<Movement> _movement;
     public readonly RefRW<PhysicsVelocity> _physicsVelocity;
+    public readonly RefRO<Cell> _cell;
+
+
     public readonly RefRW<Energy> _energy;
     public readonly RefRW<AnimalSensor> _animalSensor;
     public readonly RefRW<Target> _target;
@@ -22,6 +25,7 @@ public readonly partial struct AnimalAspect : IAspect
 
 
     private float moveSpeed => _movement.ValueRO.speed;
+    private int cell => _cell.ValueRO.numberOfCell;
     private float maxEnergy => _energy.ValueRO.maxEnergy;
     private float currentEnergy
     {
@@ -91,7 +95,9 @@ public readonly partial struct AnimalAspect : IAspect
     public void MoveForward(float deltaTime)
     {
         // move
-        _localTransform.ValueRW.Position += _localTransform.ValueRO.Forward() * moveSpeed * deltaTime;
+        _localTransform.ValueRW.Position += _localTransform.ValueRO.Forward() * moveSpeed * deltaTime * cell * 0.00001f;
+
+        Debug.Log(moveSpeed * deltaTime * cell * 0.00001f);
 
 
         //rotateResult = random.NextFloat(-maxTurnAngle, maxTurnAngle) + _localTransform.ValueRO.Rotation.value.y;

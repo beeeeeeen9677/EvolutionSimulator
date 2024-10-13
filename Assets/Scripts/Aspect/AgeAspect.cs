@@ -10,6 +10,7 @@ public readonly partial struct AgeAspect : IAspect
 
     public readonly RefRW<Age> _age;
     public readonly RefRW<AgeStage> _ageStage;
+    public readonly RefRW<Cell> _cell;
 
 
 
@@ -37,6 +38,11 @@ public readonly partial struct AgeAspect : IAspect
         private set => _ageStage.ValueRW.currentStage = value;
     }
 
+    public int cell
+    {
+        get => _cell.ValueRO.numberOfCell;
+        private set => _cell.ValueRW.numberOfCell = value;
+    }
 
 
     public void IncreaseAge(float deltaTime)
@@ -52,6 +58,24 @@ public readonly partial struct AgeAspect : IAspect
         else if (currentAge >= matureThreshold)
         {
             currentStage = AgeStageEnum.mature;
+        }
+    }
+
+
+    public void UpdateNumberOfCell(float deltaTime)
+    {
+        if(currentStage == AgeStageEnum.infant)
+        {
+            cell += (int)(deltaTime * 10000); // deltaTime = 0.004 in most of the time
+        }
+
+        if(currentStage == AgeStageEnum.aging)
+        {
+            cell -= (int)(deltaTime * 1000);
+
+            // wont smaller than 0
+            if(cell < 0)
+                cell = 0;
         }
     }
 }
