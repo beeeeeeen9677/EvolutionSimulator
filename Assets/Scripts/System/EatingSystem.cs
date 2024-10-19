@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Burst.CompilerServices;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
@@ -29,6 +31,9 @@ public partial struct EatingSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
+        //state.Enabled = false;
+
+
         foreach(var(target, physicsCollider, transform, entity) in 
             SystemAPI.Query<RefRO<Target>, RefRO<PhysicsCollider>, RefRO<LocalTransform>>().WithEntityAccess())
         {
@@ -47,20 +52,23 @@ public partial struct EatingSystem : ISystem
 
             // change filter Collision Layer by checking target type
             // check collision
-            Entity collidedEntity = ColliderCast(entityPosition, entityPosition, physicsCollider.ValueRO);
-
+            Entity collidedEntity = ColliderCast(entityPosition, physicsCollider.ValueRO, target.ValueRO.targetEntity);
 
 
 
             // if not collided with any entity, check next animal
             if(collidedEntity == Entity.Null)
                 continue;
-            
+
             //Debug.Log(collidedEntity.Index == target.ValueRO.targetEntity.Index);
 
-            // current animal collided with locked entity
-            if(collidedEntity.Index != target.ValueRO.targetEntity.Index)
+
+            // current animal collided with locked entity   // (Checked in function)
+
+            /*
+             if(collidedEntity != target.ValueRO.targetEntity)  
                 continue;
+            */
 
 
             // if collided with grass
@@ -93,8 +101,11 @@ public partial struct EatingSystem : ISystem
     }
 
 
-    public unsafe Entity ColliderCast(float3 RayFrom, float3 RayTo, PhysicsCollider physicsCollider)
+    public unsafe Entity ColliderCast(float3 entityPosition, PhysicsCollider physicsCollider, Entity targetEntity)
     {
+        //Debug.Log("Check Collision");
+
+
         // If doing this in SystemBase or ISystem, call GetSingleton<PhysicsWorldSingleton>()/SystemAPI.GetSingleton<PhysicsWorldSingleton>() directly.
         /*
         // Set up Entity Query to get PhysicsWorldSingleton
@@ -152,12 +163,17 @@ public partial struct EatingSystem : ISystem
         {
             Collider = (Collider*)physicsColliderBlob.GetUnsafePtr(),
             Orientation = quaternion.identity,
-            Start = RayFrom,
-            End = RayTo
+            Start = entityPosition,   // = RayFrom,
+            End = entityPosition      // = RayTo
+
         };
 
-        ColliderCastHit hit = new ColliderCastHit();
-        bool haveHit = collisionWorld.CastCollider(input, out hit);
+
+        //ColliderCastHit hit = new ColliderCastHit();
+        //bool haveHit = collisionWorld.CastCollider(input, out hit);
+
+        NativeList<ColliderCastHit> hits = new NativeList<ColliderCastHit>(Allocator.Temp);
+        bool haveHit = collisionWorld.CastCollider(input,ref hits);
 
 
         // reset filter
@@ -171,14 +187,31 @@ public partial struct EatingSystem : ISystem
 
 
 
+        Entity hittedTargetEntity = Entity.Null; // to be Return
+
+        // check if collided with target entity
         if (haveHit)
         {
-            return hit.Entity;
+            
+            foreach(ColliderCastHit hit in hits)
+            {
+                // Debug.Log("Collision ID: "+hit.Entity.Index);
+                if(hit.Entity == targetEntity) // collided with target entity
+                {
+                    hittedTargetEntity = hit.Entity;
+                    break;
+                }
+            }
+            
         }
+        
+        hits.Dispose();
 
+
+        
         //physicsColliderBlob.Dispose();
 
-        return Entity.Null;
+        return hittedTargetEntity; // if not hitted, return Entity.Null;
     }
 
 }

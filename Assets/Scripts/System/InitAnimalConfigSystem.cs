@@ -38,11 +38,21 @@ public partial struct InitAnimalConfigSystem : ISystem
             Entity newSpawnedAnimal = state.EntityManager.Instantiate(initAnimalConfig.animalPrefab);
 
 
+
+            float animalInitSize = UnityEngine.Random.Range(0.5f, 1f);
+            SystemAPI.SetComponent(newSpawnedAnimal, new SizeProperty
+            {
+                initSize = animalInitSize,
+                maxSize = animalInitSize * 1.5f,
+            });
+
+
+
             SystemAPI.SetComponent(newSpawnedAnimal, new LocalTransform
             {
                 Position = new float3(UnityEngine.Random.Range(-fieldSize, fieldSize), 1f, UnityEngine.Random.Range(-fieldSize, fieldSize)),
                 Rotation = quaternion.identity,
-                Scale = 1
+                Scale = animalInitSize
             });
 
 
@@ -53,12 +63,15 @@ public partial struct InitAnimalConfigSystem : ISystem
             });
 
 
-            float maxEnergy = UnityEngine.Random.Range(10, 40);
+            float maxEnergy = UnityEngine.Random.Range(40, 60);
             SystemAPI.SetComponent(newSpawnedAnimal, new Energy
             {
                 maxEnergy = maxEnergy,
                 currentEnergy = maxEnergy
             });
+
+
+            
 
         }
     }

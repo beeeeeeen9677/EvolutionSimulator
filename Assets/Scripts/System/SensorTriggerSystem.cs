@@ -31,6 +31,7 @@ public partial struct SensorTriggerSystem : ISystem
 
         hits.Dispose();
         */
+        //state.Enabled = false; // for debug lagging
 
 
 
@@ -45,6 +46,12 @@ public partial struct SensorTriggerSystem : ISystem
             // if no existing target, scan
             if (!animal.IsTargetExist())
             {
+
+                // too lag, Add a CoolDown here for every animal
+
+
+
+
                 physicsWorld.SphereCastAll(animal._localTransform.ValueRO.Position, animal.GetSensorSize() / 2,
                 float3.zero, 1, ref hits, new CollisionFilter
                 {

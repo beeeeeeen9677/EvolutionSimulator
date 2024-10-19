@@ -1,17 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Entities;
+using Unity.Transforms;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public readonly partial struct AgeAspect : IAspect
+public readonly partial struct GrowUpAspect : IAspect
 {
     public readonly Entity entity;
 
+    public readonly RefRW<LocalTransform> _localTransform;
     public readonly RefRW<Age> _age;
     public readonly RefRW<AgeStage> _ageStage;
     public readonly RefRW<Cell> _cell;
-
+    public readonly RefRO<SizeProperty> _sizeProperty;
 
 
     public float currentAge
@@ -45,6 +47,16 @@ public readonly partial struct AgeAspect : IAspect
     }
 
 
+    public float initSize => _sizeProperty.ValueRO.initSize;
+    public float maxSize => _sizeProperty.ValueRO.maxSize;
+    public float currentSize
+    {
+        get => _localTransform.ValueRO.Scale;
+        set => _localTransform.ValueRW.Scale = value;
+    } 
+
+
+
     public void IncreaseAge(float deltaTime)
     {
         // increase age value
@@ -76,6 +88,23 @@ public readonly partial struct AgeAspect : IAspect
             // wont smaller than 0
             if(cell < 0)
                 cell = 0;
+        }
+    }
+
+
+    public void UpdateSize() // update size by referring to age
+    {
+        // only will scale up in infant stage
+        if (currentStage == AgeStageEnum.infant)
+        {
+            currentSize = Mathf.Clamp(
+                initSize + (currentAge / matureThreshold) * (maxSize - initSize),
+                initSize, maxSize);
+        }
+        else if(currentStage == AgeStageEnum.mature)
+        {
+            // max size when mature
+            currentSize = maxSize;
         }
     }
 }

@@ -24,10 +24,12 @@ public partial struct GrowUpSystem : ISystem
 public partial struct IncreaseAgeJob : IJobEntity
 {
     public float deltaTime;
-    public void Execute(AgeAspect animal)
+    public void Execute(GrowUpAspect animal)
     {
         animal.IncreaseAge(deltaTime);
 
         animal.UpdateNumberOfCell(deltaTime);
+
+        animal.UpdateSize();
     }
 }

@@ -21,6 +21,8 @@ public readonly partial struct AnimalAspect : IAspect
     public readonly RefRW<AnimalSensor> _animalSensor;
     public readonly RefRW<Target> _target;
 
+    //public readonly RefRO<SizeProperty> _sizeProperty;
+
 
 
 
@@ -53,6 +55,12 @@ public readonly partial struct AnimalAspect : IAspect
         get => _target.ValueRO.targetPosition;
         set => _target.ValueRW.targetPosition = value;
     }
+
+    /*
+    public float initSize => _sizeProperty.ValueRO.initSize;
+    public float maxSize => _sizeProperty.ValueRO.maxSize;
+    public float currentSize => _localTransform.ValueRO.Scale;
+    */
 
 
 
@@ -97,7 +105,7 @@ public readonly partial struct AnimalAspect : IAspect
         // move
         _localTransform.ValueRW.Position += _localTransform.ValueRO.Forward() * moveSpeed * deltaTime * cell * 0.00001f;
 
-        Debug.Log(moveSpeed * deltaTime * cell * 0.00001f);
+        //Debug.Log(moveSpeed * deltaTime * cell * 0.00001f);
 
 
         //rotateResult = random.NextFloat(-maxTurnAngle, maxTurnAngle) + _localTransform.ValueRO.Rotation.value.y;

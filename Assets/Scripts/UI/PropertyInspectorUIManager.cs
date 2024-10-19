@@ -6,6 +6,7 @@ using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.UI;
+using static PropertyContainer;
 
 public class PropertyInspectorUIManager : MonoBehaviour
 {
@@ -68,6 +69,7 @@ public class PropertyInspectorUIManager : MonoBehaviour
         InspectTarget();
         InspectAge();
         InspectCell();
+        InspectSize();
     }
 
 
@@ -139,11 +141,11 @@ public class PropertyInspectorUIManager : MonoBehaviour
     {
         propertyContainer.SetValueText(valueText);
     }
-
-    public void SetValueUpdateDelegate(PropertyContainer propertyContainer, UpadateContainerValue func)
+    public void SetValueUpdateDelegate(PropertyContainer propertyContainer, Func<string> func)
     {
-        propertyContainer.SetValueUpdateDelegate(func);
+        propertyContainer.valueUpdateFunc = () => func;
     }
+   
     */
 
 
@@ -183,7 +185,7 @@ public class PropertyInspectorUIManager : MonoBehaviour
         SetValueUpdateDelegate(propertyContainer, newValueUpdate);
         */
         propertyContainer.valueUpdateFunc = () => {
-            return $"{((Vector3)entityManager.GetComponentData<LocalTransform>(selectedEntity).Position).ToString("F1")}";
+            return $"value: {((Vector3)entityManager.GetComponentData<LocalTransform>(selectedEntity).Position).ToString("F1")}";
         };
     }
 
@@ -298,6 +300,18 @@ public class PropertyInspectorUIManager : MonoBehaviour
         };
     }
 
+    private void InspectSize()
+    {
+        PropertyContainer propertyContainer = CreateNewPropertyContainer("Size");
+
+        propertyContainer.valueUpdateFunc = () => {
+
+            return 
+            $"current: {entityManager.GetComponentData<LocalTransform>(selectedEntity).Scale.ToString("0.00")}\n" +
+            $"init: {entityManager.GetComponentData<SizeProperty>(selectedEntity).initSize.ToString("0.00")}\n" +
+            $"max: {entityManager.GetComponentData<SizeProperty>(selectedEntity).maxSize.ToString("0.00")}";
+        };
+    }
 
 
 
