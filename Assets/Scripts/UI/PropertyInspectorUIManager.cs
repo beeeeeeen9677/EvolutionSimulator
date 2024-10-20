@@ -245,7 +245,15 @@ public class PropertyInspectorUIManager : MonoBehaviour
         SetValueUpdateDelegate(propertyContainer, newValueUpdate);
         */
         propertyContainer.valueUpdateFunc = () => {
-            return $"size: {entityManager.GetComponentData<AnimalSensor>(selectedEntity).size.ToString("0.0")}";
+            AnimalSensor sensor = entityManager.GetComponentData<AnimalSensor>(selectedEntity);
+            return
+            $"size: {sensor.size.ToString("0.0")}\n" +
+            $"Cooldown: \n" +
+            $" - current: {sensor.currentCooldown.ToString("0.0")}\n" +
+            $" - max: {sensor.maxCooldown.ToString("0.0")}\n"+
+            $"Probability: \n" +
+            $" - grass: {sensor.grassSensorProb.ToString("0.000")}\n" +
+            $" - animal: {sensor.animalSensorProb.ToString("0.000")}";
         };
     }
 
@@ -305,11 +313,11 @@ public class PropertyInspectorUIManager : MonoBehaviour
         PropertyContainer propertyContainer = CreateNewPropertyContainer("Size");
 
         propertyContainer.valueUpdateFunc = () => {
-
+            SizeProperty size = entityManager.GetComponentData<SizeProperty>(selectedEntity);
             return 
-            $"current: {entityManager.GetComponentData<LocalTransform>(selectedEntity).Scale.ToString("0.00")}\n" +
-            $"init: {entityManager.GetComponentData<SizeProperty>(selectedEntity).initSize.ToString("0.00")}\n" +
-            $"max: {entityManager.GetComponentData<SizeProperty>(selectedEntity).maxSize.ToString("0.00")}";
+            $"current: {size.currentSize.ToString("0.00")}\n" +
+            $"init: {size.initSize.ToString("0.00")}\n" +
+            $"max: {size.maxSize.ToString("0.00")}";
         };
     }
 

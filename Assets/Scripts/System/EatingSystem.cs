@@ -47,12 +47,18 @@ public partial struct EatingSystem : ISystem
 
 
 
+            CollisionLayer collideWith = CollisionLayer.Grass;
+            if (SystemAPI.HasComponent<AnimalTag>(target.ValueRO.targetEntity))
+            {
+                collideWith = CollisionLayer.Animal;
+            }
+
 
             float3 entityPosition = transform.ValueRO.Position;
 
             // change filter Collision Layer by checking target type
             // check collision
-            Entity collidedEntity = ColliderCast(entityPosition, physicsCollider.ValueRO, target.ValueRO.targetEntity);
+            Entity collidedEntity = ColliderCast(entityPosition, physicsCollider.ValueRO, target.ValueRO.targetEntity, collideWith);
 
 
 
@@ -74,7 +80,7 @@ public partial struct EatingSystem : ISystem
             // if collided with grass
             if (SystemAPI.HasComponent<GrassProperties>(collidedEntity))
             {
-                var grass = SystemAPI.GetAspect<GrassAspect>(collidedEntity);
+                GrassAspect grass = SystemAPI.GetAspect<GrassAspect>(collidedEntity);
 
                 // if this grass is not activated (was eaten by others)
                 if(grass.activated == false)
@@ -94,14 +100,45 @@ public partial struct EatingSystem : ISystem
 
                 // clear locked target
                 animal.ClearTarget();
-            }    
-                
-            
+            }
+            // if collided with animal
+            else if (SystemAPI.HasComponent<AnimalTag>(target.ValueRO.targetEntity))
+            {
+                AnimalAspect targetAnimal = SystemAPI.GetAspect<AnimalAspect>(collidedEntity);
+
+                // check if target entity was destroyed
+                if (!SystemAPI.Exists(collidedEntity))
+                {
+                    // if destroyed, set target to null
+                    Debug.Log("Target Entity Destroyed (no longer exists)");
+                    continue;
+                }
+
+                AnimalAspect animal = SystemAPI.GetAspect<AnimalAspect>(entity);
+
+
+
+                float obtainedEnergy = targetAnimal.currentSize * SystemAPI.GetComponent<Cell>(collidedEntity).numberOfCell * 0.0005f;
+
+
+
+
+                // eat the target animal
+                animal.EatTarget(obtainedEnergy);
+
+                // set its energy to 0
+                targetAnimal.WasEaten();
+
+                // clear locked target
+                animal.ClearTarget();
+            }
+
+
         }
     }
 
 
-    public unsafe Entity ColliderCast(float3 entityPosition, PhysicsCollider physicsCollider, Entity targetEntity)
+    public unsafe Entity ColliderCast(float3 entityPosition, PhysicsCollider physicsCollider, Entity targetEntity, CollisionLayer targetLayer)
     {
         //Debug.Log("Check Collision");
 
@@ -152,7 +189,7 @@ public partial struct EatingSystem : ISystem
         physicsColliderBlob.Value.SetCollisionFilter(new CollisionFilter
         {
             BelongsTo = (uint)CollisionLayer.Animal,
-            CollidesWith = (uint)CollisionLayer.Grass,
+            CollidesWith = (uint)targetLayer,
             GroupIndex = 0
         });
 

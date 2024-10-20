@@ -22,3 +22,9 @@ public enum CollisionLayer
     SelectionLayer = 1 << 10, // for mouse raycast select unit
     Ground = 1 << 11,
 }
+
+
+public static class TargetCollisionLayers
+{
+    public static CollisionLayer[] targetLayers = { CollisionLayer.Grass, CollisionLayer.Animal }; // collide with corresponding layer acoording to sensorNumber
+}

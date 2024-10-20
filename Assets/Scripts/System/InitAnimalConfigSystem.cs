@@ -63,7 +63,7 @@ public partial struct InitAnimalConfigSystem : ISystem
             });
 
 
-            float maxEnergy = UnityEngine.Random.Range(40, 60);
+            float maxEnergy = UnityEngine.Random.Range(80, 120);
             SystemAPI.SetComponent(newSpawnedAnimal, new Energy
             {
                 maxEnergy = maxEnergy,
@@ -71,6 +71,17 @@ public partial struct InitAnimalConfigSystem : ISystem
             });
 
 
+            float grassSensorProbability = UnityEngine.Random.Range(0f, 1f);
+            SystemAPI.SetComponent(newSpawnedAnimal, new AnimalSensor
+            {
+                size = 500f,
+
+                maxCooldown = 3,
+                currentCooldown = 0,
+
+                grassSensorProb = grassSensorProbability,
+                animalSensorProb = 1 - grassSensorProbability,
+            });
             
 
         }

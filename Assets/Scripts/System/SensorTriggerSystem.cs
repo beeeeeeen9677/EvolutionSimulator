@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Burst.CompilerServices;
@@ -40,23 +41,36 @@ public partial struct SensorTriggerSystem : ISystem
         {
             PhysicsWorldSingleton physicsWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
 
-            NativeList<ColliderCastHit> hits = new NativeList<ColliderCastHit>(Allocator.Temp);
 
 
             // if no existing target, scan
             if (!animal.IsTargetExist())
             {
 
-                // too lag, Add a CoolDown here for every animal
+                // check if Sensor CD is finished
+                if (!animal.SensorIsReady(SystemAPI.Time.DeltaTime))
+                {
+                    continue; // if not finish, go to next animal's loop
+                }
+                //Debug.Log("Search Target: " + animal.entity.Index);
+
+                
+                int sensorNumber = animal.GetRandomSensorNumber(); // select random sensor to use
+                //Debug.Log("sensorNumber: "+sensorNumber);
+
+                // stored in static class TargetCollisionLayers
+                //CollisionLayer[] targetLayers = { CollisionLayer.Grass, CollisionLayer.Animal }; // collide with corresponding layer acoording to sensorNumber
 
 
+
+                NativeList<ColliderCastHit> hits = new NativeList<ColliderCastHit>(Allocator.Temp);
 
 
                 physicsWorld.SphereCastAll(animal._localTransform.ValueRO.Position, animal.GetSensorSize() / 2,
                 float3.zero, 1, ref hits, new CollisionFilter
                 {
                     BelongsTo = (uint)CollisionLayer.Animal,
-                    CollidesWith = (uint)CollisionLayer.Grass,
+                    CollidesWith = (uint)TargetCollisionLayers.targetLayers[sensorNumber],    // (uint)CollisionLayer.Grass,
                 });
 
                 // loop through all scaned entities
@@ -66,17 +80,41 @@ public partial struct SensorTriggerSystem : ISystem
 
 
                     // check grass
-                    if (!SystemAPI.HasComponent<GrassProperties>(hit.Entity))
+                    if (sensorNumber == 0)
                     {
-                        Debug.Log("Missing GrassProperties Component");
-                        continue;
+                        if (!SystemAPI.HasComponent<GrassProperties>(hit.Entity))
+                        {
+                            Debug.Log("Missing GrassProperties Component");
+                            continue;
+                        }
+
+                        var grass = SystemAPI.GetComponentRO<GrassProperties>(hit.Entity);
+
+                        // this grass is not activated
+                        if (!grass.ValueRO.activated)
+                            continue; // check next detected entity
+
+
                     }
+                    // check animal
+                    else if (sensorNumber == 1)
+                    {
+                        if(hit.Entity == animal.entity) // hit itself
+                            continue;
 
-                    var grass = SystemAPI.GetComponentRO<GrassProperties>(hit.Entity);
+                        if (!SystemAPI.HasComponent<AnimalTag>(hit.Entity))
+                        {
+                            Debug.Log("Missing AnimalTag Component");
+                            continue;
+                        }
 
-                    // this grass is not activated
-                    if (!grass.ValueRO.activated)
-                        continue; // check next detected entity
+                        // compare size
+                        if(animal.CompareTargetProperiesToHunt(SystemAPI.GetAspect<AnimalAspect>(hit.Entity)))
+                        {
+                            Debug.Log("Smaller, give up");
+                            continue; // smaller than this hitted animal
+                        }
+                    }
 
 
 
@@ -90,6 +128,8 @@ public partial struct SensorTriggerSystem : ISystem
                     //Debug.Log(animal.targetPosition + "" + hit.Entity.Index+ ""+ SystemAPI.HasComponent<GrassProperties>(hit.Entity));
                     break;
                 }
+
+                hits.Dispose();
             }
             // target exist
             else
@@ -97,50 +137,65 @@ public partial struct SensorTriggerSystem : ISystem
                 // check status of locked target 
                 Entity targetEntity = animal.GetTargetEntity();
 
-                /*
+                
                 // check if target entity was destroyed
                 if (!SystemAPI.Exists(targetEntity))
                 {
                     // if destroyed, set target to null
+                    Debug.Log("Target Entity Destroyed (no longer exists)");
                     animal.ClearTarget();
                     continue;
                 }
-                */
 
 
-
-                // target is a grass
-                if (SystemAPI.HasComponent<GrassProperties>(targetEntity))
+                // for handling ArgumentException target animal entity destroyed
+                try
                 {
-                    var grass = SystemAPI.GetComponentRO<GrassProperties>(targetEntity);
-
-                    // if this grass is not activated now
-                    if (!grass.ValueRO.activated)
+                    // target is a grass
+                    if (SystemAPI.HasComponent<GrassProperties>(targetEntity))
                     {
-                        Debug.Log("Target lost   " + animal.entity.Index);
+                        var grass = SystemAPI.GetComponentRO<GrassProperties>(targetEntity);
 
-                        //reset target
-                        animal.ClearTarget();
+                        // if this grass is not activated now
+                        if (!grass.ValueRO.activated)
+                        {
+                            Debug.Log("Target lost   " + animal.entity.Index);
 
-                        continue;
+                            //reset target
+                            animal.ClearTarget();
+
+                            continue;
+                        }
                     }
+                    // target is an animal
+                    else if (SystemAPI.HasComponent<AnimalTag>(targetEntity))
+                    {
+                        // compare size
+                        if (animal.CompareTargetProperiesToHunt(SystemAPI.GetAspect<AnimalAspect>(targetEntity)))
+                        {
+                            Debug.Log("Smaller, give up and reset target");
+                            animal.ClearTarget();
+                            continue; // smaller than this hitted animal
+                        }
+                    }
+
+
+
+
+
+
+                    // refresh target position
+                    animal.targetPosition = SystemAPI.GetComponentRO<LocalTransform>(targetEntity).ValueRO.Position;
+                    //Debug.Log(animal.targetPosition);
                 }
-
-
-
-
-
-
-                // refresh target position
-                animal.targetPosition = SystemAPI.GetComponentRO<LocalTransform>(targetEntity).ValueRO.Position;
-                //Debug.Log(animal.targetPosition);
-
+                catch (ArgumentException e)
+                {
+                    Debug.Log("ArgumentException: Target Entity Destroyed (Sensor Trigger System)");
+                    animal.ClearTarget();
+                    continue;
+                }
             }
-
-
-            hits.Dispose();
         }
-        
     }
 }
 

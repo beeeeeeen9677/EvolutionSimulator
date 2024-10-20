@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Burst.CompilerServices;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
@@ -43,6 +45,34 @@ public readonly partial struct AnimalAspect : IAspect
     }
 
 
+    #region Animal_Sensor
+    private float maxCooldown
+    {
+        get => _animalSensor.ValueRO.maxCooldown;
+        set => _animalSensor.ValueRW.maxCooldown = value;
+    }
+
+
+    private float currentCooldown
+    {
+        get => _animalSensor.ValueRO.currentCooldown;
+        set => _animalSensor.ValueRW.currentCooldown = value;
+    }
+
+
+    private float grassSensorProb
+    {
+        get => _animalSensor.ValueRO.grassSensorProb;
+        set => _animalSensor.ValueRW.grassSensorProb = value;
+    }
+
+    private float animalSensorProb
+    {
+        get => _animalSensor.ValueRO.animalSensorProb;
+        set => _animalSensor.ValueRW.animalSensorProb = value;
+    }
+    #endregion
+
 
 
     private Entity targetEntity
@@ -59,8 +89,8 @@ public readonly partial struct AnimalAspect : IAspect
     /*
     public float initSize => _sizeProperty.ValueRO.initSize;
     public float maxSize => _sizeProperty.ValueRO.maxSize;
-    public float currentSize => _localTransform.ValueRO.Scale;
     */
+    public float currentSize => _localTransform.ValueRO.Scale;
 
 
 
@@ -132,8 +162,7 @@ public readonly partial struct AnimalAspect : IAspect
     // for increase / decrease energy with clamp checking
     private void ModifyEnergy(float value)
     {
-        currentEnergy += value;
-        currentEnergy = Mathf.Clamp(currentEnergy, 0, maxEnergy);
+        currentEnergy = Mathf.Clamp(currentEnergy + value, 0, maxEnergy);
     }
 
 
@@ -151,10 +180,52 @@ public readonly partial struct AnimalAspect : IAspect
     {
         this.targetEntity = targetEntity;
     }
+
+
+
     public float GetSensorSize()
     {
         return sensorSize; 
     }
+
+    public bool SensorIsReady(float deltaTime) // cooldown, return whether CD is 0
+    {
+        // decrease Cooldown
+        currentCooldown = Mathf.Clamp(currentCooldown - deltaTime, 0, maxCooldown);
+
+        // check if finished cooldown 
+        if (currentCooldown == 0)
+        {
+            currentCooldown = maxCooldown; // reset CD
+            return true;
+        }
+
+        // not ready to use
+        return false;
+    }
+
+
+    public int GetRandomSensorNumber()
+    {
+        float randResult = UnityEngine.Random.Range(0f, 1f);
+
+        float[] sensorProbs = { grassSensorProb, animalSensorProb};
+        float cumulativeProbability = 0;
+        for(int i = 0; i < sensorProbs.Length; i++)
+        {
+            cumulativeProbability += sensorProbs[i];
+
+            if(cumulativeProbability > randResult)
+            {
+                return i;
+            }
+        }
+
+        Debug.LogError("Error: GetRandomSensorNumber() did not pick any of Sensor in for loop");
+        return 0;
+    }
+
+
 
     public void EatTarget(float obtainedEnergy)
     {
@@ -169,5 +240,18 @@ public readonly partial struct AnimalAspect : IAspect
     public void ClearTarget()
     {
         targetEntity = Entity.Null;
+    }
+
+
+    public bool CompareTargetProperiesToHunt(AnimalAspect targetEntity)
+    {
+        return currentSize <= targetEntity.currentSize; // compare size
+    }
+
+
+    // call when this animal was eaten by others
+    public void WasEaten()
+    {
+        currentEnergy = 0;
     }
 }

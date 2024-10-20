@@ -19,6 +19,7 @@ public class SizePropertyAuthoring : MonoBehaviour
 
 public struct SizeProperty : IComponentData
 {
+    public float currentSize;
     public float initSize;
     public float maxSize;
 }

@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class SensorAuthoring : MonoBehaviour
 {
-    public float size;
+    //public float size;
 
     public class SensorbBaker : Baker<SensorAuthoring>
     {
@@ -16,7 +16,7 @@ public class SensorAuthoring : MonoBehaviour
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
             AddComponent(entity, new AnimalSensor
             {
-                size = authoring.size,
+                //size = authoring.size,
             });
 
         }
@@ -27,5 +27,13 @@ public class SensorAuthoring : MonoBehaviour
 // for trigger detection
 public struct AnimalSensor : IComponentData
 {
-    public float size; //radius
+    public float size; // radius
+
+    public float maxCooldown; // CD of the sensor
+    public float currentCooldown;
+
+    // all sensor probability sum should be 1
+    public float grassSensorProb;
+    public float animalSensorProb;
+    //public float deadbodySensorProb;
 }

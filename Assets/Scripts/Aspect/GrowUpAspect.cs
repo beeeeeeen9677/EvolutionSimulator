@@ -13,7 +13,7 @@ public readonly partial struct GrowUpAspect : IAspect
     public readonly RefRW<Age> _age;
     public readonly RefRW<AgeStage> _ageStage;
     public readonly RefRW<Cell> _cell;
-    public readonly RefRO<SizeProperty> _sizeProperty;
+    public readonly RefRW<SizeProperty> _sizeProperty;
 
 
     public float currentAge
@@ -51,8 +51,12 @@ public readonly partial struct GrowUpAspect : IAspect
     public float maxSize => _sizeProperty.ValueRO.maxSize;
     public float currentSize
     {
-        get => _localTransform.ValueRO.Scale;
-        set => _localTransform.ValueRW.Scale = value;
+        get => _sizeProperty.ValueRO.currentSize;
+        private set
+        {
+            _sizeProperty.ValueRW.currentSize = value;
+            _localTransform.ValueRW.Scale = value;
+        }
     } 
 
 
