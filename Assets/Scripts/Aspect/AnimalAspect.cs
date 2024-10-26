@@ -129,11 +129,16 @@ public readonly partial struct AnimalAspect : IAspect
     
     }
 
+    public float GetMoveSpeed()
+    {
+        return moveSpeed * cell * 0.00001f;
+    }
+
 
     public void MoveForward(float deltaTime)
     {
         // move
-        _localTransform.ValueRW.Position += _localTransform.ValueRO.Forward() * moveSpeed * deltaTime * cell * 0.00001f;
+        _localTransform.ValueRW.Position += _localTransform.ValueRO.Forward() * deltaTime * GetMoveSpeed();
 
         //Debug.Log(moveSpeed * deltaTime * cell * 0.00001f);
 
@@ -185,7 +190,7 @@ public readonly partial struct AnimalAspect : IAspect
 
     public float GetSensorSize()
     {
-        return sensorSize; 
+        return sensorSize * cell * 0.0001f; 
     }
 
     public bool SensorIsReady(float deltaTime) // cooldown, return whether CD is 0

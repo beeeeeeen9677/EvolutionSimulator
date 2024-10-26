@@ -30,6 +30,8 @@ public class PropertyInspectorUIManager : MonoBehaviour
     public static Entity selectedEntity { get; private set; }
     public static EntityManager entityManager { get; private set; }
 
+    private AnimalAspect _animalAspect;
+
     private Action OnSelectedEntityLost;
     #endregion
 
@@ -59,6 +61,9 @@ public class PropertyInspectorUIManager : MonoBehaviour
         inspectorPanel.SetActive(true); // open inspector
         ClearAllChild(inspectorScrollViewContent);
 
+
+
+        _animalAspect = entityManager.GetAspect<AnimalAspect>(selectedEntity);
 
         // add different properties onto inspector
         InspectEntityID();
@@ -226,7 +231,7 @@ public class PropertyInspectorUIManager : MonoBehaviour
             int numberOfCell = entityManager.GetComponentData<Cell>(selectedEntity).numberOfCell;
             return
             // actual speed
-            $"current: {(originalSpeed * numberOfCell * 0.00001f).ToString("0.0")}\n" +
+            $"current: {(_animalAspect.GetMoveSpeed()).ToString("0.0")}\n" +
             // original speed
             $"original: {originalSpeed.ToString("0.0")}";
         };
@@ -247,7 +252,7 @@ public class PropertyInspectorUIManager : MonoBehaviour
         propertyContainer.valueUpdateFunc = () => {
             AnimalSensor sensor = entityManager.GetComponentData<AnimalSensor>(selectedEntity);
             return
-            $"size: {sensor.size.ToString("0.0")}\n" +
+            $"size: {_animalAspect.GetSensorSize().ToString("0.0")}\n" +
             $"Cooldown: \n" +
             $" - current: {sensor.currentCooldown.ToString("0.0")}\n" +
             $" - max: {sensor.maxCooldown.ToString("0.0")}\n"+
