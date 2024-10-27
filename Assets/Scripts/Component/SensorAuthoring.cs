@@ -29,6 +29,8 @@ public struct AnimalSensor : IComponentData
 {
     public float size; // radius
 
+    public float warningRange;// max distance to detect predator
+
     public float maxCooldown; // CD of the sensor
     public float currentCooldown;
 
@@ -36,4 +38,5 @@ public struct AnimalSensor : IComponentData
     public float grassSensorProb;
     public float animalSensorProb;
     //public float deadbodySensorProb;
+
 }

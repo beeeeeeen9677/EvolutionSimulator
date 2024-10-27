@@ -76,6 +76,9 @@ public partial struct InitAnimalConfigSystem : ISystem
             {
                 size = 20f,
 
+                warningRange = 10f,
+
+
                 maxCooldown = 3,
                 currentCooldown = 0,
 

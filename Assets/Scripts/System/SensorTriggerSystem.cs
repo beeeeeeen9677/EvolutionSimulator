@@ -124,7 +124,10 @@ public partial struct SensorTriggerSystem : ISystem
                     // if eatable, set as target
                     Debug.Log("Target Found   " + animal.entity.Index);
                     animal.SetTargetEntity(hit.Entity);
+                    animal.ResetChaseCountdown();
                     animal.targetPosition = SystemAPI.GetComponent<LocalTransform>(hit.Entity).Position;
+                    
+
                     //Debug.Log(animal.targetPosition + "" + hit.Entity.Index+ ""+ SystemAPI.HasComponent<GrassProperties>(hit.Entity));
                     break;
                 }
@@ -172,12 +175,37 @@ public partial struct SensorTriggerSystem : ISystem
                     // target is an animal
                     else if (SystemAPI.HasComponent<AnimalTag>(targetEntity))
                     {
+
+                        AnimalAspect targetAnimal = SystemAPI.GetAspect<AnimalAspect>(targetEntity);
+
+
+                        // update target's threat entity & position
+                        targetAnimal.SetThreatEntity(animal.entity, animal.position);
+                        
+
                         // compare size
-                        if (animal.CompareTargetProperiesToHunt(SystemAPI.GetAspect<AnimalAspect>(targetEntity)))
+                        if (animal.CompareTargetProperiesToHunt(targetAnimal))
                         {
                             Debug.Log("Smaller, give up and reset target");
-                            animal.ClearTarget();
+
+                            animal.ClearTarget(); // clear target
+
+                            targetAnimal.ClearTargetThreat(animal.entity); // clear target threat
+
                             continue; // smaller than this hitted animal
+                        }
+
+
+                        // check remaining chase time
+                        if (animal.IsChaseTimeOver(SystemAPI.Time.DeltaTime))
+                        {
+                            Debug.Log("Chase time over");
+
+                            animal.ClearTarget(); // clear target
+
+                            targetAnimal.ClearTargetThreat(animal.entity); // clear target threat
+
+                            continue; 
                         }
                     }
 

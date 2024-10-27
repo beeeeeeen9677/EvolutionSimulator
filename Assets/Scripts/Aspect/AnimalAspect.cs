@@ -22,10 +22,16 @@ public readonly partial struct AnimalAspect : IAspect
     public readonly RefRW<Energy> _energy;
     public readonly RefRW<AnimalSensor> _animalSensor;
     public readonly RefRW<Target> _target;
+    public readonly RefRW<Threat> _threat;
 
     //public readonly RefRO<SizeProperty> _sizeProperty;
 
 
+    public float3 position
+    {
+        get => _localTransform.ValueRO.Position;
+        private set => _localTransform.ValueRW.Position = value;
+    }
 
 
     private float moveSpeed => _movement.ValueRO.speed;
@@ -38,6 +44,8 @@ public readonly partial struct AnimalAspect : IAspect
     }
 
 
+
+    #region Animal_Sensor
     private float sensorSize
     {
         get => _animalSensor.ValueRO.size;
@@ -45,7 +53,13 @@ public readonly partial struct AnimalAspect : IAspect
     }
 
 
-    #region Animal_Sensor
+    private float warningRange
+    {
+        get => _animalSensor.ValueRO.warningRange;
+        set => _animalSensor.ValueRW.warningRange = value;
+    }
+
+
     private float maxCooldown
     {
         get => _animalSensor.ValueRO.maxCooldown;
@@ -85,6 +99,38 @@ public readonly partial struct AnimalAspect : IAspect
         get => _target.ValueRO.targetPosition;
         set => _target.ValueRW.targetPosition = value;
     }
+
+    private float maxChaseTime
+    {
+        get => _target.ValueRO.maxChaseTime;
+        set => _target.ValueRW.maxChaseTime = value;
+    }
+
+
+    public float remainChaseTime
+    {
+        get => _target.ValueRO.remainChaseTime;
+        private set => _target.ValueRW.remainChaseTime = value;
+    }
+
+
+    private Entity threatEntity
+    {
+        get => _threat.ValueRO.threatEntity;
+        set => _threat.ValueRW.threatEntity = value;
+    }
+
+
+
+    public float3 threatPosition
+    {
+        get => _threat.ValueRO.threatPosition;
+        set => _threat.ValueRW.threatPosition = value;
+    }
+
+
+
+
 
     /*
     public float initSize => _sizeProperty.ValueRO.initSize;
@@ -138,7 +184,7 @@ public readonly partial struct AnimalAspect : IAspect
     public void MoveForward(float deltaTime)
     {
         // move
-        _localTransform.ValueRW.Position += _localTransform.ValueRO.Forward() * deltaTime * GetMoveSpeed();
+        position += _localTransform.ValueRO.Forward() * deltaTime * GetMoveSpeed();
 
         //Debug.Log(moveSpeed * deltaTime * cell * 0.00001f);
 
@@ -180,11 +226,32 @@ public readonly partial struct AnimalAspect : IAspect
         return targetEntity != Entity.Null;
     }
 
-    public Entity GetTargetEntity() { return targetEntity; }
+    public Entity GetTargetEntity() 
+    { 
+        return targetEntity; 
+    }
+
     public void SetTargetEntity(Entity targetEntity)
     {
         this.targetEntity = targetEntity;
     }
+
+
+    public void ResetChaseCountdown()
+    {
+        remainChaseTime = maxChaseTime;
+    }
+
+
+    public bool IsChaseTimeOver(float deltaTime) // true if counter less than 0
+    {
+        remainChaseTime = Mathf.Clamp(remainChaseTime - deltaTime, 0, maxChaseTime);
+
+        return remainChaseTime <= 0;   
+    }
+
+
+
 
 
 
@@ -192,6 +259,59 @@ public readonly partial struct AnimalAspect : IAspect
     {
         return sensorSize * cell * 0.0001f; 
     }
+
+    public float GetWarningRange()
+    {
+        return warningRange * cell * 0.0001f;
+    }
+
+
+
+
+    public void SetThreatEntity(Entity threat, float3 threatPos)
+    {
+        // set threat entity only if no exisiting threatEntity
+
+        if (threatEntity != Entity.Null)
+            return;
+
+        threatEntity = threat;
+        threatPosition = threatPos;
+    }
+
+
+    public bool IsThreatExist()
+    {
+
+        // if no threat exist
+        if (threatEntity == Entity.Null)
+        {
+            //Debug.Log("No Threat");
+            return false;
+        }
+        // if threat ourside warning range
+        else if (MathHelpers.GetDistance(position, targetPosition) > GetWarningRange())
+        {
+            //Debug.Log($"Threat outside: {MathHelpers.GetDistance(position, targetPosition)} > {GetWarningRange()}");
+            return false;
+        }
+
+
+        //Debug.Log("Threat Found");
+        return true;
+    }
+    
+
+    // call by threat entity
+    public void ClearTargetThreat(Entity threat)
+    {
+        // clear only if called by threat entity
+        if(threatEntity == threat)
+            threatEntity = Entity.Null;
+    }
+
+
+
 
     public bool SensorIsReady(float deltaTime) // cooldown, return whether CD is 0
     {
@@ -245,6 +365,7 @@ public readonly partial struct AnimalAspect : IAspect
     public void ClearTarget()
     {
         targetEntity = Entity.Null;
+        remainChaseTime = 0;
     }
 
 

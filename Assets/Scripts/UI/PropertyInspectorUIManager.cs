@@ -72,6 +72,7 @@ public class PropertyInspectorUIManager : MonoBehaviour
         InspectMovement();
         InspectSensor();
         InspectTarget();
+        InspectThreat();
         InspectAge();
         InspectCell();
         InspectSize();
@@ -253,7 +254,8 @@ public class PropertyInspectorUIManager : MonoBehaviour
             AnimalSensor sensor = entityManager.GetComponentData<AnimalSensor>(selectedEntity);
             return
             $"size: {_animalAspect.GetSensorSize().ToString("0.0")}\n" +
-            $"Cooldown: \n" +
+            $"warning range: {_animalAspect.GetWarningRange().ToString("0.0")}\n" +
+            $"cooldown: \n" +
             $" - current: {sensor.currentCooldown.ToString("0.0")}\n" +
             $" - max: {sensor.maxCooldown.ToString("0.0")}\n"+
             $"Probability: \n" +
@@ -280,15 +282,32 @@ public class PropertyInspectorUIManager : MonoBehaviour
 
         propertyContainer.valueUpdateFunc = () => {
 
-            Entity tempTargetEntity = entityManager.GetComponentData<Target>(selectedEntity).targetEntity;
+            Target tempTarget = entityManager.GetComponentData<Target>(selectedEntity);
 
-            int tempTargetID = entityManager.GetComponentData<Target>(selectedEntity).targetEntity.Index;
+            int tempTargetID = tempTarget.targetEntity.Index;
 
-            return "id: " + (tempTargetID == 0 ? "empty" : tempTargetID.ToString());
+            return 
+            "id: " + (tempTargetID == 0 ? "empty" : tempTargetID.ToString()) + "\n" + 
+            $"max chase time: {tempTarget.maxChaseTime.ToString("0.0")}\n" +
+            $"remaining time: {tempTarget.remainChaseTime.ToString("0.0")}";
             //+ "\n" + entityManager.GetComponentData<LocalTransform>(tempTargetEntity).Position;
         };
     }
 
+
+    private void InspectThreat()
+    {
+        PropertyContainer propertyContainer = CreateNewPropertyContainer("Threat");
+       
+        propertyContainer.valueUpdateFunc = () => {
+
+
+            int tempThreatID = entityManager.GetComponentData<Threat>(selectedEntity).threatEntity.Index;
+
+            return "id: " + (tempThreatID == 0 ? "empty" : tempThreatID.ToString());
+            //+ "\n" + entityManager.GetComponentData<LocalTransform>(tempTargetEntity).Position;
+        };
+    }
 
     private void InspectAge()
     {

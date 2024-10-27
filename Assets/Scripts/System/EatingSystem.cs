@@ -126,11 +126,17 @@ public partial struct EatingSystem : ISystem
                 // eat the target animal
                 animal.EatTarget(obtainedEnergy);
 
-                // set its energy to 0
-                targetAnimal.WasEaten();
 
                 // clear locked target
                 animal.ClearTarget();
+
+                // clear target threat
+                targetAnimal.ClearTargetThreat(animal.entity);
+
+
+                // set its energy to 0
+                targetAnimal.WasEaten();
+
             }
 
 

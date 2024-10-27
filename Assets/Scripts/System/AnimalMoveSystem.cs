@@ -47,10 +47,15 @@ public partial struct MoveAnimalJob : IJobEntity
     //[BurstCompile]
     public void Execute(AnimalAspect animal)
     {
-        if (animal.IsTargetExist())
+        if (animal.IsThreatExist())
+        {
+            float heading = MathHelpers.GetHeading(animal.threatPosition, animal.position);
+            animal.FaceTarget(heading);
+        }
+        else if (animal.IsTargetExist())
         {
 
-            float heading = MathHelpers.GetHeading(animal._localTransform.ValueRO.Position, animal.targetPosition);
+            float heading = MathHelpers.GetHeading(animal.position, animal.targetPosition);
             //Debug.Log(animal.targetPosition);
             animal.FaceTarget(heading);
         }
