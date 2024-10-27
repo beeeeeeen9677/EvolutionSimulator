@@ -58,6 +58,8 @@ public partial struct SensorTriggerSystem : ISystem
                 int sensorNumber = animal.GetRandomSensorNumber(); // select random sensor to use
                 //Debug.Log("sensorNumber: "+sensorNumber);
 
+                animal.SetCurrentSensor(TargetCollisionLayers.targetLayers[sensorNumber]);
+
                 // stored in static class TargetCollisionLayers
                 //CollisionLayer[] targetLayers = { CollisionLayer.Grass, CollisionLayer.Animal }; // collide with corresponding layer acoording to sensorNumber
 
@@ -132,6 +134,15 @@ public partial struct SensorTriggerSystem : ISystem
                     break;
                 }
 
+
+                // check if any Target locked after scanning
+                if (!animal.IsTargetExist())
+                {
+                    // if failed to lock any target, mark this round as FAIL
+                    animal.AdjustSensorProbability(false);
+                }
+
+
                 hits.Dispose();
             }
             // target exist
@@ -146,7 +157,7 @@ public partial struct SensorTriggerSystem : ISystem
                 {
                     // if destroyed, set target to null
                     Debug.Log("Target Entity Destroyed (no longer exists)");
-                    animal.ClearTarget();
+                    animal.ClearTarget(false);
                     continue;
                 }
 
@@ -167,7 +178,7 @@ public partial struct SensorTriggerSystem : ISystem
                             Debug.Log("Target lost   " + animal.entity.Index);
 
                             //reset target
-                            animal.ClearTarget();
+                            animal.ClearTarget(false);
 
                             continue;
                         }
@@ -188,7 +199,7 @@ public partial struct SensorTriggerSystem : ISystem
                         {
                             Debug.Log("Smaller, give up and reset target");
 
-                            animal.ClearTarget(); // clear target
+                            animal.ClearTarget(false); // clear target
 
                             targetAnimal.ClearTargetThreat(animal.entity); // clear target threat
 
@@ -201,7 +212,7 @@ public partial struct SensorTriggerSystem : ISystem
                         {
                             Debug.Log("Chase time over");
 
-                            animal.ClearTarget(); // clear target
+                            animal.ClearTarget(false); // clear target
 
                             targetAnimal.ClearTargetThreat(animal.entity); // clear target threat
 
@@ -223,7 +234,7 @@ public partial struct SensorTriggerSystem : ISystem
                 catch (ArgumentException e)
                 {
                     Debug.Log("ArgumentException: Target Entity Destroyed (Sensor Trigger System)");
-                    animal.ClearTarget();
+                    animal.ClearTarget(false);
                     continue;
                 }
             }

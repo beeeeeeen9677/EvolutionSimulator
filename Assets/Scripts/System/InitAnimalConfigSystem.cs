@@ -78,12 +78,13 @@ public partial struct InitAnimalConfigSystem : ISystem
 
                 warningRange = 10f,
 
-
                 maxCooldown = 3,
                 currentCooldown = 0,
 
-                grassSensorProb = grassSensorProbability,
-                animalSensorProb = 1 - grassSensorProbability,
+                grassSensorProbability = grassSensorProbability,
+                animalSensorProbability = 1 - grassSensorProbability,
+
+                currentSensor = null,
             });
             
 

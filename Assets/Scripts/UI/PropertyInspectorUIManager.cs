@@ -254,13 +254,14 @@ public class PropertyInspectorUIManager : MonoBehaviour
             AnimalSensor sensor = entityManager.GetComponentData<AnimalSensor>(selectedEntity);
             return
             $"size: {_animalAspect.GetSensorSize().ToString("0.0")}\n" +
+            $"using: {sensor.currentSensor}\n" +
             $"warning range: {_animalAspect.GetWarningRange().ToString("0.0")}\n" +
-            $"cooldown: \n" +
+            $"Cooldown: \n" +
             $" - current: {sensor.currentCooldown.ToString("0.0")}\n" +
             $" - max: {sensor.maxCooldown.ToString("0.0")}\n"+
             $"Probability: \n" +
-            $" - grass: {sensor.grassSensorProb.ToString("0.000")}\n" +
-            $" - animal: {sensor.animalSensorProb.ToString("0.000")}";
+            $" - grass: {sensor.grassSensorProbability.ToString("0.000")}\n" +
+            $" - animal: {sensor.animalSensorProbability.ToString("0.000")}";
         };
     }
 
@@ -288,8 +289,8 @@ public class PropertyInspectorUIManager : MonoBehaviour
 
             return 
             "id: " + (tempTargetID == 0 ? "empty" : tempTargetID.ToString()) + "\n" + 
-            $"max chase time: {tempTarget.maxChaseTime.ToString("0.0")}\n" +
-            $"remaining time: {tempTarget.remainChaseTime.ToString("0.0")}";
+            $"max chase time: {tempTarget.maxChaseTime.ToString("0.0")}s\n" +
+            $"remaining time: {tempTarget.remainChaseTime.ToString("0.0")}s";
             //+ "\n" + entityManager.GetComponentData<LocalTransform>(tempTargetEntity).Position;
         };
     }

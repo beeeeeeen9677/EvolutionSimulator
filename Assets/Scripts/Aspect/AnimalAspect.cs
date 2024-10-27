@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using Unity.Burst.CompilerServices;
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.UIElements.Experimental;
@@ -15,7 +14,7 @@ public readonly partial struct AnimalAspect : IAspect
 
     public readonly RefRW<LocalTransform> _localTransform;
     public readonly RefRW<Movement> _movement;
-    public readonly RefRW<PhysicsVelocity> _physicsVelocity;
+    //public readonly RefRW<PhysicsVelocity> _physicsVelocity;
     public readonly RefRO<Cell> _cell;
 
 
@@ -74,16 +73,23 @@ public readonly partial struct AnimalAspect : IAspect
     }
 
 
-    private float grassSensorProb
+    private float grassSensorProbability
     {
-        get => _animalSensor.ValueRO.grassSensorProb;
-        set => _animalSensor.ValueRW.grassSensorProb = value;
+        get => _animalSensor.ValueRO.grassSensorProbability;
+        set => _animalSensor.ValueRW.grassSensorProbability = value;
     }
 
-    private float animalSensorProb
+    private float animalSensorProbability
     {
-        get => _animalSensor.ValueRO.animalSensorProb;
-        set => _animalSensor.ValueRW.animalSensorProb = value;
+        get => _animalSensor.ValueRO.animalSensorProbability;
+        set => _animalSensor.ValueRW.animalSensorProbability = value;
+    }
+
+
+    private CollisionLayer? currentSensor
+    {
+        get => _animalSensor.ValueRO.currentSensor;
+        set => _animalSensor.ValueRW.currentSensor = value;
     }
     #endregion
 
@@ -251,6 +257,15 @@ public readonly partial struct AnimalAspect : IAspect
     }
 
 
+    public void SetCurrentSensor(CollisionLayer collisionLayer)
+    {
+        currentSensor = collisionLayer;
+    }
+
+    public void ResetCurrentSensor()
+    {
+        currentSensor = null;
+    }
 
 
 
@@ -334,7 +349,7 @@ public readonly partial struct AnimalAspect : IAspect
     {
         float randResult = UnityEngine.Random.Range(0f, 1f);
 
-        float[] sensorProbs = { grassSensorProb, animalSensorProb};
+        float[] sensorProbs = { grassSensorProbability, animalSensorProbability};
         float cumulativeProbability = 0;
         for(int i = 0; i < sensorProbs.Length; i++)
         {
@@ -351,6 +366,37 @@ public readonly partial struct AnimalAspect : IAspect
     }
 
 
+    public void AdjustSensorProbability(bool isSuccess) //Call after every round of scanning & hunting
+    {
+        float adjustRate = 0.1f;
+        if(currentSensor == CollisionLayer.Grass)
+        {
+            if (isSuccess) // success to eat grass
+            {
+                grassSensorProbability = Mathf.Clamp(grassSensorProbability + adjustRate, 0, 1);
+                animalSensorProbability = 1 - grassSensorProbability;
+            }
+            else // fail to eat grass
+            {
+                grassSensorProbability = Mathf.Clamp(grassSensorProbability - adjustRate, 0, 1);
+                animalSensorProbability = 1 - grassSensorProbability;
+            }
+        }
+        else if (currentSensor == CollisionLayer.Animal)
+        {
+            if (isSuccess) // success to eat animal
+            {
+                animalSensorProbability = Mathf.Clamp(animalSensorProbability + adjustRate, 0, 1);
+                grassSensorProbability = 1 - animalSensorProbability;
+            }
+            else // fail to eat animal
+            {
+                animalSensorProbability = Mathf.Clamp(animalSensorProbability - adjustRate, 0, 1);
+                grassSensorProbability = 1 - animalSensorProbability;
+            }
+        }
+    }
+
 
     public void EatTarget(float obtainedEnergy)
     {
@@ -362,10 +408,13 @@ public readonly partial struct AnimalAspect : IAspect
         */
     }
 
-    public void ClearTarget()
+    public void ClearTarget(bool isSuccess) // isSuccess: this round success to eat target?
     {
         targetEntity = Entity.Null;
         remainChaseTime = 0;
+
+
+        AdjustSensorProbability(isSuccess);
     }
 
 

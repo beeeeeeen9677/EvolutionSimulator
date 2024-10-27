@@ -99,7 +99,7 @@ public partial struct EatingSystem : ISystem
                 grass.WasEaten();
 
                 // clear locked target
-                animal.ClearTarget();
+                animal.ClearTarget(true);
             }
             // if collided with animal
             else if (SystemAPI.HasComponent<AnimalTag>(target.ValueRO.targetEntity))
@@ -128,7 +128,7 @@ public partial struct EatingSystem : ISystem
 
 
                 // clear locked target
-                animal.ClearTarget();
+                animal.ClearTarget(true);
 
                 // clear target threat
                 targetAnimal.ClearTargetThreat(animal.entity);

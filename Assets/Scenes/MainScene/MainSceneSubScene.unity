@@ -322,7 +322,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   grassPrefab: {fileID: 6429284052333050457, guid: bcd55b8a9a48bcf469b4b9720f9e51fc,
     type: 3}
-  initGrassNumber: 0
+  initGrassNumber: 2
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -35,8 +35,10 @@ public struct AnimalSensor : IComponentData
     public float currentCooldown;
 
     // all sensor probability sum should be 1
-    public float grassSensorProb;
-    public float animalSensorProb;
+    public float grassSensorProbability;
+    public float animalSensorProbability;
     //public float deadbodySensorProb;
+
+    public CollisionLayer? currentSensor; // the sensor using currently
 
 }
