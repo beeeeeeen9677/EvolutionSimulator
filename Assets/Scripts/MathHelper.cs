@@ -12,4 +12,10 @@ public static class MathHelpers
 
         return math.atan2(x, y) + math.PI;
     }
+
+
+    public static float GetDistance(float3 positionA, float3 positionB)
+    {
+        return Vector3.Distance(positionA, positionB);
+    }
 }

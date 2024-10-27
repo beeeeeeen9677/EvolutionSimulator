@@ -151,6 +151,8 @@ public partial struct SensorTriggerSystem : ISystem
                 // for handling ArgumentException target animal entity destroyed
                 try
                 {
+
+
                     // target is a grass
                     if (SystemAPI.HasComponent<GrassProperties>(targetEntity))
                     {
@@ -183,10 +185,12 @@ public partial struct SensorTriggerSystem : ISystem
 
 
 
-
                     // refresh target position
                     animal.targetPosition = SystemAPI.GetComponentRO<LocalTransform>(targetEntity).ValueRO.Position;
                     //Debug.Log(animal.targetPosition);
+
+                    //Debug.Log("Distance: " + MathHelpers.GetDistance(animal._localTransform.ValueRO.Position, animal.targetPosition));
+
                 }
                 catch (ArgumentException e)
                 {
