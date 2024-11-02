@@ -131,7 +131,7 @@ public partial struct EatingSystem : ISystem
                 animal.ClearTarget(true);
 
                 // clear target threat
-                targetAnimal.ClearTargetThreat(animal.entity);
+                targetAnimal.ClearThreat(animal.entity);
 
 
                 // set its energy to 0

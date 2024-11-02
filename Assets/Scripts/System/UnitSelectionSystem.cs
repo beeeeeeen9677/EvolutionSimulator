@@ -9,7 +9,7 @@ using UnityEngine;
 using RaycastHit = Unity.Physics.RaycastHit;
 
 
-public partial class UnitSelectionSystem : SystemBase
+public partial class UnitSelectionSystem : SystemBase  // SystemBase: other class can reference you and use SystemAPI
 {
     private Camera mainCamera;
     private CollisionWorld collisionWorld;

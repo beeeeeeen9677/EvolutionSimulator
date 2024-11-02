@@ -86,7 +86,7 @@ public readonly partial struct GrowUpAspect : IAspect
         }
 
         if(currentStage == AgeStageEnum.aging)
-        {
+        {    
             cell -= (int)(deltaTime * 1000);
 
             // wont smaller than 0

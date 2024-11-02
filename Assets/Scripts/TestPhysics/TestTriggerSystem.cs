@@ -50,8 +50,8 @@ public partial struct TestTriggerSystem : ISystem
 
                 foreach (ColliderCastHit hit in hits)
                 {
-                    entityManager.DestroyEntity(hit.Entity);
-                    //Debug.Log(hit.Entity);
+                    //entityManager.DestroyEntity(hit.Entity);
+                    Debug.Log("Trigger: " + hit.Entity);
                 }
 
                 hits.Dispose();

@@ -37,28 +37,28 @@ public partial struct SensorTriggerSystem : ISystem
 
 
         //foreach ((RefRO<LocalTransform> localTransform, RefRO<AnimalSensor> trigger, Entity entity) in SystemAPI.Query< RefRO <LocalTransform>, RefRO <AnimalSensor>>().WithEntityAccess())
-        foreach (AnimalAspect animal in SystemAPI.Query<AnimalAspect>())
+        foreach (AnimalAspect currentAnimal in SystemAPI.Query<AnimalAspect>())
         {
             PhysicsWorldSingleton physicsWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
 
 
 
             // if no existing target, scan
-            if (!animal.IsTargetExist())
+            if (!currentAnimal.IsTargetExist())
             {
 
                 // check if Sensor CD is finished
-                if (!animal.SensorIsReady(SystemAPI.Time.DeltaTime))
+                if (!currentAnimal.SensorIsReady(SystemAPI.Time.DeltaTime))
                 {
                     continue; // if not finish, go to next animal's loop
                 }
                 //Debug.Log("Search Target: " + animal.entity.Index);
 
                 
-                int sensorNumber = animal.GetRandomSensorNumber(); // select random sensor to use
+                int sensorNumber = currentAnimal.GetRandomSensorNumber(); // select random sensor to use
                 //Debug.Log("sensorNumber: "+sensorNumber);
 
-                animal.SetCurrentSensor(TargetCollisionLayers.targetLayers[sensorNumber]);
+                currentAnimal.SetCurrentSensor(TargetCollisionLayers.targetLayers[sensorNumber]);
 
                 // stored in static class TargetCollisionLayers
                 //CollisionLayer[] targetLayers = { CollisionLayer.Grass, CollisionLayer.Animal }; // collide with corresponding layer acoording to sensorNumber
@@ -68,7 +68,7 @@ public partial struct SensorTriggerSystem : ISystem
                 NativeList<ColliderCastHit> hits = new NativeList<ColliderCastHit>(Allocator.Temp);
 
 
-                physicsWorld.SphereCastAll(animal._localTransform.ValueRO.Position, animal.GetSensorSize() / 2,
+                physicsWorld.SphereCastAll(currentAnimal._localTransform.ValueRO.Position, currentAnimal.GetSensorSize() / 2,
                 float3.zero, 1, ref hits, new CollisionFilter
                 {
                     BelongsTo = (uint)CollisionLayer.Animal,
@@ -101,7 +101,7 @@ public partial struct SensorTriggerSystem : ISystem
                     // check animal
                     else if (sensorNumber == 1)
                     {
-                        if(hit.Entity == animal.entity) // hit itself
+                        if(hit.Entity == currentAnimal.entity) // hit itself
                             continue;
 
                         if (!SystemAPI.HasComponent<AnimalTag>(hit.Entity))
@@ -111,7 +111,7 @@ public partial struct SensorTriggerSystem : ISystem
                         }
 
                         // compare size
-                        if(animal.CompareTargetProperiesToHunt(SystemAPI.GetAspect<AnimalAspect>(hit.Entity)))
+                        if(currentAnimal.CompareTargetProperiesToHunt(SystemAPI.GetAspect<AnimalAspect>(hit.Entity)))
                         {
                             Debug.Log("Smaller, give up");
                             continue; // smaller than this hitted animal
@@ -124,10 +124,10 @@ public partial struct SensorTriggerSystem : ISystem
 
 
                     // if eatable, set as target
-                    Debug.Log("Target Found   " + animal.entity.Index);
-                    animal.SetTargetEntity(hit.Entity);
-                    animal.ResetChaseCountdown();
-                    animal.targetPosition = SystemAPI.GetComponent<LocalTransform>(hit.Entity).Position;
+                    Debug.Log("Target Found   " + currentAnimal.entity.Index);
+                    currentAnimal.SetTargetEntity(hit.Entity);
+                    currentAnimal.ResetChaseCountdown();
+                    currentAnimal.targetPosition = SystemAPI.GetComponent<LocalTransform>(hit.Entity).Position;
                     
 
                     //Debug.Log(animal.targetPosition + "" + hit.Entity.Index+ ""+ SystemAPI.HasComponent<GrassProperties>(hit.Entity));
@@ -136,10 +136,10 @@ public partial struct SensorTriggerSystem : ISystem
 
 
                 // check if any Target locked after scanning
-                if (!animal.IsTargetExist())
+                if (!currentAnimal.IsTargetExist())
                 {
                     // if failed to lock any target, mark this round as FAIL
-                    animal.AdjustSensorProbability(false);
+                    currentAnimal.AdjustSensorProbability(false);
                 }
 
 
@@ -149,7 +149,7 @@ public partial struct SensorTriggerSystem : ISystem
             else
             {
                 // check status of locked target 
-                Entity targetEntity = animal.GetTargetEntity();
+                Entity targetEntity = currentAnimal.GetTargetEntity();
 
                 
                 // check if target entity was destroyed
@@ -157,7 +157,7 @@ public partial struct SensorTriggerSystem : ISystem
                 {
                     // if destroyed, set target to null
                     Debug.Log("Target Entity Destroyed (no longer exists)");
-                    animal.ClearTarget(false);
+                    currentAnimal.ClearTarget(false);
                     continue;
                 }
 
@@ -175,10 +175,10 @@ public partial struct SensorTriggerSystem : ISystem
                         // if this grass is not activated now
                         if (!grass.ValueRO.activated)
                         {
-                            Debug.Log("Target lost   " + animal.entity.Index);
+                            Debug.Log("Target lost   " + currentAnimal.entity.Index);
 
                             //reset target
-                            animal.ClearTarget(false);
+                            currentAnimal.ClearTarget(false);
 
                             continue;
                         }
@@ -191,30 +191,30 @@ public partial struct SensorTriggerSystem : ISystem
 
 
                         // update target's threat entity & position
-                        targetAnimal.SetThreatEntity(animal.entity, animal.position);
+                        targetAnimal.SetThreatEntity(currentAnimal.entity, currentAnimal.position);
                         
 
                         // compare size
-                        if (animal.CompareTargetProperiesToHunt(targetAnimal))
+                        if (currentAnimal.CompareTargetProperiesToHunt(targetAnimal))
                         {
                             Debug.Log("Smaller, give up and reset target");
 
-                            animal.ClearTarget(false); // clear target
+                            currentAnimal.ClearTarget(false); // clear target
 
-                            targetAnimal.ClearTargetThreat(animal.entity); // clear target threat
+                            targetAnimal.ClearThreat(currentAnimal.entity); // clear target threat
 
                             continue; // smaller than this hitted animal
                         }
 
 
                         // check remaining chase time
-                        if (animal.IsChaseTimeOver(SystemAPI.Time.DeltaTime))
+                        if (currentAnimal.IsChaseTimeOver(SystemAPI.Time.DeltaTime))
                         {
                             Debug.Log("Chase time over");
 
-                            animal.ClearTarget(false); // clear target
+                            currentAnimal.ClearTarget(false); // clear target
 
-                            targetAnimal.ClearTargetThreat(animal.entity); // clear target threat
+                            targetAnimal.ClearThreat(currentAnimal.entity); // clear target threat
 
                             continue; 
                         }
@@ -225,7 +225,7 @@ public partial struct SensorTriggerSystem : ISystem
 
 
                     // refresh target position
-                    animal.targetPosition = SystemAPI.GetComponentRO<LocalTransform>(targetEntity).ValueRO.Position;
+                    currentAnimal.targetPosition = SystemAPI.GetComponentRO<LocalTransform>(targetEntity).ValueRO.Position;
                     //Debug.Log(animal.targetPosition);
 
                     //Debug.Log("Distance: " + MathHelpers.GetDistance(animal._localTransform.ValueRO.Position, animal.targetPosition));
@@ -234,7 +234,7 @@ public partial struct SensorTriggerSystem : ISystem
                 catch (ArgumentException e)
                 {
                     Debug.Log("ArgumentException: Target Entity Destroyed (Sensor Trigger System)");
-                    animal.ClearTarget(false);
+                    currentAnimal.ClearTarget(false);
                     continue;
                 }
             }

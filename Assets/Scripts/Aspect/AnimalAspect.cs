@@ -120,10 +120,10 @@ public readonly partial struct AnimalAspect : IAspect
     }
 
 
-    private Entity threatEntity
+    public Entity threatEntity
     {
         get => _threat.ValueRO.threatEntity;
-        set => _threat.ValueRW.threatEntity = value;
+        private set => _threat.ValueRW.threatEntity = value;
     }
 
 
@@ -281,7 +281,7 @@ public readonly partial struct AnimalAspect : IAspect
     }
 
 
-
+  
 
     public void SetThreatEntity(Entity threat, float3 threatPos)
     {
@@ -318,7 +318,7 @@ public readonly partial struct AnimalAspect : IAspect
     
 
     // call by threat entity
-    public void ClearTargetThreat(Entity threat)
+    public void ClearThreat(Entity threat)
     {
         // clear only if called by threat entity
         if(threatEntity == threat)
