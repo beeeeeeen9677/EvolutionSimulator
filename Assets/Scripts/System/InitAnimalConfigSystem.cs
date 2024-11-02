@@ -64,7 +64,6 @@ public partial struct InitAnimalConfigSystem : ISystem
 
 
             float maxEnergy = UnityEngine.Random.Range(80, 120);
-            maxEnergy = UnityEngine.Random.Range(8, 35);
             SystemAPI.SetComponent(newSpawnedAnimal, new Energy
             {
                 maxEnergy = maxEnergy,
