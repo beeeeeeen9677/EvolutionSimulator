@@ -274,7 +274,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animalPrefab: {fileID: 3302597946754029742, guid: 197a0ef542d16e940ac3db124350a93b,
     type: 3}
-  initAnimalNumber: 2
+  initAnimalNumber: 5
   fieldSize: 50
 --- !u!1 &1232810080
 GameObject:
@@ -322,7 +322,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   grassPrefab: {fileID: 6429284052333050457, guid: bcd55b8a9a48bcf469b4b9720f9e51fc,
     type: 3}
-  initGrassNumber: 0
+  initGrassNumber: 20
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

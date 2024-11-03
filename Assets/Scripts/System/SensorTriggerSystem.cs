@@ -75,9 +75,19 @@ public partial struct SensorTriggerSystem : ISystem
                     CollidesWith = (uint)TargetCollisionLayers.targetLayers[sensorNumber],    // (uint)CollisionLayer.Grass,
                 });
 
+
+
+
+                // Store MIN distance entity
+                float minDistance = -1; // set init value to negative number
+                Entity nearestTargetEntity = Entity.Null;
+
+
                 // loop through all scaned entities
                 foreach (ColliderCastHit hit in hits)
                 {
+                    
+
                     //Debug.Log("Scaned Target: " + hit.Entity.Index);
 
 
@@ -120,19 +130,47 @@ public partial struct SensorTriggerSystem : ISystem
 
 
 
+                    float3 targetPosition = SystemAPI.GetComponentRO<LocalTransform>(hit.Entity).ValueRO.Position;
+                    float targetDistance = MathHelpers.GetDistance(currentAnimal.position, targetPosition);
+
+
+                    // if no problem, compare distance
+
+                    if (targetDistance < minDistance || minDistance < 0) // new entity is more near OR mindistance is still storing init value
+                    {
+                        // update min distance
+                        minDistance = targetDistance;
+                        nearestTargetEntity = hit.Entity;
+                        Debug.Log(currentAnimal.entity.Index + " update min distance: " + minDistance);
+                    }
 
 
 
+                    /* Do Checking outside
                     // if eatable, set as target
                     Debug.Log("Target Found   " + currentAnimal.entity.Index);
                     currentAnimal.SetTargetEntity(hit.Entity);
                     currentAnimal.ResetChaseCountdown();
                     currentAnimal.targetPosition = SystemAPI.GetComponent<LocalTransform>(hit.Entity).Position;
-                    
+
 
                     //Debug.Log(animal.targetPosition + "" + hit.Entity.Index+ ""+ SystemAPI.HasComponent<GrassProperties>(hit.Entity));
                     break;
+                    */
                 }
+
+
+                // if scanned any entity
+                if (nearestTargetEntity != Entity.Null)
+                {
+                    // if eatable, set as target
+                    Debug.Log(currentAnimal.entity.Index + " found a target");
+                    currentAnimal.SetTargetEntity(nearestTargetEntity);
+                    currentAnimal.ResetChaseCountdown();
+                    currentAnimal.targetPosition = SystemAPI.GetComponentRO<LocalTransform>(nearestTargetEntity).ValueRO.Position;   
+                }
+
+
 
 
                 // check if any Target locked after scanning
