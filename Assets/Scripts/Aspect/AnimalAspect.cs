@@ -224,7 +224,10 @@ public readonly partial struct AnimalAspect : IAspect
 
 
 
-    public float GetEnergy() { return currentEnergy; }  
+    public float GetEnergy() 
+    { 
+        return currentEnergy; 
+    }  
 
     // check if any target is being locked on
     public bool IsTargetExist()
@@ -410,8 +413,9 @@ public readonly partial struct AnimalAspect : IAspect
 
     public void ClearTarget(bool isSuccess) // isSuccess: this round success to eat target?
     {
+        Debug.Log("ClearTarget: "+isSuccess);
         targetEntity = Entity.Null;
-        remainChaseTime = 0;
+        //remainChaseTime = 0;
 
 
         AdjustSensorProbability(isSuccess);

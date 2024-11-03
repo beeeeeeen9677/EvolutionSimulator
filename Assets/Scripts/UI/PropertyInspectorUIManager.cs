@@ -74,6 +74,7 @@ public class PropertyInspectorUIManager : MonoBehaviour
         InspectTarget();
         InspectThreat();
         InspectAge();
+        InspectReproductionCD();
         InspectCell();
         InspectSize();
     }
@@ -254,7 +255,7 @@ public class PropertyInspectorUIManager : MonoBehaviour
             AnimalSensor sensor = entityManager.GetComponentData<AnimalSensor>(selectedEntity);
             return
             $"size: {_animalAspect.GetSensorSize().ToString("0.0")}\n" +
-            $"using: {sensor.currentSensor}\n" +
+            $"finding: {sensor.currentSensor}\n" +
             $"warning range: {_animalAspect.GetWarningRange().ToString("0.0")}\n" +
             $"Cooldown: \n" +
             $" - current: {sensor.currentCooldown.ToString("0.0")}\n" +
@@ -321,7 +322,17 @@ public class PropertyInspectorUIManager : MonoBehaviour
             $"cutoff: {ageStage.matureThreshold} / {ageStage.agingThreshold}";
         };
     }
+    private void InspectReproductionCD()
+    {
+        PropertyContainer propertyContainer = CreateNewPropertyContainer("Reproduction");
 
+        propertyContainer.valueUpdateFunc = () => {
+            ReproductionCounter counter = entityManager.GetComponentData<ReproductionCounter>(selectedEntity);
+            return
+            $"interval: {counter.interval.ToString("0.00")}\n" +
+            $"current: {counter.currentCD.ToString("0.00")}";
+        };
+    }
 
     private void InspectCell()
     {
@@ -346,6 +357,8 @@ public class PropertyInspectorUIManager : MonoBehaviour
         };
     }
 
+
+    
 
 
 

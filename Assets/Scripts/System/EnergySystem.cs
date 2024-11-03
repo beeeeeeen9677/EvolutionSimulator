@@ -33,14 +33,21 @@ public partial struct EnergySystem : ISystem
             // dead if no more energy
             if (animal.GetEnergy() <= 0)
             {
+
+                
                 // clear target's threat
                 if (animal.IsTargetExist())
                 {
+                    // if target is an animal, clear target's threat
+                    if (!SystemAPI.HasComponent<AnimalTag>(animal.GetTargetEntity()))
+                        return; 
+
+
                     AnimalAspect targetAnimal = SystemAPI.GetAspect<AnimalAspect>(animal.GetTargetEntity());
                     targetAnimal.ClearThreat(animal.entity);
                     Debug.Log("Threat clear since threat died");
                 }
-
+                
 
 
                 // destroy itself

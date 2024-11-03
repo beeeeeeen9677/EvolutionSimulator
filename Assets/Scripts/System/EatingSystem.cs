@@ -34,8 +34,8 @@ public partial struct EatingSystem : ISystem
         //state.Enabled = false;
 
 
-        foreach(var(target, physicsCollider, transform, entity) in 
-            SystemAPI.Query<RefRO<Target>, RefRO<PhysicsCollider>, RefRO<LocalTransform>>().WithEntityAccess())
+        foreach(var(target, animalSensor, physicsCollider, transform, entity) in 
+            SystemAPI.Query<RefRO<Target>, RefRO<AnimalSensor>, RefRO<PhysicsCollider>, RefRO<LocalTransform>>().WithEntityAccess())
         {
 
             if(target.ValueRO.targetEntity == Entity.Null)
@@ -75,6 +75,8 @@ public partial struct EatingSystem : ISystem
              if(collidedEntity != target.ValueRO.targetEntity)  
                 continue;
             */
+
+            Debug.Log(entity.Index + " Collided with target");
 
 
             // if collided with grass

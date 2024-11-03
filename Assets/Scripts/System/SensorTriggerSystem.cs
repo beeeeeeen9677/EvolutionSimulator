@@ -34,12 +34,25 @@ public partial struct SensorTriggerSystem : ISystem
         */
         //state.Enabled = false; // for debug lagging
 
+        PhysicsWorldSingleton physicsWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
+
 
 
         //foreach ((RefRO<LocalTransform> localTransform, RefRO<AnimalSensor> trigger, Entity entity) in SystemAPI.Query< RefRO <LocalTransform>, RefRO <AnimalSensor>>().WithEntityAccess())
         foreach (AnimalAspect currentAnimal in SystemAPI.Query<AnimalAspect>())
         {
-            PhysicsWorldSingleton physicsWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
+            Debug.Log(currentAnimal.entity.Index + " is going to start sensor loop");
+
+
+
+
+            // is it is chasing by another
+            if (currentAnimal.IsThreatExist())
+            {
+                continue; // escape first, no need to scan food
+            }
+
+
 
 
 
@@ -123,7 +136,7 @@ public partial struct SensorTriggerSystem : ISystem
                         // compare size
                         if(currentAnimal.CompareTargetProperiesToHunt(SystemAPI.GetAspect<AnimalAspect>(hit.Entity)))
                         {
-                            Debug.Log("Smaller, give up");
+                            Debug.Log(currentAnimal.entity.Index + " Smaller, give up");
                             continue; // smaller than this hitted animal
                         }
                     }
@@ -169,6 +182,12 @@ public partial struct SensorTriggerSystem : ISystem
                     currentAnimal.ResetChaseCountdown();
                     currentAnimal.targetPosition = SystemAPI.GetComponentRO<LocalTransform>(nearestTargetEntity).ValueRO.Position;   
                 }
+                /*
+                else
+                {
+                    Debug.Log(currentAnimal.entity.Index + " cannot find any target");
+                }
+                */
 
 
 
@@ -177,6 +196,7 @@ public partial struct SensorTriggerSystem : ISystem
                 if (!currentAnimal.IsTargetExist())
                 {
                     // if failed to lock any target, mark this round as FAIL
+                    Debug.Log(currentAnimal.entity.Index + " Adjust Sensor Probability checkpt 1");
                     currentAnimal.AdjustSensorProbability(false);
                 }
 
@@ -213,7 +233,7 @@ public partial struct SensorTriggerSystem : ISystem
                         // if this grass is not activated now
                         if (!grass.ValueRO.activated)
                         {
-                            Debug.Log("Target lost   " + currentAnimal.entity.Index);
+                            Debug.Log(currentAnimal.entity.Index + " Grass Target lost");
 
                             //reset target
                             currentAnimal.ClearTarget(false);
@@ -230,9 +250,10 @@ public partial struct SensorTriggerSystem : ISystem
 
                         // update target's threat entity & position
                         targetAnimal.SetThreatEntity(currentAnimal.entity, currentAnimal.position);
-                        
+
 
                         // compare size
+                        //Debug.Log(currentAnimal.entity.Index + " Compare Size");
                         if (currentAnimal.CompareTargetProperiesToHunt(targetAnimal))
                         {
                             Debug.Log("Smaller, give up and reset target");
@@ -246,9 +267,10 @@ public partial struct SensorTriggerSystem : ISystem
 
 
                         // check remaining chase time
+                        //Debug.Log(currentAnimal.entity.Index + " Check Chase Time: " + currentAnimal.remainChaseTime.ToString("0.000"));
                         if (currentAnimal.IsChaseTimeOver(SystemAPI.Time.DeltaTime))
                         {
-                            Debug.Log("Chase time over");
+                            Debug.Log(currentAnimal.entity.Index + " Chase time over");
 
                             currentAnimal.ClearTarget(false); // clear target
 
@@ -256,6 +278,7 @@ public partial struct SensorTriggerSystem : ISystem
 
                             continue; 
                         }
+                        //Debug.Log(currentAnimal.entity.Index + " End of Checking Chase Time: " + currentAnimal.remainChaseTime.ToString("0.000"));
                     }
 
 
@@ -267,6 +290,8 @@ public partial struct SensorTriggerSystem : ISystem
                     //Debug.Log(animal.targetPosition);
 
                     //Debug.Log("Distance: " + MathHelpers.GetDistance(animal._localTransform.ValueRO.Position, animal.targetPosition));
+
+                    Debug.Log(currentAnimal.entity.Index + " End of update sensed target");
 
                 }
                 catch (ArgumentException e)

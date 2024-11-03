@@ -14,6 +14,7 @@ public readonly partial struct GrowUpAspect : IAspect
     public readonly RefRW<AgeStage> _ageStage;
     public readonly RefRW<Cell> _cell;
     public readonly RefRW<SizeProperty> _sizeProperty;
+    public readonly RefRW<ReproductionCounter> _reproductionCounter;
 
 
     public float currentAge
@@ -58,6 +59,18 @@ public readonly partial struct GrowUpAspect : IAspect
             _localTransform.ValueRW.Scale = value;
         }
     } 
+
+
+    public float reproductionInterval => _reproductionCounter.ValueRO.interval;
+    public float reproductionCD
+    {
+        get => _reproductionCounter.ValueRO.currentCD;
+        private set => _reproductionCounter.ValueRW.currentCD = value;
+    }
+
+
+
+
 
 
 
@@ -109,6 +122,23 @@ public readonly partial struct GrowUpAspect : IAspect
         {
             // max size when mature
             currentSize = maxSize;
+        }
+    }
+
+
+    public bool IsReadyToGenerateOffspring(float deltaTime)
+    {
+        // decrease CD
+        reproductionCD -= deltaTime;
+
+        if(reproductionCD <= 0) // ready to born offspring
+        {
+            reproductionCD = reproductionInterval;
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
 }

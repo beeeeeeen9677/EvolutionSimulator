@@ -64,6 +64,7 @@ public partial struct InitAnimalConfigSystem : ISystem
 
 
             float maxEnergy = UnityEngine.Random.Range(80, 120);
+            //maxEnergy = UnityEngine.Random.Range(18, 29);    // for test
             SystemAPI.SetComponent(newSpawnedAnimal, new Energy
             {
                 maxEnergy = maxEnergy,
@@ -86,8 +87,14 @@ public partial struct InitAnimalConfigSystem : ISystem
 
                 currentSensor = null,
             });
-            
 
+
+
+            SystemAPI.SetComponent(newSpawnedAnimal, new ReproductionCounter
+            {
+                interval = 10f,
+                currentCD = 10f,
+            });
         }
     }
 }
