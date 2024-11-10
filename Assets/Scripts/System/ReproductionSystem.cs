@@ -16,13 +16,13 @@ public partial struct ReproductionSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
-        EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(state.WorldUpdateAllocator); //better
+        EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(state.WorldUpdateAllocator);
 
         foreach ((GrowUpAspect animal, RefRO<Energy> energy) in SystemAPI.Query<GrowUpAspect, RefRO<Energy>>())
         {
             //if (animal.currentStage != AgeStageEnum.mature)
             if (animal.currentStage == AgeStageEnum.infant)  // only generate offspring if not at infant stage
-               return;
+               continue;
 
             // if current energy more than 50% of max energy, born offspring
             if(energy.ValueRO.currentEnergy >= 0.5f * energy.ValueRO.maxEnergy)
@@ -33,6 +33,8 @@ public partial struct ReproductionSystem : ISystem
                 }
             }
         }
+
+
 
         entityCommandBuffer.Playback(state.EntityManager);//execute the recorded commands
     }
@@ -88,7 +90,7 @@ public partial struct ReproductionSystem : ISystem
                 warningRange = parentSensor.warningRange,
 
                 maxCooldown = parentSensor.maxCooldown,
-                currentCooldown = 0,
+                currentCooldown = parentSensor.maxCooldown,
 
                 grassSensorProbability = parentSensor.grassSensorProbability,
                 animalSensorProbability = 1 - parentSensor.grassSensorProbability,
