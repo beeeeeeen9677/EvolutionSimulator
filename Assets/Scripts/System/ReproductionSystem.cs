@@ -21,8 +21,8 @@ public partial struct ReproductionSystem : ISystem
         foreach ((GrowUpAspect animal, RefRO<Energy> energy) in SystemAPI.Query<GrowUpAspect, RefRO<Energy>>())
         {
             //if (animal.currentStage != AgeStageEnum.mature)
-            if (animal.currentStage == AgeStageEnum.infant)  // only generate offspring if not at infant stage
-                return;
+            //if (animal.currentStage == AgeStageEnum.infant)  // only generate offspring if not at infant stage
+             //   return;
 
             // if current energy more than 50% of max energy, born offspring
             if(energy.ValueRO.currentEnergy >= 0.5f * energy.ValueRO.maxEnergy)

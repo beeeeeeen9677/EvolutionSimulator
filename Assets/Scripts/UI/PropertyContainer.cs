@@ -51,9 +51,14 @@ public class PropertyContainer : MonoBehaviour
             propertyValue.text = valueUpdateFunc?.Invoke();
 
         }
-        catch(ArgumentException ex)
+        catch(ArgumentException ex) // due to entity die
         {
             StopUpdating();
+            Debug.Log("PropertyContainer: " + ex.Message);
+        }
+        catch(ObjectDisposedException ex) // due to new entity generated or certain entity die
+        {
+            PropertyInspectorUIManager.instance.ReassignAnimalAspect();
             Debug.Log("PropertyContainer: " + ex.Message);
         }
     }

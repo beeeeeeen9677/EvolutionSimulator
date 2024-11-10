@@ -12,6 +12,11 @@ public class PropertyInspectorUIManager : MonoBehaviour
 {
     #region Variables
 
+
+    public static PropertyInspectorUIManager instance;
+
+
+
     [SerializeField]
     private GameObject inspectorPanel;
     [SerializeField]
@@ -36,7 +41,17 @@ public class PropertyInspectorUIManager : MonoBehaviour
     #endregion
 
 
-
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(this);
+        }
+    }
 
 
 
@@ -61,9 +76,7 @@ public class PropertyInspectorUIManager : MonoBehaviour
         inspectorPanel.SetActive(true); // open inspector
         ClearAllChild(inspectorScrollViewContent);
 
-
-
-        _animalAspect = entityManager.GetAspect<AnimalAspect>(selectedEntity);
+        ReassignAnimalAspect();
 
         // add different properties onto inspector
         InspectEntityID();
@@ -78,6 +91,15 @@ public class PropertyInspectorUIManager : MonoBehaviour
         InspectCell();
         InspectSize();
     }
+
+
+
+    public void ReassignAnimalAspect()     // reassign the variable storing AnimalAspect due to ObjectDisposedException
+    {
+        if (selectedEntity != Entity.Null)
+            _animalAspect = entityManager.GetAspect<AnimalAspect>(selectedEntity);
+    }
+
 
 
     private void CloseInspectorAndResetTarget()
@@ -134,8 +156,8 @@ public class PropertyInspectorUIManager : MonoBehaviour
 
     private PropertyContainer CreateNewPropertyContainer(string propertyName)
     {
-        GameObject newPropertyContainerObj = Instantiate(propertyContainerPrefab, inspectorScrollViewContent);
-        PropertyContainer propertyContainer = newPropertyContainerObj.GetComponent<PropertyContainer>();
+        GameObject newPropertyContainerGameObj = Instantiate(propertyContainerPrefab, inspectorScrollViewContent);
+        PropertyContainer propertyContainer = newPropertyContainerGameObj.GetComponent<PropertyContainer>();
         propertyContainer.SetPropertyName(propertyName);
 
         OnSelectedEntityLost += propertyContainer.StopUpdating;
