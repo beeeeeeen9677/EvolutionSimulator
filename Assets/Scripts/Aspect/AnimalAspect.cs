@@ -413,7 +413,7 @@ public readonly partial struct AnimalAspect : IAspect
 
     public void ClearTarget(bool isSuccess) // isSuccess: this round success to eat target?
     {
-        Debug.Log("ClearTarget: "+isSuccess);
+        //Debug.Log("ClearTarget: "+isSuccess);
         targetEntity = Entity.Null;
         //remainChaseTime = 0;
 

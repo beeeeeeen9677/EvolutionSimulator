@@ -136,7 +136,7 @@ public partial struct SensorTriggerSystem : ISystem
                         // compare size
                         if(!currentAnimal.IsAbleToHuntTarget(SystemAPI.GetAspect<AnimalAspect>(hit.Entity)))
                         {
-                            Debug.Log(currentAnimal.entity.Index + " Smaller, give up");
+                            Debug.Log(currentAnimal.entity.Index + " not able to hunt target, give up");
                             continue; // smaller than this hitted animal
                         }
                     }
@@ -177,7 +177,7 @@ public partial struct SensorTriggerSystem : ISystem
                 if (nearestTargetEntity != Entity.Null)
                 {
                     // if eatable, set as target
-                    Debug.Log(currentAnimal.entity.Index + " found a target");
+                    //Debug.Log(currentAnimal.entity.Index + " found a target");
                     currentAnimal.SetTargetEntity(nearestTargetEntity);
                     currentAnimal.ResetChaseCountdown();
                     currentAnimal.targetPosition = SystemAPI.GetComponentRO<LocalTransform>(nearestTargetEntity).ValueRO.Position;   

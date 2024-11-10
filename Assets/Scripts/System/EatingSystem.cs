@@ -76,7 +76,7 @@ public partial struct EatingSystem : ISystem
                 continue;
             */
 
-            Debug.Log(entity.Index + " Collided with target");
+            //Debug.Log(entity.Index + " Collided with target");
 
 
             // if collided with grass

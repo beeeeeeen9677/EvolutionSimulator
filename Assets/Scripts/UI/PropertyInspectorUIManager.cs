@@ -69,12 +69,12 @@ public class PropertyInspectorUIManager : MonoBehaviour
         InspectEntityID();
         InspectPosition();
         InspectEnergy();
+        InspectReproductionCD();
         InspectMovement();
         InspectSensor();
         InspectTarget();
         InspectThreat();
         InspectAge();
-        InspectReproductionCD();
         InspectCell();
         InspectSize();
     }
@@ -217,6 +217,19 @@ public class PropertyInspectorUIManager : MonoBehaviour
     }
 
 
+    private void InspectReproductionCD()
+    {
+        PropertyContainer propertyContainer = CreateNewPropertyContainer("Reproduction");
+
+        propertyContainer.valueUpdateFunc = () => {
+            ReproductionCounter counter = entityManager.GetComponentData<ReproductionCounter>(selectedEntity);
+            return
+            $"interval: {counter.interval.ToString("0.00")}\n" +
+            $"current: {counter.currentCD.ToString("0.00")}";
+        };
+    }
+
+
     private void InspectMovement()
     {
         PropertyContainer propertyContainer = CreateNewPropertyContainer("Movement");
@@ -322,17 +335,7 @@ public class PropertyInspectorUIManager : MonoBehaviour
             $"cutoff: {ageStage.matureThreshold} / {ageStage.agingThreshold}";
         };
     }
-    private void InspectReproductionCD()
-    {
-        PropertyContainer propertyContainer = CreateNewPropertyContainer("Reproduction");
-
-        propertyContainer.valueUpdateFunc = () => {
-            ReproductionCounter counter = entityManager.GetComponentData<ReproductionCounter>(selectedEntity);
-            return
-            $"interval: {counter.interval.ToString("0.00")}\n" +
-            $"current: {counter.currentCD.ToString("0.00")}";
-        };
-    }
+   
 
     private void InspectCell()
     {

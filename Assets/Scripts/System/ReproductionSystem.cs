@@ -20,8 +20,8 @@ public partial struct ReproductionSystem : ISystem
 
         foreach ((GrowUpAspect animal, RefRO<Energy> energy) in SystemAPI.Query<GrowUpAspect, RefRO<Energy>>())
         {
-            // only generate offspring in mature stage
-            if (animal.currentStage != AgeStageEnum.mature)
+            //if (animal.currentStage != AgeStageEnum.mature)
+            if (animal.currentStage == AgeStageEnum.infant)  // only generate offspring if not at infant stage
                 return;
 
             // if current energy more than 50% of max energy, born offspring
@@ -39,20 +39,19 @@ public partial struct ReproductionSystem : ISystem
 
     private void GenerateOffspring(Entity parentEntity, EntityCommandBuffer entityCommandBuffer, ref SystemState state)
     {
-        Debug.Log($"{parentEntity.Index} Born offspring");
-
         AnimalAspect parentAnimal = SystemAPI.GetAspect<AnimalAspect>(parentEntity);
 
-        // Consume 20% energy
-        parentAnimal.ConsumeEnergy(0.2f * parentAnimal.maxEnergy);
+        parentAnimal.ConsumeEnergy(0.2f * parentAnimal.maxEnergy);        // Consume 20% energy
 
 
         InitAnimalConfig initAnimalConfig = SystemAPI.GetSingleton<InitAnimalConfig>();
 
-        int numberToSpawn = 1;
+        int numberToSpawn = 2;
 
         for (int i = 0; i < numberToSpawn; i++)
         {
+            Debug.Log($"{parentEntity.Index} Born offspring: {i+1} of {numberToSpawn}");
+
             Entity newSpawnedAnimal = entityCommandBuffer.Instantiate(initAnimalConfig.animalPrefab);
 
 
@@ -65,52 +64,45 @@ public partial struct ReproductionSystem : ISystem
             {
                 Position = new float3(
                     UnityEngine.Random.Range(parentAnimal.position.x - 3, parentAnimal.position.x + 3),  // x
-                    parentAnimal.position.y,                                                       // y
+                    parentAnimal.position.y + 1,                                                       // y
                     UnityEngine.Random.Range(parentAnimal.position.z - 3, parentAnimal.position.z + 3)), // z
                 Rotation = quaternion.identity,
                 Scale = SystemAPI.GetComponent<SizeProperty>(parentEntity).initSize
             });
 
 
-            // assign random value to speed
-            entityCommandBuffer.SetComponent(newSpawnedAnimal, new Movement
-            {
-                speed = UnityEngine.Random.Range(1, 6)
-            });
+            // Movement Component
+            entityCommandBuffer.SetComponent(newSpawnedAnimal, SystemAPI.GetComponent<Movement>(parentEntity));
 
 
-            float maxEnergy = UnityEngine.Random.Range(80, 120);
-            //maxEnergy = UnityEngine.Random.Range(18, 29);    // for test
-            entityCommandBuffer.SetComponent(newSpawnedAnimal, new Energy
-            {
-                maxEnergy = maxEnergy,
-                currentEnergy = maxEnergy
-            });
+            // Energy Component
+            entityCommandBuffer.SetComponent(newSpawnedAnimal, SystemAPI.GetComponent<Energy>(parentEntity));
 
 
-            float grassSensorProbability = UnityEngine.Random.Range(0f, 1f);
+            // AnimalSensor Component
+            AnimalSensor parentSensor = SystemAPI.GetComponent<AnimalSensor>(parentEntity);
             entityCommandBuffer.SetComponent(newSpawnedAnimal, new AnimalSensor
             {
-                size = 20f,
+                size = parentSensor.size,
 
-                warningRange = 10f,
+                warningRange = parentSensor.warningRange,
 
-                maxCooldown = 3,
+                maxCooldown = parentSensor.maxCooldown,
                 currentCooldown = 0,
 
-                grassSensorProbability = grassSensorProbability,
-                animalSensorProbability = 1 - grassSensorProbability,
+                grassSensorProbability = parentSensor.grassSensorProbability,
+                animalSensorProbability = 1 - parentSensor.grassSensorProbability,
 
                 currentSensor = null,
             });
 
 
-
+            // ReproductionCounter Component
             entityCommandBuffer.SetComponent(newSpawnedAnimal, new ReproductionCounter
             {
-                interval = 10f,
-                currentCD = 10f,
-            });
+                interval = SystemAPI.GetComponent<ReproductionCounter>(parentEntity).interval,
+                currentCD = SystemAPI.GetComponent<ReproductionCounter>(parentEntity).interval,
+            }); 
         }
     }
 }
