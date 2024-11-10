@@ -35,7 +35,7 @@ public readonly partial struct AnimalAspect : IAspect
 
     private float moveSpeed => _movement.ValueRO.speed;
     private int cell => _cell.ValueRO.numberOfCell;
-    private float maxEnergy => _energy.ValueRO.maxEnergy;
+    public float maxEnergy => _energy.ValueRO.maxEnergy;
     private float currentEnergy
     {
         get => _energy.ValueRO.currentEnergy;
@@ -422,9 +422,9 @@ public readonly partial struct AnimalAspect : IAspect
     }
 
 
-    public bool CompareTargetProperiesToHunt(AnimalAspect targetEntity)
+    public bool IsAbleToHuntTarget(AnimalAspect targetEntity) // return True if able to hunt
     {
-        return currentSize <= targetEntity.currentSize; // compare size
+        return 0.7f * currentSize >= targetEntity.currentSize; // compare size
     }
 
 

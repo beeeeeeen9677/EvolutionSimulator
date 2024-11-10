@@ -41,7 +41,7 @@ public partial struct SensorTriggerSystem : ISystem
         //foreach ((RefRO<LocalTransform> localTransform, RefRO<AnimalSensor> trigger, Entity entity) in SystemAPI.Query< RefRO <LocalTransform>, RefRO <AnimalSensor>>().WithEntityAccess())
         foreach (AnimalAspect currentAnimal in SystemAPI.Query<AnimalAspect>())
         {
-            Debug.Log(currentAnimal.entity.Index + " is going to start sensor loop");
+            //Debug.Log(currentAnimal.entity.Index + " is going to start sensor loop");
 
 
 
@@ -134,7 +134,7 @@ public partial struct SensorTriggerSystem : ISystem
                         }
 
                         // compare size
-                        if(currentAnimal.CompareTargetProperiesToHunt(SystemAPI.GetAspect<AnimalAspect>(hit.Entity)))
+                        if(!currentAnimal.IsAbleToHuntTarget(SystemAPI.GetAspect<AnimalAspect>(hit.Entity)))
                         {
                             Debug.Log(currentAnimal.entity.Index + " Smaller, give up");
                             continue; // smaller than this hitted animal
@@ -154,7 +154,7 @@ public partial struct SensorTriggerSystem : ISystem
                         // update min distance
                         minDistance = targetDistance;
                         nearestTargetEntity = hit.Entity;
-                        Debug.Log(currentAnimal.entity.Index + " update min distance: " + minDistance);
+                        //Debug.Log(currentAnimal.entity.Index + " update min distance: " + minDistance);
                     }
 
 
@@ -196,7 +196,7 @@ public partial struct SensorTriggerSystem : ISystem
                 if (!currentAnimal.IsTargetExist())
                 {
                     // if failed to lock any target, mark this round as FAIL
-                    Debug.Log(currentAnimal.entity.Index + " Adjust Sensor Probability checkpt 1");
+                    //Debug.Log(currentAnimal.entity.Index + " Adjust Sensor Probability checkpt 1");
                     currentAnimal.AdjustSensorProbability(false);
                 }
 
@@ -254,7 +254,7 @@ public partial struct SensorTriggerSystem : ISystem
 
                         // compare size
                         //Debug.Log(currentAnimal.entity.Index + " Compare Size");
-                        if (currentAnimal.CompareTargetProperiesToHunt(targetAnimal))
+                        if (currentAnimal.IsAbleToHuntTarget(targetAnimal))
                         {
                             Debug.Log("Smaller, give up and reset target");
 
@@ -291,7 +291,7 @@ public partial struct SensorTriggerSystem : ISystem
 
                     //Debug.Log("Distance: " + MathHelpers.GetDistance(animal._localTransform.ValueRO.Position, animal.targetPosition));
 
-                    Debug.Log(currentAnimal.entity.Index + " End of update sensed target");
+                    //Debug.Log(currentAnimal.entity.Index + " End of update sensed target");
 
                 }
                 catch (ArgumentException e)

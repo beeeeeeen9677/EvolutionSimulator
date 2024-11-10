@@ -126,7 +126,7 @@ public readonly partial struct GrowUpAspect : IAspect
     }
 
 
-    public bool IsReadyToGenerateOffspring(float deltaTime)
+    public bool IsReadyToGenerateOffspring(float deltaTime) // Count down, return true if CD = 0
     {
         // decrease CD
         reproductionCD -= deltaTime;
