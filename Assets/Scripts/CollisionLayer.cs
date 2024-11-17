@@ -21,6 +21,10 @@ public enum CollisionLayer
     Grass = 1 << 9,
     SelectionLayer = 1 << 10, // for mouse raycast select unit
     Ground = 1 << 11,
+
+    Sensor = 1<< 12, // for sensor collision
+
+    Lake = 1 << 13,
 }
 
 

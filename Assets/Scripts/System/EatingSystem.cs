@@ -196,7 +196,7 @@ public partial struct EatingSystem : ISystem
         // change filter
         physicsColliderBlob.Value.SetCollisionFilter(new CollisionFilter
         {
-            BelongsTo = (uint)CollisionLayer.Animal,
+            BelongsTo = (uint)CollisionLayer.Sensor,
             CollidesWith = (uint)targetLayer,
             GroupIndex = 0
         });

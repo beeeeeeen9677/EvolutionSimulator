@@ -84,7 +84,7 @@ public partial struct SensorTriggerSystem : ISystem
                 physicsWorld.SphereCastAll(currentAnimal._localTransform.ValueRO.Position, currentAnimal.GetSensorSize() / 2,
                 float3.zero, 1, ref hits, new CollisionFilter
                 {
-                    BelongsTo = (uint)CollisionLayer.Animal,
+                    BelongsTo = (uint)CollisionLayer.Sensor,
                     CollidesWith = (uint)TargetCollisionLayers.targetLayers[sensorNumber],    // (uint)CollisionLayer.Grass,
                 });
 
