@@ -321,7 +321,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animalPrefab: {fileID: 3302597946754029742, guid: 197a0ef542d16e940ac3db124350a93b,
     type: 3}
-  initAnimalNumber: 2
+  initAnimalNumber: 5
   fieldSize: 20
 --- !u!1 &1232810080
 GameObject:
@@ -369,7 +369,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lakePrefab: {fileID: 2543757849809389493, guid: 24be5f13c386512479d39c7c525e2cc7,
     type: 3}
-  initLakeNumber: 0
+  initLakeNumber: 5
   fieldSize: 100
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

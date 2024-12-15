@@ -82,6 +82,7 @@ public class PropertyInspectorUIManager : MonoBehaviour
         InspectEntityID();
         InspectPosition();
         InspectEnergy();
+        InspectHungerState();
         InspectReproductionCD();
         InspectMovement();
         InspectSensor();
@@ -238,6 +239,22 @@ public class PropertyInspectorUIManager : MonoBehaviour
                        $"max: {entityManager.GetComponentData<Energy>(selectedEntity).maxEnergy.ToString("0.0")}";
         };
     }
+
+
+    private void InspectHungerState()
+    {
+        PropertyContainer propertyContainer = CreateNewPropertyContainer("Hunger");
+
+        propertyContainer.valueUpdateFunc = () => {
+
+            HungerStatus hungerStatus = entityManager.GetComponentData<HungerStatus>(selectedEntity);
+
+            return 
+            $"threshold: {hungerStatus.hungryThreshold.ToString("0.0")}\n" +
+            $"state: {hungerStatus.currentState}";
+        };
+    }
+
 
 
     private void InspectReproductionCD()
