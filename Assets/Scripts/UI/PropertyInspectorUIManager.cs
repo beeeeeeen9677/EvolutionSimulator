@@ -87,6 +87,7 @@ public class PropertyInspectorUIManager : MonoBehaviour
         InspectSensor();
         InspectTarget();
         InspectThreat();
+        InspectSprint();
         InspectAge();
         InspectCell();
         InspectSize();
@@ -265,7 +266,7 @@ public class PropertyInspectorUIManager : MonoBehaviour
         */
         propertyContainer.valueUpdateFunc = () => {
             float originalSpeed = entityManager.GetComponentData<Movement>(selectedEntity).speed;
-            int numberOfCell = entityManager.GetComponentData<Cell>(selectedEntity).numberOfCell;
+            int numberOfCell = entityManager.GetComponentData<Cell>(selectedEntity).numberOfNormalCell;
             return
             // actual speed
             $"current: {(_animalAspect.GetMoveSpeed()).ToString("0.0")}\n" +
@@ -346,13 +347,36 @@ public class PropertyInspectorUIManager : MonoBehaviour
         };
     }
 
+
+    private void InspectSprint()
+    {
+        PropertyContainer propertyContainer = CreateNewPropertyContainer("Sprint");
+
+        propertyContainer.valueUpdateFunc = () => {
+
+            Sprint sprint = entityManager.GetComponentData<Sprint>(selectedEntity);
+
+            return
+            $"sprint speed: {_animalAspect.sprintSpeed.ToString("0.00")}\n" +
+            $"counter: {sprint.effectCounter.ToString("0.00")}s\n" +
+            $"total: {sprint.effectTotalTime.ToString("0.00")}s";
+        };
+
+
+    }
+
+
+
+
+
     private void InspectAge()
     {
         PropertyContainer propertyContainer = CreateNewPropertyContainer("Age");
         
         propertyContainer.valueUpdateFunc = () => {
             AgeStage ageStage = entityManager.GetComponentData<AgeStage>(selectedEntity);
-            return $"age: {(int)entityManager.GetComponentData<Age>(selectedEntity).currentAge}\n" +
+            return 
+            $"age: {(int)entityManager.GetComponentData<Age>(selectedEntity).currentAge}\n" +
             $"stage: {ageStage.currentStage.ToString()}\n" +
             $"cutoff: {ageStage.matureThreshold} / {ageStage.agingThreshold}";
         };
@@ -365,7 +389,9 @@ public class PropertyInspectorUIManager : MonoBehaviour
 
         propertyContainer.valueUpdateFunc = () => {
 
-            return $"number: {entityManager.GetComponentData<Cell>(selectedEntity).numberOfCell}";
+            return
+            $"normal: {entityManager.GetComponentData<Cell>(selectedEntity).numberOfNormalCell}\n" +
+            $"meat: {entityManager.GetComponentData<Cell>(selectedEntity).numberOfMeatCell}";
         };
     }
 

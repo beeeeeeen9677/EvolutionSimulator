@@ -16,6 +16,8 @@ public partial struct ReproductionSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
+
+
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(state.WorldUpdateAllocator);
 
         foreach ((GrowUpAspect animal, RefRO<Energy> energy) in SystemAPI.Query<GrowUpAspect, RefRO<Energy>>())
@@ -33,7 +35,6 @@ public partial struct ReproductionSystem : ISystem
                 }
             }
         }
-
 
 
         entityCommandBuffer.Playback(state.EntityManager);//execute the recorded commands
@@ -54,6 +55,8 @@ public partial struct ReproductionSystem : ISystem
         {
             Debug.Log($"{parentEntity.Index} Born offspring: {i+1} of {numberToSpawn}");
 
+
+            // born new animal
             Entity newSpawnedAnimal = entityCommandBuffer.Instantiate(initAnimalConfig.animalPrefab);
 
 

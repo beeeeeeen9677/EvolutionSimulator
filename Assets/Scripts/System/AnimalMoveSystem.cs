@@ -47,13 +47,22 @@ public partial struct MoveAnimalJob : IJobEntity
     //[BurstCompile]
     public void Execute(AnimalAspect animal)
     {
+        bool sprinting = false;
+
         if (animal.IsThreatExist())
         {
+
+            sprinting = animal.IsAbleToSprint(deltaTime); // check if sprint time remains
+
+
             float heading = MathHelpers.GetHeading(animal.threatPosition, animal.position);
             animal.FaceTarget(heading);
         }
         else if (animal.IsTargetExist())
         {
+
+            sprinting = animal.IsAbleToSprint(deltaTime); // check if sprint time remains
+
 
             float heading = MathHelpers.GetHeading(animal.position, animal.targetPosition);
             //Debug.Log(animal.targetPosition);
@@ -61,9 +70,15 @@ public partial struct MoveAnimalJob : IJobEntity
         }
         else
         {
+            animal.RestoreSprintTime(deltaTime); // restore sprint time when no target & threat
+
             animal.TurnRandomly(randomSeed);
         }
 
-        animal.MoveForward(deltaTime);
+
+        float movespeed = deltaTime * (sprinting ? animal.sprintSpeed : 1); // if sprinting, speed become higher
+
+
+        animal.MoveForward(movespeed);
     }
 }

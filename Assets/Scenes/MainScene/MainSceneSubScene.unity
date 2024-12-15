@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 91482531}
   - component: {fileID: 91482530}
   m_Layer: 0
-  m_Name: Init_GrassSystem
+  m_Name: Init_GrassSystem(Outdated)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -321,8 +321,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animalPrefab: {fileID: 3302597946754029742, guid: 197a0ef542d16e940ac3db124350a93b,
     type: 3}
-  initAnimalNumber: 1
-  fieldSize: 50
+  initAnimalNumber: 2
+  fieldSize: 20
 --- !u!1 &1232810080
 GameObject:
   m_ObjectHideFlags: 0
@@ -369,7 +369,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lakePrefab: {fileID: 2543757849809389493, guid: 24be5f13c386512479d39c7c525e2cc7,
     type: 3}
-  initLakeNumber: 5
+  initLakeNumber: 0
   fieldSize: 100
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

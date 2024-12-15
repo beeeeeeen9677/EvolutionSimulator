@@ -203,6 +203,8 @@ public partial struct SensorTriggerSystem : ISystem
 
                 hits.Dispose();
             }
+
+
             // target exist
             else
             {
@@ -254,9 +256,9 @@ public partial struct SensorTriggerSystem : ISystem
 
                         // compare size
                         //Debug.Log(currentAnimal.entity.Index + " Compare Size");
-                        if (currentAnimal.IsAbleToHuntTarget(targetAnimal))
+                        if (!currentAnimal.IsAbleToHuntTarget(targetAnimal))
                         {
-                            Debug.Log("Smaller, give up and reset target");
+                            Debug.Log(currentAnimal.entity.Index + ": Smaller, give up and reset target");
 
                             currentAnimal.ClearTarget(false); // clear target
 

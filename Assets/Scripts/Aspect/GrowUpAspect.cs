@@ -43,8 +43,8 @@ public readonly partial struct GrowUpAspect : IAspect
 
     public int cell
     {
-        get => _cell.ValueRO.numberOfCell;
-        private set => _cell.ValueRW.numberOfCell = value;
+        get => _cell.ValueRO.numberOfNormalCell;
+        private set => _cell.ValueRW.numberOfNormalCell = value;
     }
 
 

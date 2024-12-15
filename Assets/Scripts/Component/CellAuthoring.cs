@@ -14,7 +14,8 @@ public class CellAuthoring : MonoBehaviour
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
             AddComponent(entity, new Cell
             {
-                numberOfCell = 0
+                numberOfNormalCell = 0,
+                numberOfMeatCell = 0,
             });
         }
     }
@@ -23,5 +24,6 @@ public class CellAuthoring : MonoBehaviour
 
 public struct Cell : IComponentData
 {
-    public int numberOfCell;
+    public int numberOfNormalCell;
+    public int numberOfMeatCell;
 }

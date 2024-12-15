@@ -15,13 +15,17 @@ public readonly partial struct AnimalAspect : IAspect
     public readonly RefRW<LocalTransform> _localTransform;
     public readonly RefRW<Movement> _movement;
     //public readonly RefRW<PhysicsVelocity> _physicsVelocity;
-    public readonly RefRO<Cell> _cell;
+    public readonly RefRW<Cell> _cell;
 
 
     public readonly RefRW<Energy> _energy;
     public readonly RefRW<AnimalSensor> _animalSensor;
     public readonly RefRW<Target> _target;
     public readonly RefRW<Threat> _threat;
+
+
+    public readonly RefRW<Sprint> _sprint;
+
 
     //public readonly RefRO<SizeProperty> _sizeProperty;
 
@@ -34,7 +38,12 @@ public readonly partial struct AnimalAspect : IAspect
 
 
     private float moveSpeed => _movement.ValueRO.speed;
-    private int cell => _cell.ValueRO.numberOfCell;
+    private int cell => _cell.ValueRO.numberOfNormalCell;
+    private int meatCell
+    {
+        get => _cell.ValueRO.numberOfMeatCell;
+        set => _cell.ValueRW.numberOfMeatCell = value;  
+    }
     public float maxEnergy => _energy.ValueRO.maxEnergy;
     private float currentEnergy
     {
@@ -143,6 +152,18 @@ public readonly partial struct AnimalAspect : IAspect
     public float maxSize => _sizeProperty.ValueRO.maxSize;
     */
     public float currentSize => _localTransform.ValueRO.Scale;
+
+
+
+    // sprint effect time counter
+    public float effectTimeCounter
+    {
+        get => _sprint.ValueRO.effectCounter;
+        private set => _sprint.ValueRW.effectCounter = value;
+    }
+    // sprint effect total time 
+    public float effectITotalTime => _sprint.ValueRW.effectTotalTime;
+
 
 
 
@@ -400,6 +421,11 @@ public readonly partial struct AnimalAspect : IAspect
         }
     }
 
+    // increase number of meat cell when eat meat by target size
+    public void IncreaseMeatCell(int number)
+    {
+        meatCell += number;
+    }
 
     public void EatTarget(float obtainedEnergy)
     {
@@ -433,4 +459,31 @@ public readonly partial struct AnimalAspect : IAspect
     {
         currentEnergy = 0;
     }
+
+
+    public void RestoreSprintTime(float deltaTime)
+    {
+        effectTimeCounter = Mathf.Clamp(effectTimeCounter + deltaTime * 0.25f, 0, effectITotalTime);
+    }
+
+    // use in move system, decide whether can sprint
+    public bool IsAbleToSprint(float deltaTime)
+    {
+        if(effectTimeCounter > 0)
+        {
+            // able to sprint
+            effectTimeCounter -= deltaTime;
+
+            if (effectTimeCounter < 0)
+                effectTimeCounter = 0;            
+
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public float sprintSpeed => 1.5f * (1 + 0.1f * Mathf.Log(1 + meatCell));
 }

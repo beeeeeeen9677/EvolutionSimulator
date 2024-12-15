@@ -46,19 +46,22 @@ public partial struct EatingSystem : ISystem
 
 
 
-
+            /*
+            // Collide With, not working properly
             CollisionLayer collideWith = CollisionLayer.Grass;
             if (SystemAPI.HasComponent<AnimalTag>(target.ValueRO.targetEntity))
             {
                 collideWith = CollisionLayer.Animal;
             }
+            */
+
 
 
             float3 entityPosition = transform.ValueRO.Position;
 
             // change filter Collision Layer by checking target type
             // check collision
-            Entity collidedEntity = ColliderCast(entityPosition, physicsCollider.ValueRO, target.ValueRO.targetEntity, collideWith);
+            Entity collidedEntity = ColliderCast(entityPosition, physicsCollider.ValueRO, target.ValueRO.targetEntity);
 
 
 
@@ -120,7 +123,7 @@ public partial struct EatingSystem : ISystem
 
 
 
-                float obtainedEnergy = targetAnimal.currentSize * SystemAPI.GetComponent<Cell>(collidedEntity).numberOfCell * 0.0005f;
+                float obtainedEnergy = targetAnimal.currentSize * SystemAPI.GetComponent<Cell>(collidedEntity).numberOfNormalCell * 0.0005f;
 
 
 
@@ -131,6 +134,11 @@ public partial struct EatingSystem : ISystem
 
                 // clear locked target
                 animal.ClearTarget(true);
+
+
+                // increase meat cell by target size
+                animal.IncreaseMeatCell(Mathf.FloorToInt(targetAnimal.currentSize * 10));
+
 
                 // clear target threat
                 targetAnimal.ClearThreat(animal.entity);
@@ -146,7 +154,7 @@ public partial struct EatingSystem : ISystem
     }
 
 
-    public unsafe Entity ColliderCast(float3 entityPosition, PhysicsCollider physicsCollider, Entity targetEntity, CollisionLayer targetLayer)
+    public unsafe Entity ColliderCast(float3 entityPosition, PhysicsCollider physicsCollider, Entity targetEntity)
     {
         //Debug.Log("Check Collision");
 
@@ -197,9 +205,11 @@ public partial struct EatingSystem : ISystem
         physicsColliderBlob.Value.SetCollisionFilter(new CollisionFilter
         {
             BelongsTo = (uint)CollisionLayer.Sensor,
-            CollidesWith = (uint)targetLayer,
+            //CollidesWith = (uint)targetLayer,  // bug: cannot collide with animal, dont know why
+            CollidesWith = ~0u, // all 1s, so all layers, collide with everything
             GroupIndex = 0
         });
+
 
 
 
