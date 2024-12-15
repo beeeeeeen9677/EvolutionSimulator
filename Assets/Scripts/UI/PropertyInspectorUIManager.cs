@@ -248,9 +248,10 @@ public class PropertyInspectorUIManager : MonoBehaviour
         propertyContainer.valueUpdateFunc = () => {
 
             HungerStatus hungerStatus = entityManager.GetComponentData<HungerStatus>(selectedEntity);
+            float hungryThreshold = hungerStatus.hungryThreshold;
 
             return 
-            $"threshold: {hungerStatus.hungryThreshold.ToString("0.0")}\n" +
+            $"threshold: {hungryThreshold.ToString("0.0")} ({(hungryThreshold * entityManager.GetComponentData<Energy>(selectedEntity).maxEnergy).ToString("0.0")})\n" +
             $"state: {hungerStatus.currentState}";
         };
     }
