@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Entities;
@@ -23,6 +24,9 @@ public partial struct InitGrassConfigSystem : ISystem
         InitGrassConfig initGrassConfig = SystemAPI.GetSingleton<InitGrassConfig>();
         InitAnimalConfig initAnimalConfig = SystemAPI.GetSingleton<InitAnimalConfig>();
 
+        Entity initGrassConfigEntity = SystemAPI.GetSingletonEntity<InitGrassConfig>();
+
+
 
         int fieldSize = initAnimalConfig.fieldSize;
 
@@ -35,7 +39,13 @@ public partial struct InitGrassConfigSystem : ISystem
 
         for(int i = 0; i < initGrassConfig.initGrassNumber; i++)
         {
-            Entity newSpawnedGrass = state.EntityManager.Instantiate(initGrassConfig.grassPrefab);
+            // get random type of grasses
+            var buffer = state.EntityManager.GetBuffer<GrassPrefabElement>(initGrassConfigEntity);
+            int grassIndex = UnityEngine.Random.Range(0, buffer.Length);
+            Entity newSpawnedGrass = state.EntityManager.Instantiate(buffer[grassIndex].grassPrefabs);
+
+
+            //Entity newSpawnedGrass = state.EntityManager.Instantiate(initGrassConfig.grassPrefab); //old code
 
             SystemAPI.SetComponent(newSpawnedGrass, new LocalTransform
             {

@@ -409,7 +409,11 @@ public class PropertyInspectorUIManager : MonoBehaviour
 
             return
             $"normal: {entityManager.GetComponentData<Cell>(selectedEntity).numberOfNormalCell}\n" +
-            $"meat: {entityManager.GetComponentData<Cell>(selectedEntity).numberOfMeatCell}";
+            $"meat: {entityManager.GetComponentData<Cell>(selectedEntity).numberOfMeatCell}\n" +
+            $"green: {entityManager.GetComponentData<Cell>(selectedEntity).numberOfGreenCell}\n" +
+            $"orange: {entityManager.GetComponentData<Cell>(selectedEntity).numberOfOrangeCell}\n" +
+            $"purple: {entityManager.GetComponentData<Cell>(selectedEntity).numberOfPurpleCell}\n" +
+            $"pink: {entityManager.GetComponentData<Cell>(selectedEntity).numberOfPinkCell}";
         };
     }
 

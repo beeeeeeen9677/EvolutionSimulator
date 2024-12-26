@@ -25,6 +25,9 @@ public partial struct InitLakeSystem : ISystem
 
         InitGrassConfig initGrassConfig = SystemAPI.GetSingleton<InitGrassConfig>();
 
+        Entity initGrassConfigEntity = SystemAPI.GetSingletonEntity<InitGrassConfig>();
+
+
 
 
         int fieldSize = initLakeConfig.fieldSize;
@@ -60,7 +63,15 @@ public partial struct InitLakeSystem : ISystem
             int grassNumOfCurrentLake = lakeProperty.numberOfGrass;
             for (int j = 0; j < grassNumOfCurrentLake; j++)
             {
-                Entity newSpawnedGrass = state.EntityManager.Instantiate(initGrassConfig.grassPrefab);
+
+                // get random type of grasses
+                var buffer = state.EntityManager.GetBuffer<GrassPrefabElement>(initGrassConfigEntity);
+                int grassIndex = UnityEngine.Random.Range(0, buffer.Length);
+                Entity newSpawnedGrass = state.EntityManager.Instantiate(buffer[grassIndex].grassPrefabs);
+
+
+
+                //Entity newSpawnedGrass = state.EntityManager.Instantiate(initGrassConfig.grassPrefab);   //old code
 
 
                 SystemAPI.SetComponent(newSpawnedGrass, new LocalTransform
@@ -74,14 +85,14 @@ public partial struct InitLakeSystem : ISystem
                     Scale = 1
                 });
 
-                // set in inspector
-                /*
+                // set grass property
+                float randomMaxSize = UnityEngine.Random.Range(0.7f, 1f);
                 SystemAPI.SetComponent(newSpawnedGrass, new GrassProperties
                 {
-                    currentSize = 1,
-                    maxSize = 1,
+                    currentSize = 0,
+                    maxSize = randomMaxSize,
                 });
-                */
+                
             }
         }
     }

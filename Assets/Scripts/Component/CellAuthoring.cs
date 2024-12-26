@@ -24,6 +24,13 @@ public class CellAuthoring : MonoBehaviour
 
 public struct Cell : IComponentData
 {
+    // normal cell
     public int numberOfNormalCell;
+    // eat animal
     public int numberOfMeatCell;
+    // eat grass
+    public int numberOfGreenCell;
+    public int numberOfOrangeCell;
+    public int numberOfPurpleCell;
+    public int numberOfPinkCell;
 }

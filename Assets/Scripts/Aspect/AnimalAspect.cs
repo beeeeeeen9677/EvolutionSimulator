@@ -38,12 +38,41 @@ public readonly partial struct AnimalAspect : IAspect
 
 
     private float moveSpeed => _movement.ValueRO.speed;
+
+    #region Cell
+    // normal cell
     private int cell => _cell.ValueRO.numberOfNormalCell;
+    // eat animal
     private int meatCell
     {
         get => _cell.ValueRO.numberOfMeatCell;
         set => _cell.ValueRW.numberOfMeatCell = value;  
     }
+    // eat grass
+    private int greenCell
+    {
+        get => _cell.ValueRO.numberOfGreenCell;
+        set => _cell.ValueRW.numberOfGreenCell = value;
+    }
+    private int orangeCell
+    {
+        get => _cell.ValueRO.numberOfOrangeCell;
+        set => _cell.ValueRW.numberOfOrangeCell = value;
+    }
+    private int purpleCell
+    {
+        get => _cell.ValueRO.numberOfPurpleCell;
+        set => _cell.ValueRW.numberOfPurpleCell = value;
+    }
+    private int pinkCell
+    {
+        get => _cell.ValueRO.numberOfPinkCell;
+        set => _cell.ValueRW.numberOfPinkCell = value;
+    }
+    #endregion
+
+
+
     public float maxEnergy => _energy.ValueRO.maxEnergy;
     private float currentEnergy
     {
@@ -426,6 +455,30 @@ public readonly partial struct AnimalAspect : IAspect
     {
         meatCell += number;
     }
+
+    public void IncreaseColorCell(int number, string grassColor)
+    {
+        switch (grassColor)
+        {
+            case "green":
+                greenCell += number;
+                break;
+            case "orange":
+                orangeCell += number;
+                break;
+            case "purple":
+                purpleCell += number;
+                break;
+            case "pink":
+                pinkCell += number;
+                break;
+            default:
+                Debug.Log("IncreaseColorCell: no such color of grasses");
+                break;
+        }
+    }
+
+
 
     public void EatTarget(float obtainedEnergy)
     {

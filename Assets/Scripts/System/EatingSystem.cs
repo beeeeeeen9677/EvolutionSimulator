@@ -100,6 +100,36 @@ public partial struct EatingSystem : ISystem
                 // eat the grass
                 animal.EatTarget(obtainedEnergy);
 
+                // increase correspoding cell
+                string grassColor = "";
+                if (SystemAPI.HasComponent<GrassTag_Green>(collidedEntity)) // green grass
+                {
+                    grassColor = "green";
+                }
+                else if (SystemAPI.HasComponent<GrassTag_Orange>(collidedEntity)) // orange grass
+                {
+                    grassColor = "orange";
+                }
+                else if (SystemAPI.HasComponent<GrassTag_Purple>(collidedEntity)) // purple grass
+                {
+                    grassColor = "purple";
+                }
+                else if (SystemAPI.HasComponent<GrassTag_Pink>(collidedEntity)) // pink grass
+                {
+                    grassColor = "pink";
+                }
+                else
+                {
+                    Debug.Log("Eating System: this grass does not have any color tag");
+                }
+
+                // if the grass has color tag
+                if(grassColor != "")
+                {
+                    animal.IncreaseColorCell(Mathf.FloorToInt(grass.currentSize * 5), grassColor);
+                }
+
+
                 // set isActivated to false
                 grass.WasEaten();
 

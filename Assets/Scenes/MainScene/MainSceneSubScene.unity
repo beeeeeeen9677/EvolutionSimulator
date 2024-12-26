@@ -152,7 +152,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edc49aaa6a19ae44f819832f33d63b24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  grassPrefab: {fileID: 6429284052333050457, guid: bcd55b8a9a48bcf469b4b9720f9e51fc,
+  grassPrefab_Green: {fileID: 6429284052333050457, guid: bcd55b8a9a48bcf469b4b9720f9e51fc,
+    type: 3}
+  grassPrefab_Orange: {fileID: 6429284052333050457, guid: 4f75d9aed3f92eb4c9883ad7ef8762f8,
+    type: 3}
+  grassPrefab_Purple: {fileID: 6429284052333050457, guid: 1b5bf447238314d4ba568ba5ff49c078,
+    type: 3}
+  grassPrefab_Pink: {fileID: 6429284052333050457, guid: b5b1ded62e7892947b70c0675f12378a,
     type: 3}
   initGrassNumber: 0
 --- !u!4 &91482531
@@ -321,7 +327,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animalPrefab: {fileID: 3302597946754029742, guid: 197a0ef542d16e940ac3db124350a93b,
     type: 3}
-  initAnimalNumber: 5
+  initAnimalNumber: 1
   fieldSize: 20
 --- !u!1 &1232810080
 GameObject:
