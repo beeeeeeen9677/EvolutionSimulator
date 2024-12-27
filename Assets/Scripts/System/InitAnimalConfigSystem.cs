@@ -86,6 +86,12 @@ public partial struct InitAnimalConfigSystem : ISystem
                 animalSensorProbability = 1 - grassSensorProbability,
 
                 currentSensor = null,
+
+                // 1 to 9
+                greenWeight = UnityEngine.Random.Range(1, 10),
+                orangeWeight = UnityEngine.Random.Range(1, 10),
+                purpleWeight = UnityEngine.Random.Range(1, 10),
+                pinkWeight = UnityEngine.Random.Range(1, 10),
             });
 
 

@@ -313,10 +313,15 @@ public class PropertyInspectorUIManager : MonoBehaviour
             $"warning range: {_animalAspect.GetWarningRange().ToString("0.0")}\n" +
             $"Cooldown: \n" +
             $" - current: {sensor.currentCooldown.ToString("0.0")}\n" +
-            $" - max: {sensor.maxCooldown.ToString("0.0")}\n"+
+            $" - max: {sensor.maxCooldown.ToString("0.0")}\n" +
             $"Probability: \n" +
+            $" - animal: {sensor.animalSensorProbability.ToString("0.000")}\n" +
             $" - grass: {sensor.grassSensorProbability.ToString("0.000")}\n" +
-            $" - animal: {sensor.animalSensorProbability.ToString("0.000")}";
+            $"   * <color=lime>green</color>:{sensor.greenWeight}\n" +
+            $"   * <color=orange>orange</color>: {sensor.orangeWeight}\n" +
+            $"   * <color=purple>purple</color>: {sensor.purpleWeight}\n" +
+            $"   * <color=magenta>pink</color>: {sensor.pinkWeight}";
+
         };
     }
 

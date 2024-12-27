@@ -34,3 +34,12 @@ public struct Cell : IComponentData
     public int numberOfPurpleCell;
     public int numberOfPinkCell;
 }
+
+
+public enum ColorCell
+{
+    Green,
+    Orange,
+    Purple,
+    Pink
+}

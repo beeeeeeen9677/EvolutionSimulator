@@ -27,7 +27,7 @@ public partial struct ReproductionSystem : ISystem
                continue;
 
             // if current energy more than 50% of max energy, born offspring
-            if(energy.ValueRO.currentEnergy >= 0.5f * energy.ValueRO.maxEnergy)
+            if(energy.ValueRO.currentEnergy >= 0.8f * energy.ValueRO.maxEnergy)
             {
                 if (animal.IsReadyToGenerateOffspring(SystemAPI.Time.DeltaTime))
                 {
@@ -99,6 +99,11 @@ public partial struct ReproductionSystem : ISystem
                 animalSensorProbability = 1 - parentSensor.grassSensorProbability,
 
                 currentSensor = null,
+
+                greenWeight = parentSensor.greenWeight,
+                orangeWeight = parentSensor.orangeWeight,
+                purpleWeight = parentSensor.purpleWeight,
+                pinkWeight = parentSensor.pinkWeight,
             });
 
 

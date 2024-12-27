@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using Unity.Burst.CompilerServices;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Entities.UniversalDelegates;
 using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Transforms;
@@ -46,6 +48,8 @@ public partial struct SensorTriggerSystem : ISystem
 
 
 
+
+
             // is it is chasing by another
             if (currentAnimal.IsThreatExist())
             {
@@ -75,7 +79,11 @@ public partial struct SensorTriggerSystem : ISystem
                 }
                 //Debug.Log("Search Target: " + animal.entity.Index);
 
-                
+
+
+
+
+
                 int sensorNumber = currentAnimal.GetRandomSensorNumber(); // select random sensor to use
                 //Debug.Log("sensorNumber: "+sensorNumber);
 
@@ -99,9 +107,38 @@ public partial struct SensorTriggerSystem : ISystem
 
 
 
+
+
+                /*
                 // Store MIN distance entity
                 float minDistance = -1; // set init value to negative number
                 Entity nearestTargetEntity = Entity.Null;
+                */
+
+
+                // Changed to List for sequencing
+                // Store MIN distance entity
+                List<float> minDistance = new List<float>(); // set init value to negative number
+                List<Entity> nearestTargetEntity = new List<Entity>();
+
+
+                int sequenceListLength = 1; // inital length for animal
+                List<ColorCell> colorSequence = new List<ColorCell>();
+                if (sensorNumber == 0) // grass
+                {
+                    // get the sequence of color
+                    colorSequence = currentAnimal.GetGrassColorSequence();
+                    sequenceListLength = colorSequence.Count; // change the length to 4
+                }
+
+                // init the Lists
+                for (int i = 0; i < sequenceListLength; i++)
+                {
+                    minDistance.Add(-1); // set init value to negative number
+                    nearestTargetEntity.Add(Entity.Null); 
+                }
+
+
 
 
                 // loop through all scaned entities
@@ -156,14 +193,80 @@ public partial struct SensorTriggerSystem : ISystem
 
 
                     // if no problem, compare distance
-
-                    if (targetDistance < minDistance || minDistance < 0) // new entity is more near OR mindistance is still storing init value
+                    if(sensorNumber == 1) // check animal
                     {
-                        // update min distance
-                        minDistance = targetDistance;
-                        nearestTargetEntity = hit.Entity;
-                        //Debug.Log(currentAnimal.entity.Index + " update min distance: " + minDistance);
+                        int listIndex = 0;
+                        UpdateNearestTargetList(minDistance, nearestTargetEntity, hit, targetDistance, listIndex);
                     }
+                    else if(sensorNumber == 0) // check grass
+                    {
+                        int listIndex = -1;
+
+                        // loop through different colors
+                        for (int i = 0; i < colorSequence.Count; i++)
+                        {
+                            // Get the type of the current color for checking later
+                            //Type typeOfCurrentColor = colorSequence[i].GetType();
+                            // Convert the type to a ComponentType
+                            //ComponentType componentType = ComponentType.ReadOnly(typeOfCurrentColor);
+
+                            Type typeOfCurrentColor;
+                            switch (colorSequence[i])
+                            {
+                                case ColorCell.Green:
+                                    typeOfCurrentColor = typeof(GrassTag_Green);
+                                    break;
+                                case ColorCell.Orange:
+                                    typeOfCurrentColor = typeof(GrassTag_Orange);
+                                    break;
+                                case ColorCell.Purple:
+                                    typeOfCurrentColor = typeof(GrassTag_Purple);
+                                    break;
+                                case ColorCell.Pink:
+                                    typeOfCurrentColor = typeof(GrassTag_Pink);
+                                    break;
+
+                                default:
+                                    typeOfCurrentColor = typeof(AnimalTag); // this entity is not grass
+                                    Debug.Log("Error: switch - grass color not matching");
+                                    break;
+                            }
+
+
+
+                            if (state.EntityManager.HasComponent(hit.Entity, typeOfCurrentColor)) // if this grass has same color with current looping color
+                            {
+                                listIndex = i;
+                                break;  
+                            }
+                        }
+                        if(listIndex == -1) // error
+                        {
+                            Debug.Log("Error: listIndex == -1 - grass color not matching");
+                            listIndex = 0;
+                        }
+
+
+                        //Debug.Log(listIndex);
+                        /*
+                        // get the sequence of color
+                        List<ColorCell> colorSequence = currentAnimal.GetGrassColorSequence();
+
+                        foreach(ColorCell color in colorSequence)
+                        {
+                            // grt the type of current color for checking later
+                            Type typeOfCurrentColor = color.GetType();
+
+                        
+                            if (SystemAPI.HasComponent<typeOfCurrentColor>(hit.Entity)) // if this grass have same color with current looping color
+                            {
+
+                            }
+                        }
+                        */
+                        UpdateNearestTargetList(minDistance, nearestTargetEntity, hit, targetDistance, listIndex);
+                    }
+
 
 
 
@@ -181,21 +284,27 @@ public partial struct SensorTriggerSystem : ISystem
                 }
 
 
-                // if scanned any entity
-                if (nearestTargetEntity != Entity.Null)
+                for(int i = 0; i < nearestTargetEntity.Count; i++)
                 {
-                    // if eatable, set as target
-                    //Debug.Log(currentAnimal.entity.Index + " found a target");
-                    currentAnimal.SetTargetEntity(nearestTargetEntity);
-                    currentAnimal.ResetChaseCountdown();
-                    currentAnimal.targetPosition = SystemAPI.GetComponentRO<LocalTransform>(nearestTargetEntity).ValueRO.Position;   
+                    // if scanned any entity
+                    if (nearestTargetEntity[i] != Entity.Null)
+                    {
+                        // if eatable, set as target
+                        //Debug.Log(currentAnimal.entity.Index + " found a target");
+                        currentAnimal.SetTargetEntity(nearestTargetEntity[i]);
+                        currentAnimal.ResetChaseCountdown();
+                        currentAnimal.targetPosition = SystemAPI.GetComponentRO<LocalTransform>(nearestTargetEntity[i]).ValueRO.Position;
+
+                        break;
+                    }
+                    /*
+                    else
+                    {
+                        Debug.Log(currentAnimal.entity.Index + " cannot find any target");
+                    }
+                    */
                 }
-                /*
-                else
-                {
-                    Debug.Log(currentAnimal.entity.Index + " cannot find any target");
-                }
-                */
+
 
 
 
@@ -311,6 +420,24 @@ public partial struct SensorTriggerSystem : ISystem
                     continue;
                 }
             }
+        }
+    }
+
+    private static void UpdateNearestTargetList(List<float> minDistance, List<Entity> nearestTargetEntity, ColliderCastHit hit, float targetDistance, int listIndex)
+    {
+        /*
+         * minDistance: List of mindistance to current nearest target
+         * nearestTargetEntity: current nearest target
+         * hit: current hitted(scanned) entity 
+        */
+
+
+        if (targetDistance < minDistance[listIndex] || minDistance[listIndex] < 0) // new entity is more near OR mindistance is still storing init value
+        {
+            // update min distance
+            minDistance[listIndex] = targetDistance;
+            nearestTargetEntity[listIndex] = hit.Entity;
+            //Debug.Log(currentAnimal.entity.Index + " update min distance: " + minDistance);
         }
     }
 }

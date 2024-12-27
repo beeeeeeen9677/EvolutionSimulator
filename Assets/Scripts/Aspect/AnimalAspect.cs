@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 using Unity.Burst.CompilerServices;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -129,6 +131,34 @@ public readonly partial struct AnimalAspect : IAspect
         get => _animalSensor.ValueRO.currentSensor;
         set => _animalSensor.ValueRW.currentSensor = value;
     }
+
+    private int greenWeight
+    {
+        get => _animalSensor.ValueRO.greenWeight;
+        set => _animalSensor.ValueRW.greenWeight = value;
+    }
+
+
+    private int orangeWeight
+    {
+        get => _animalSensor.ValueRO.orangeWeight;
+        set => _animalSensor.ValueRW.orangeWeight = value;
+    }
+
+
+    private int purpleWeight
+    {
+        get => _animalSensor.ValueRO.purpleWeight;
+        set => _animalSensor.ValueRW.purpleWeight = value;
+    }
+
+
+    private int pinkWeight
+    {
+        get => _animalSensor.ValueRO.pinkWeight;
+        set => _animalSensor.ValueRW.pinkWeight = value;
+    }
+
     #endregion
 
 
@@ -408,7 +438,7 @@ public readonly partial struct AnimalAspect : IAspect
         {
             cumulativeProbability += sensorProbs[i];
 
-            if(cumulativeProbability > randResult)
+            if(randResult < cumulativeProbability)
             {
                 return i;
             }
@@ -417,6 +447,71 @@ public readonly partial struct AnimalAspect : IAspect
         Debug.LogError("Error: GetRandomSensorNumber() did not pick any of Sensor in for loop");
         return 0;
     }
+
+
+    // get the sequence of different color of grasses
+    public List<ColorCell> GetGrassColorSequence()
+    {
+        List<ColorCell> resultSequence = new List<ColorCell>();
+
+        //initialize the List of weight for different colors
+        List<ColorCell> remainingColor = new List<ColorCell> { ColorCell.Green, ColorCell.Orange, ColorCell.Purple, ColorCell.Pink};
+        List<int> remainWeight = new List<int> { greenWeight, orangeWeight, purpleWeight, pinkWeight};
+
+        // pick one color randomly, until the list become empty to form a sequence
+        while (remainingColor.Count > 0)
+        {
+            // total weight of remaining weight
+            int totalWeight = remainWeight.Sum();
+
+            
+            // random number for picking a color
+            int randNum = UnityEngine.Random.Range(0, totalWeight);
+            // cumulative weight, add the color's weight in this loop
+            int cumulativeWeight = 0;
+
+            for (int i = 0;i < remainWeight.Count; i++)
+            {
+                cumulativeWeight += remainWeight[i];
+
+                if (randNum < cumulativeWeight)
+                {
+                    // if true, pick current color 
+                    resultSequence.Add(remainingColor[i]); // Add current color to sequence list
+                    // Remove from inital lists
+                    remainingColor.RemoveAt(i);
+                    remainWeight.RemoveAt(i);
+
+                    break;
+                }
+                    // else check next color
+                
+            }
+        }
+
+
+        // print output
+        
+        string printColor = "";
+        foreach(ColorCell color in resultSequence)
+        {
+            printColor += color.ToString() + "  "; 
+        }
+
+        Debug.Log(printColor);
+        
+
+
+        return resultSequence;
+    }
+
+
+
+
+
+
+
+
 
 
     public void AdjustSensorProbability(bool isSuccess) //Call after every round of scanning & hunting

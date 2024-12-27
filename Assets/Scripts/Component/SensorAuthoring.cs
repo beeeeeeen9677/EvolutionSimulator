@@ -41,4 +41,11 @@ public struct AnimalSensor : IComponentData
 
     public CollisionLayer? currentSensor; // the sensor using currently
 
+
+    // weight of different grasses
+    public int greenWeight;
+    public int orangeWeight;
+    public int purpleWeight;
+    public int pinkWeight;
+
 }
