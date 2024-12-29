@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Xml.Serialization;
 using Unity.Entities;
 using Unity.Transforms;
@@ -92,6 +93,7 @@ public class PropertyInspectorUIManager : MonoBehaviour
         InspectAge();
         InspectCell();
         InspectSize();
+        InspectHabitat();
     }
 
 
@@ -436,7 +438,23 @@ public class PropertyInspectorUIManager : MonoBehaviour
     }
 
 
-    
+    private void InspectHabitat()
+    {
+        PropertyContainer propertyContainer = CreateNewPropertyContainer("Habitat");
+
+        propertyContainer.valueUpdateFunc = () => {
+            //bool isFindingHabitat = entityManager.IsComponentEnabled<IsFindingHabitat>(selectedEntity);
+            AnimalHabitatInfo habitat = entityManager.GetComponentData<AnimalHabitatInfo>(selectedEntity);
+
+            return
+            //$"status: {(isFindingHabitat?"finding":"/")}";
+            $"exist: {(habitat.habitatProperty == null? "no" : "yes")}\n" +
+            $"position: \n{habitat.habitatPosition.ToString("F1")}";
+
+        };
+    }
+
+
 
 
 

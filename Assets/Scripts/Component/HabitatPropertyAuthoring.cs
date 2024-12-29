@@ -18,7 +18,7 @@ public class HabitatPropertyAuthoring : MonoBehaviour
 
 public struct HabitatProperty : IComponentData
 {
-    // the MINIMUM & MAXIMUM value of max size of the animal living here
+    // the MINIMUM & MAXIMUM value of max size of the animal living here (Limitation)
     public float minSize;
     public float maxSize;
 }

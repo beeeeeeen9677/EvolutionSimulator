@@ -135,6 +135,13 @@ public partial struct EatingSystem : ISystem
 
                 // clear locked target
                 animal.ClearTarget(true);
+
+
+                // find/update habitat after finishing eating successfully
+                UpdateHabitat(ref state, animal.entity);
+
+
+
             }
             // if collided with animal
             else if (SystemAPI.HasComponent<AnimalTag>(target.ValueRO.targetEntity))
@@ -177,11 +184,23 @@ public partial struct EatingSystem : ISystem
                 // set its energy to 0
                 targetAnimal.WasEaten();
 
+
+                // find/update habitat after finishing eating successfully
+                UpdateHabitat(ref state, animal.entity);
+
             }
 
 
         }
     }
+
+    private void UpdateHabitat(ref SystemState state, Entity animal)
+    {
+        // enable the IsFindingHabitat tag
+        state.EntityManager.SetComponentEnabled<IsFindingHabitat>(animal, true);
+    }
+
+
 
 
     public unsafe Entity ColliderCast(float3 entityPosition, PhysicsCollider physicsCollider, Entity targetEntity)
