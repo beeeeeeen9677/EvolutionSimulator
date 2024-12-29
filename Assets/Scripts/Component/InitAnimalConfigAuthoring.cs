@@ -9,6 +9,12 @@ public class InitAnimalConfigAuthoring : MonoBehaviour
     public int initAnimalNumber; // number to spawn initially
     public int fieldSize;
 
+    #region animalInitSize
+    // min & max value of INITIAL size of animal
+    public float minInitSize;
+    public float maxInitSize;
+    #endregion
+
 
     public class InitAnimalConfigBaker : Baker<InitAnimalConfigAuthoring>
     {
@@ -20,6 +26,8 @@ public class InitAnimalConfigAuthoring : MonoBehaviour
                 animalPrefab = GetEntity(authoring.animalPrefab, TransformUsageFlags.Dynamic),
                 initAnimalNumber = authoring.initAnimalNumber,
                 fieldSize = authoring.fieldSize,
+                minInitSize = authoring.minInitSize,
+                maxInitSize = authoring.maxInitSize,
             });
         }
     }
@@ -30,4 +38,7 @@ public struct InitAnimalConfig : IComponentData
     public Entity animalPrefab; 
     public int initAnimalNumber; // number to spawn initially
     public int fieldSize;
+
+    public float minInitSize;
+    public float maxInitSize;
 }

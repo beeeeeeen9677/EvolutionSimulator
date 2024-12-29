@@ -38,8 +38,8 @@ public partial struct InitAnimalConfigSystem : ISystem
             Entity newSpawnedAnimal = state.EntityManager.Instantiate(initAnimalConfig.animalPrefab);
 
 
-
-            float animalInitSize = UnityEngine.Random.Range(0.5f, 1f);
+            //float animalInitSize = UnityEngine.Random.Range(0.5f, 1f);
+            float animalInitSize = UnityEngine.Random.Range(initAnimalConfig.minInitSize, initAnimalConfig.maxInitSize);
             SystemAPI.SetComponent(newSpawnedAnimal, new SizeProperty
             {
                 initSize = animalInitSize,
