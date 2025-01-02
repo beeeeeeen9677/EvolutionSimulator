@@ -11,6 +11,13 @@ public class InitHabitatConfigAuthoring : MonoBehaviour
     private int numberOfHabitat;
     [SerializeField]
     private float interval;     // value from min to max
+    [SerializeField]
+    private float maxRadius;
+    [SerializeField]
+    private float minRadius;
+    [SerializeField]
+    public float effectOfHiding;
+
 
 
     public class InitHabitatConfigBaker : Baker<InitHabitatConfigAuthoring>
@@ -23,6 +30,9 @@ public class InitHabitatConfigAuthoring : MonoBehaviour
                 habitatPrefab = GetEntity(authoring.habitatPrefab, TransformUsageFlags.None),
                 numberOfHabitat = authoring.numberOfHabitat,
                 interval = authoring.interval,  
+                maxRadius = authoring.maxRadius,
+                minRadius = authoring.minRadius,
+                effectOfHiding = authoring.effectOfHiding,
             });
         }
     }
@@ -35,4 +45,7 @@ public struct InitHabitatConfig : IComponentData
     public int numberOfHabitat;
     // value from min to max
     public float interval;
+    public float maxRadius;
+    public float minRadius;
+    public float effectOfHiding; // a number between 0 - 1 to decide whether can be detected by enemy, larger better
 }

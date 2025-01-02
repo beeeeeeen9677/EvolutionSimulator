@@ -70,7 +70,7 @@ public partial struct FindHabitatSystem : ISystem
             // finished looping through all habitats
 
 
-            // update habitat by result
+            // update habitat by result if found
             if(nearestHabitat != null && minDistance != -1)
             {
                 ecb.SetComponent(animalEntity, new AnimalHabitatInfo

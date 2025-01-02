@@ -99,6 +99,7 @@ public partial struct EatingSystem : ISystem
 
                 // eat the grass
                 animal.EatTarget(obtainedEnergy);
+                //Debug.Log("Eat grass: "+obtainedEnergy);
 
                 // increase correspoding cell
                 string grassColor = "";

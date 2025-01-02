@@ -440,7 +440,7 @@ public class PropertyInspectorUIManager : MonoBehaviour
 
     private void InspectHabitat()
     {
-        PropertyContainer propertyContainer = CreateNewPropertyContainer("Habitat");
+        PropertyContainer propertyContainer = CreateNewPropertyContainer("Shelter"); // Habitat
 
         propertyContainer.valueUpdateFunc = () => {
             //bool isFindingHabitat = entityManager.IsComponentEnabled<IsFindingHabitat>(selectedEntity);

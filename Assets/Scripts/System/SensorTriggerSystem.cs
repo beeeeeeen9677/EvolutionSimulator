@@ -172,7 +172,7 @@ public partial struct SensorTriggerSystem : ISystem
                         if(hit.Entity == currentAnimal.entity) // hit itself
                             continue;
 
-                        if (!SystemAPI.HasComponent<AnimalTag>(hit.Entity))
+                        if (!SystemAPI.HasComponent<AnimalTag>(hit.Entity)) // do not has AnimalTag
                         {
                             Debug.Log("Missing AnimalTag Component");
                             continue;
@@ -184,6 +184,26 @@ public partial struct SensorTriggerSystem : ISystem
                             Debug.Log(currentAnimal.entity.Index + " not able to hunt target, give up");
                             continue; // smaller than this hitted animal
                         }
+
+
+                        // check if target in habitat
+                        AnimalAspect targetAnimal = SystemAPI.GetAspect<AnimalAspect>(hit.Entity);
+                        if (targetAnimal.IsInsideHabitat())
+                        {
+                            // get random number (0 - 1) and check with effect of hiding 
+                            float hideEffectRandomNumber = UnityEngine.Random.Range(0, 1);
+                            if(hideEffectRandomNumber < targetAnimal.habitatProperty.Value.effectOfHiding)
+                            {
+                                Debug.Log("Success to hide from predator"); // Success
+                                continue;
+                            }
+                            Debug.Log("Failed to hide from predator"); // Failed
+
+
+                        }
+
+
+
                     }
 
 

@@ -86,11 +86,14 @@ public partial struct InitLakeSystem : ISystem
                 });
 
                 // set grass property
+                GrassProperties grassPropertyData = SystemAPI.GetComponent<GrassProperties>(newSpawnedGrass);
                 float randomMaxSize = UnityEngine.Random.Range(0.7f, 1f);
                 SystemAPI.SetComponent(newSpawnedGrass, new GrassProperties
                 {
                     currentSize = 0,
                     maxSize = randomMaxSize,
+                    provideEnergy = grassPropertyData.provideEnergy,
+                    activated = grassPropertyData.activated,
                 });
                 
             }

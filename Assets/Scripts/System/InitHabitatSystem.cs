@@ -37,8 +37,12 @@ public partial struct InitHabitatSystem : ISystem
 
         InitHabitatConfig initHabitatConfig = SystemAPI.GetSingleton<InitHabitatConfig>();
 
+        float maxRadius = initHabitatConfig.maxRadius; // 30
+        float minRadius = initHabitatConfig.minRadius; // 15
+        float effectOfHiding = initHabitatConfig.effectOfHiding;
 
-        for(int i = 0; i < initHabitatConfig.numberOfHabitat; i++)
+
+        for (int i = 0; i < initHabitatConfig.numberOfHabitat; i++)
         {
             Entity newSpawnedHabitat = state.EntityManager.Instantiate(initHabitatConfig.habitatPrefab);
 
@@ -61,6 +65,8 @@ public partial struct InitHabitatSystem : ISystem
             {
                 minSize = minSize,
                 maxSize = maxSize,
+                radius = UnityEngine.Random.Range(minRadius, maxRadius),
+                effectOfHiding = effectOfHiding,
             });
 
 

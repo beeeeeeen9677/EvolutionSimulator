@@ -72,7 +72,19 @@ public partial struct MoveAnimalJob : IJobEntity
         {
             animal.RestoreSprintTime(deltaTime); // restore sprint time when no target & threat
 
-            animal.TurnRandomly(randomSeed);
+
+
+            //animal.TurnRandomly(randomSeed);
+
+            // go to habitat or turn randomly if do not have habitat
+            bool isTakingRest = TakeRest(animal); // true: inside habitat
+
+            if(isTakingRest)
+            {
+                return; // This acts like 'continue' in Execute()
+            }
+
+
         }
 
 
@@ -80,5 +92,35 @@ public partial struct MoveAnimalJob : IJobEntity
 
 
         animal.MoveForward(movespeed);
+    }
+
+
+
+    private bool TakeRest(AnimalAspect animal)
+    {
+        if(animal.IsHabitatExist())
+        {
+            float heading = MathHelpers.GetHeading(animal.position, animal.habitatPosition);
+            animal.FaceTarget(heading);
+
+            // whether inside/arrived habitat
+            if(animal.IsInsideHabitat())
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+        else
+        {
+            // Do not have habitat
+            // walk randomly
+            animal.TurnRandomly(randomSeed);
+
+            return false;
+        }
     }
 }

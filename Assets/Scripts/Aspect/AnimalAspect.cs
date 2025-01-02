@@ -25,8 +25,9 @@ public readonly partial struct AnimalAspect : IAspect
     public readonly RefRW<Target> _target;
     public readonly RefRW<Threat> _threat;
 
-
     public readonly RefRW<Sprint> _sprint;
+
+    public readonly RefRO<AnimalHabitatInfo> _habitatInfo;
 
 
     //public readonly RefRO<SizeProperty> _sizeProperty;
@@ -202,7 +203,17 @@ public readonly partial struct AnimalAspect : IAspect
         set => _threat.ValueRW.threatPosition = value;
     }
 
+    #region habitat
+    public HabitatProperty? habitatProperty
+    {
+        get => _habitatInfo.ValueRO.habitatProperty;
+    }
 
+    public Vector3 habitatPosition
+    {
+        get => _habitatInfo.ValueRO.habitatPosition;
+    }
+    #endregion
 
 
 
@@ -286,6 +297,12 @@ public readonly partial struct AnimalAspect : IAspect
     // Consume Energy
     public void ConsumeEnergy(float deltaTime)
     {
+
+        if (IsInsideHabitat()) // if is inside habitat, consume less energy
+        {
+            deltaTime *= 0.1f;
+        }
+
         // consume energy
         ModifyEnergy(-deltaTime);
         /*
@@ -634,4 +651,43 @@ public readonly partial struct AnimalAspect : IAspect
     }
 
     public float sprintSpeed => 1.5f * (1 + 0.1f * Mathf.Log(1 + meatCell));
+
+
+
+
+    public bool IsHabitatExist()
+    {
+        return habitatProperty != null;
+    }
+
+    private float GetHabitatAreaRadius()
+    {
+        if (!IsHabitatExist())
+        {// if habitat not exists
+            return 0;
+        }
+        else
+        {
+            return habitatProperty.Value.radius;
+        }
+    }
+
+    public bool IsInsideHabitat()
+    {
+        if (!IsHabitatExist()) // if do not have habitat
+            return false;
+
+
+
+        float distanceToHabitat = MathHelpers.GetDistance(position, habitatPosition);
+
+        if(distanceToHabitat <= GetHabitatAreaRadius()/2)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }

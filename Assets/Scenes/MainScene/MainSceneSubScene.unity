@@ -327,7 +327,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animalPrefab: {fileID: 3302597946754029742, guid: 197a0ef542d16e940ac3db124350a93b,
     type: 3}
-  initAnimalNumber: 10
+  initAnimalNumber: 1
   fieldSize: 20
   minInitSize: 0.5
   maxInitSize: 1
@@ -427,6 +427,9 @@ MonoBehaviour:
     type: 3}
   numberOfHabitat: 5
   interval: 0.3
+  maxRadius: 30
+  minRadius: 15
+  effectOfHiding: 0.5
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
