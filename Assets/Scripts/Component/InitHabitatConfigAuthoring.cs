@@ -16,7 +16,10 @@ public class InitHabitatConfigAuthoring : MonoBehaviour
     [SerializeField]
     private float minRadius;
     [SerializeField]
-    public float effectOfHiding;
+    private float effectOfHiding;
+
+    [SerializeField]
+    private GameObject domainEffectPrefab;
 
 
 
@@ -33,6 +36,7 @@ public class InitHabitatConfigAuthoring : MonoBehaviour
                 maxRadius = authoring.maxRadius,
                 minRadius = authoring.minRadius,
                 effectOfHiding = authoring.effectOfHiding,
+                domainEffectPrefab = GetEntity(authoring.domainEffectPrefab, TransformUsageFlags.None),
             });
         }
     }
@@ -48,4 +52,6 @@ public struct InitHabitatConfig : IComponentData
     public float maxRadius;
     public float minRadius;
     public float effectOfHiding; // a number between 0 - 1 to decide whether can be detected by enemy, larger better
+
+    public Entity domainEffectPrefab; // show the range (radius) of the habitat
 }

@@ -61,11 +61,13 @@ public partial struct InitHabitatSystem : ISystem
             float midValue = UnityEngine.Random.Range(minInitValue, maxInitValue);
             float minSize = midValue - initHabitatConfig.interval / 2;
             float maxSize = midValue + initHabitatConfig.interval / 2;
+
+            float radius = UnityEngine.Random.Range(minRadius, maxRadius);
             SystemAPI.SetComponent(newSpawnedHabitat, new HabitatProperty
             {
                 minSize = minSize,
                 maxSize = maxSize,
-                radius = UnityEngine.Random.Range(minRadius, maxRadius),
+                radius = radius,
                 effectOfHiding = effectOfHiding,
             });
 
@@ -76,6 +78,18 @@ public partial struct InitHabitatSystem : ISystem
                 $"Habitat {i} - min: {habitatProperty.minSize}    max: {habitatProperty.maxSize}");
             */
             Debug.Log($"Habitat {i}:  min: {habitatProperty.minSize}    max: {habitatProperty.maxSize}");
+
+
+
+
+            // create domain effect by radius
+            Entity newDomainEffect = state.EntityManager.Instantiate(initHabitatConfig.domainEffectPrefab);
+            SystemAPI.SetComponent(newDomainEffect, new LocalTransform
+            {
+                Position = habitatPosition,
+                Rotation = quaternion.identity,
+                Scale = radius * 2,
+            });
         }
     }
 }

@@ -430,6 +430,8 @@ MonoBehaviour:
   maxRadius: 30
   minRadius: 15
   effectOfHiding: 0.5
+  domainEffectPrefab: {fileID: 1994633700383872687, guid: 7b779eca26959204792954e05371a25a,
+    type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

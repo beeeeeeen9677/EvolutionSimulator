@@ -46,10 +46,12 @@ Material:
     - _QueueControl: 0
     - _QueueOffset: 0
     - _Radius: 5
-    - _alpha: 1
+    - _alpha: 0.3
     m_Colors:
     - _Boundary_Color: {r: 1, g: 0, b: 0, a: 0}
     - _Fill_Color: {r: 0, g: 1, b: 0.5224282, a: 0}
+    - _Fill_Color_1: {r: 0.8119533, g: 1, b: 0, a: 0}
+    - _Fill_Color_2: {r: 0, g: 1, b: 0.51593256, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &1149094651115336343
 MonoBehaviour:
