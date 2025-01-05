@@ -313,6 +313,13 @@ public readonly partial struct AnimalAspect : IAspect
     }
 
 
+    // value will NOT affected by habitat 
+    public void ConsumeFixedEnergy(float deltaTime)
+    {
+        ModifyEnergy(-deltaTime);
+    }
+
+
     // for increase / decrease energy with clamp checking
     private void ModifyEnergy(float value)
     {
