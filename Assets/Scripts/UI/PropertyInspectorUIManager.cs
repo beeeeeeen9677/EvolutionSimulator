@@ -316,7 +316,7 @@ public class PropertyInspectorUIManager : MonoBehaviour
             $"Cooldown: \n" +
             $" - current: {sensor.currentCooldown.ToString("0.0")}\n" +
             $" - max: {sensor.maxCooldown.ToString("0.0")}\n" +
-            $"Probability: \n" +
+            $"Preferences: \n" +
             $" - animal: {sensor.animalSensorProbability.ToString("0.000")}\n" +
             $" - grass: {sensor.grassSensorProbability.ToString("0.000")}\n" +
             $"   * <color=lime>green</color>:{sensor.greenWeight}\n" +
@@ -383,7 +383,7 @@ public class PropertyInspectorUIManager : MonoBehaviour
 
             return
             $"sprint speed: {_animalAspect.sprintSpeed.ToString("0.00")}\n" +
-            $"counter: {sprint.effectCounter.ToString("0.00")}s\n" +
+            $"remain: {sprint.effectCounter.ToString("0.00")}s\n" +
             $"total: {sprint.effectTotalTime.ToString("0.00")}s";
         };
 
