@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class TestGridScript : MonoBehaviour
 {
-    private Grid grid;
+    private TestGrid grid;
     // Start is called before the first frame update
     private void Start()
     {
-        grid = new Grid(4, 2, 10f, new Vector3(-20, 0, 0));
+        grid = new TestGrid(4, 2, 10f, new Vector3(-20, 0, 0));
     }
 
     private void Update()

@@ -11,6 +11,7 @@ public partial struct InitLakeSystem : ISystem
     {
         state.RequireForUpdate<InitLakeConfig>();
         state.RequireForUpdate<InitGrassConfig>();
+        state.RequireForUpdate<InitGridSystemConfig>();
     }
 
     public void OnDestroy(ref SystemState state)
@@ -21,13 +22,25 @@ public partial struct InitLakeSystem : ISystem
     {
         state.Enabled = false; // run for one loop only
 
+        RefRW<InitGridSystemConfig> initGridSystemConfig;
+        Entity initGridSystemConfigEntity;
+        initGridSystemConfig = SystemAPI.GetSingletonRW<InitGridSystemConfig>();
+        initGridSystemConfigEntity = SystemAPI.GetSingletonEntity<InitGridSystemConfig>();
+
+
+      
+
+
+
+
+
+
+
+
+
         InitLakeConfig initLakeConfig = SystemAPI.GetSingleton<InitLakeConfig>();
-
         InitGrassConfig initGrassConfig = SystemAPI.GetSingleton<InitGrassConfig>();
-
         Entity initGrassConfigEntity = SystemAPI.GetSingletonEntity<InitGrassConfig>();
-
-
 
 
         int fieldSize = initLakeConfig.fieldSize;
@@ -38,9 +51,25 @@ public partial struct InitLakeSystem : ISystem
             fieldSize = 50;
         }
 
-        // spawn lake
+        // spawn lake & coresponding grass
         for (int i = 0; i < initLakeConfig.initLakeNumber; i++)
         {
+            // ensure number of gird cells larger than total number of Objects (grasses & trees & )
+            // if number of objects exceeding remaining quotas, stop adding new objects
+            if(initGridSystemConfig.ValueRW.remainingGrids <= 0)
+            {
+                // if no more available grids ...
+                Debug.Log("No more available grids (Lake)");
+                return;
+            }
+            else
+            {
+                initGridSystemConfig.ValueRW.remainingGrids--;
+                //Debug.Log("Placed new object (Lake)");
+            }
+
+
+
             Entity newSpawnedLake = state.EntityManager.Instantiate(initLakeConfig.lakePrefab);
 
             LakeProperty lakeProperty = SystemAPI.GetComponent<LakeProperty>(newSpawnedLake);
@@ -63,6 +92,21 @@ public partial struct InitLakeSystem : ISystem
             int grassNumOfCurrentLake = lakeProperty.numberOfGrass;
             for (int j = 0; j < grassNumOfCurrentLake; j++)
             {
+                // ensure number of gird cells larger than total number of Objects (grasses & trees & )
+                // if number of objects exceeding remaining quotas, stop adding new objects
+                if (initGridSystemConfig.ValueRW.remainingGrids <= 0)
+                {
+                    // if no more available grids ...
+                    Debug.Log("No more available grids (Grass)");
+                    return;
+                }
+                else
+                {
+                    initGridSystemConfig.ValueRW.remainingGrids--;
+                    //Debug.Log("Placed new object (Grass)");
+                }
+
+
 
                 // get random type of grasses
                 var buffer = state.EntityManager.GetBuffer<GrassPrefabElement>(initGrassConfigEntity);

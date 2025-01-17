@@ -30,4 +30,6 @@ public struct InitLakeConfig : IComponentData
     public Entity lakePrefab;
     public int initLakeNumber; // number to spawn initially
     public int fieldSize;
+
+
 }

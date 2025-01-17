@@ -77,7 +77,7 @@ public partial struct InitHabitatSystem : ISystem
             Debug.Log($"mid: {midValue} interval: {initHabitatConfig.interval / 2}    min: {minSize}    max: {maxSize}\n" +
                 $"Habitat {i} - min: {habitatProperty.minSize}    max: {habitatProperty.maxSize}");
             */
-            Debug.Log($"Habitat {i}:  min: {habitatProperty.minSize}    max: {habitatProperty.maxSize}");
+            //Debug.Log($"Habitat {i}:  min: {habitatProperty.minSize}    max: {habitatProperty.maxSize}");
 
 
 
