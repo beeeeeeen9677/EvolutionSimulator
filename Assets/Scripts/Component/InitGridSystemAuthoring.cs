@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Entities;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class InitGridSystemAuthoring : MonoBehaviour
@@ -13,8 +14,10 @@ public class InitGridSystemAuthoring : MonoBehaviour
     [SerializeField]
     private int gridCellSize;
 
+    private Vector3 originPosition = Vector3.zero;
 
 
+   
     public class InitGridSystemBaker : Baker<InitGridSystemAuthoring>
     {
         public override void Bake(InitGridSystemAuthoring authoring)
@@ -25,8 +28,10 @@ public class InitGridSystemAuthoring : MonoBehaviour
                 width = authoring.width,
                 height = authoring.height,
                 gridCellSize = authoring.gridCellSize,
+                originPosition = authoring.originPosition,
                 remainingGrids = authoring.width * authoring.height, // number of total grids
             });
+            Debug.Log("Total number of grids: " + authoring.width * authoring.height);
 
             // for storing the 2D Grid Cells
             DynamicBuffer<GridCell> buffer = AddBuffer<GridCell>(entity);
@@ -34,12 +39,14 @@ public class InitGridSystemAuthoring : MonoBehaviour
             {
                 for (int y = 0; y < authoring.height; y++)
                 {
-                    buffer.Add(new GridCell { X = x, Y = y, Value = int.Parse($"{x}{y}") });
+                    buffer.Add(new GridCell { X = x, Y = y, storingObject = Entity.Null });
                 }
-
             }
         }
     }
+
+
+
 }
 
 
@@ -48,8 +55,19 @@ public struct InitGridSystemConfig : IComponentData
     public int width;  // x
     public int height; // y
     public int gridCellSize;
+    public Vector3 originPosition;
     public int remainingGrids; // number of empty grids (no object was placed on it)
+
+
+    // functions
+    public Vector3 GetWorldPosition(int x, int z)
+    {
+        return new Vector3(x, 0, z) * gridCellSize + originPosition;
+    }
 }
+
+
+
 
 // ref type cannot be used in ECS component, 
 // use Dynamic Buffer instead
@@ -59,10 +77,19 @@ public struct GridCell : IBufferElementData
     public int X;
     public int Y;
     // data storing in the Grid Cell
-    public int Value;
+    public Entity storingObject;
 }
 
 
+
+
+
+
+
+
+
+
+// Utility Functions for Grid Cell dynamic buffer
 public static class GridBufferUtils
 {
     // Get/Set the dynamic buffer by XY coordinate
@@ -72,13 +99,60 @@ public static class GridBufferUtils
         return buffer[index];
     }
 
+    // Set grid by buffer index
+    public static void SetGridCell(DynamicBuffer<GridCell> buffer, int bufferIndex, GridCell cell)
+    {
+        buffer[bufferIndex] = cell;
+    }
+    public static void SetGridCell(DynamicBuffer<GridCell> buffer, int bufferIndex, Entity newEntity)     // Overload, set grid by Value
+    {
+        buffer[bufferIndex] = new GridCell { X = buffer[bufferIndex].X, Y = buffer[bufferIndex].Y, storingObject = newEntity };
+    }
+
+
+
+    // Set grid by Cell coordinate
     public static void SetGridCell(DynamicBuffer<GridCell> buffer, int width, int x, int y, GridCell cell)
     {
         int index = x * width + y;
         buffer[index] = cell;
     }
+    public static void SetGridCell(DynamicBuffer<GridCell> buffer, int width, int x, int y, Entity newEntity)     // Overload, set grid by Value
+    {
+        int index = x * width + y;
+        buffer[index] = new GridCell { X = buffer[index].X, Y = buffer[index].Y, storingObject = newEntity };
+    }
+
+
+    // place a new entity/object (shelter/grass/lake) on an empty grid
+    public static GridCell SetObjectOnGridRandomly(DynamicBuffer<GridCell> buffer, Entity newEntity)
+    {
+        int bufferLenght = buffer.Length;
+        // get random index
+        int randIdx = -1;
+        while(true)
+        {
+            randIdx = UnityEngine.Random.Range(0, bufferLenght);
+            // loop until current random grid cell is empty
+            if(buffer[randIdx].storingObject == Entity.Null)
+            {
+                //buffer[randIdx].storingObject = newEntity;
+                SetGridCell(buffer, randIdx, newEntity);
+                return buffer[randIdx];
+            }
+        }
+    }
+
+
+
+    public static Vector3 GetWorldPosition(int x, int z, int cellSize, Vector3 originPosition)
+    {
+        return new Vector3(x, 0, z) * cellSize + originPosition + new Vector3(0.5f * cellSize, 0, 0.5f * cellSize);
+    }
+
 }
 
+/*
 public partial struct TestInitGridSystem : ISystem
 {
 
@@ -133,3 +207,4 @@ public partial struct TestInitGridSystem : ISystem
         }
     }
 }
+*/

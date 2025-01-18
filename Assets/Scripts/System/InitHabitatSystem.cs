@@ -10,12 +10,23 @@ public partial struct InitHabitatSystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<InitHabitatConfig>();
+        state.RequireForUpdate<InitGridSystemConfig>();
     }
 
 
     public void OnUpdate(ref SystemState state)
     {
         state.Enabled = false; // run for one loop only
+
+
+
+        RefRW<InitGridSystemConfig> initGridSystemConfig;
+        initGridSystemConfig = SystemAPI.GetSingletonRW<InitGridSystemConfig>();
+        Entity initGridSystemConfigEntity;
+        initGridSystemConfigEntity = SystemAPI.GetSingletonEntity<InitGridSystemConfig>();
+        var gridCellBuffer = state.EntityManager.GetBuffer<GridCell>(initGridSystemConfigEntity);
+
+
 
 
         InitLakeConfig initLakeConfig = SystemAPI.GetSingleton<InitLakeConfig>();
@@ -42,13 +53,39 @@ public partial struct InitHabitatSystem : ISystem
         float effectOfHiding = initHabitatConfig.effectOfHiding;
 
 
+
+
+
         for (int i = 0; i < initHabitatConfig.numberOfHabitat; i++)
         {
+
+            // ensure number of gird cells larger than total number of Objects (grasses & trees & )
+            // if number of objects exceeding remaining quotas, stop adding new objects
+            if (initGridSystemConfig.ValueRO.remainingGrids <= 0)
+            {
+                // if no more available grids ...
+                Debug.Log("No more available grids (Habitat/Shelter)");
+                return;
+            }
+            else
+            {
+                initGridSystemConfig.ValueRW.remainingGrids--;
+                //Debug.Log("Placed new object (Lake)");
+            }
+
+
+
+
             Entity newSpawnedHabitat = state.EntityManager.Instantiate(initHabitatConfig.habitatPrefab);
+
+            // place new spawned habitat/shelter into an empty cell
+            GridCell allocatedGridCell = GridBufferUtils.SetObjectOnGridRandomly(gridCellBuffer, newSpawnedHabitat);
+
 
 
             // random position
-            float3 habitatPosition = new float3(UnityEngine.Random.Range(-fieldSize, fieldSize), 0, UnityEngine.Random.Range(-fieldSize, fieldSize));
+            float3 habitatPosition = GridBufferUtils.GetWorldPosition(allocatedGridCell.X, allocatedGridCell.Y, initGridSystemConfig.ValueRO.gridCellSize, initGridSystemConfig.ValueRO.originPosition);
+            //float3 habitatPosition = new float3(UnityEngine.Random.Range(-fieldSize, fieldSize), 0, UnityEngine.Random.Range(-fieldSize, fieldSize));
             SystemAPI.SetComponent(newSpawnedHabitat, new LocalTransform
             {
                 Position = habitatPosition,

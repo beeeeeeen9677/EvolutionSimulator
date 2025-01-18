@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TestGridScript : MonoBehaviour
+public class TestGridManager : MonoBehaviour
 {
     private TestGrid grid;
     // Start is called before the first frame update

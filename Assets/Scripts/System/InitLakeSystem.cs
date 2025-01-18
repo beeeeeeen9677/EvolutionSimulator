@@ -22,16 +22,12 @@ public partial struct InitLakeSystem : ISystem
     {
         state.Enabled = false; // run for one loop only
 
+
         RefRW<InitGridSystemConfig> initGridSystemConfig;
-        Entity initGridSystemConfigEntity;
         initGridSystemConfig = SystemAPI.GetSingletonRW<InitGridSystemConfig>();
+        Entity initGridSystemConfigEntity;
         initGridSystemConfigEntity = SystemAPI.GetSingletonEntity<InitGridSystemConfig>();
-
-
-      
-
-
-
+        var gridCellBuffer = state.EntityManager.GetBuffer<GridCell>(initGridSystemConfigEntity);
 
 
 
@@ -41,6 +37,7 @@ public partial struct InitLakeSystem : ISystem
         InitLakeConfig initLakeConfig = SystemAPI.GetSingleton<InitLakeConfig>();
         InitGrassConfig initGrassConfig = SystemAPI.GetSingleton<InitGrassConfig>();
         Entity initGrassConfigEntity = SystemAPI.GetSingletonEntity<InitGrassConfig>();
+        var grassTypeBuffer = state.EntityManager.GetBuffer<GrassPrefabElement>(initGrassConfigEntity);
 
 
         int fieldSize = initLakeConfig.fieldSize;
@@ -56,7 +53,7 @@ public partial struct InitLakeSystem : ISystem
         {
             // ensure number of gird cells larger than total number of Objects (grasses & trees & )
             // if number of objects exceeding remaining quotas, stop adding new objects
-            if(initGridSystemConfig.ValueRW.remainingGrids <= 0)
+            if(initGridSystemConfig.ValueRO.remainingGrids <= 0)
             {
                 // if no more available grids ...
                 Debug.Log("No more available grids (Lake)");
@@ -71,12 +68,18 @@ public partial struct InitLakeSystem : ISystem
 
 
             Entity newSpawnedLake = state.EntityManager.Instantiate(initLakeConfig.lakePrefab);
-
+            
             LakeProperty lakeProperty = SystemAPI.GetComponent<LakeProperty>(newSpawnedLake);
 
 
+            // place new spawned lake into an empty cell
+            GridCell allocatedGridCell = GridBufferUtils.SetObjectOnGridRandomly(gridCellBuffer, newSpawnedLake);
 
-            float3 lakePosition = new float3(UnityEngine.Random.Range(-fieldSize, fieldSize), 0, UnityEngine.Random.Range(-fieldSize, fieldSize));
+
+
+
+            float3 lakePosition = GridBufferUtils.GetWorldPosition(allocatedGridCell.X, allocatedGridCell.Y, initGridSystemConfig.ValueRO.gridCellSize, initGridSystemConfig.ValueRO.originPosition);
+            //float3 lakePosition = new float3(UnityEngine.Random.Range(-fieldSize, fieldSize), 0, UnityEngine.Random.Range(-fieldSize, fieldSize));
 
             SystemAPI.SetComponent(newSpawnedLake, new LocalTransform
             {
@@ -94,7 +97,7 @@ public partial struct InitLakeSystem : ISystem
             {
                 // ensure number of gird cells larger than total number of Objects (grasses & trees & )
                 // if number of objects exceeding remaining quotas, stop adding new objects
-                if (initGridSystemConfig.ValueRW.remainingGrids <= 0)
+                if (initGridSystemConfig.ValueRO.remainingGrids <= 0)
                 {
                     // if no more available grids ...
                     Debug.Log("No more available grids (Grass)");
@@ -109,10 +112,14 @@ public partial struct InitLakeSystem : ISystem
 
 
                 // get random type of grasses
-                var buffer = state.EntityManager.GetBuffer<GrassPrefabElement>(initGrassConfigEntity);
-                int grassIndex = UnityEngine.Random.Range(0, buffer.Length);
-                Entity newSpawnedGrass = state.EntityManager.Instantiate(buffer[grassIndex].grassPrefabs);
+                int grassIndex = UnityEngine.Random.Range(0, grassTypeBuffer.Length);
+                Entity newSpawnedGrass = state.EntityManager.Instantiate(grassTypeBuffer[grassIndex].grassPrefabs);
 
+                // place new spawned grass into surrounding cell of this lake
+                // ...
+                // ... 
+                // ...
+                // ...
 
 
                 //Entity newSpawnedGrass = state.EntityManager.Instantiate(initGrassConfig.grassPrefab);   //old code
