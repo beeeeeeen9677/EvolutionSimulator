@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class LakePropertyAuthoring : MonoBehaviour
 {
-    public float lakeRange;
+    public int lakeRange; // number of grids
     public int numberOfGrass;
 
 
@@ -27,6 +27,6 @@ public class LakePropertyAuthoring : MonoBehaviour
 public struct LakeProperty : IComponentData
 {
     public float size;
-    public float lakeRange;
+    public int lakeRange; // number of grids
     public int numberOfGrass;
 }

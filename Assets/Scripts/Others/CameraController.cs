@@ -51,11 +51,11 @@ public class CameraController : MonoBehaviour
 
         if (Input.GetKey(KeyCode.Q))
         {
-            transform.Rotate(0, 0.2f, 0, Space.World);
+            transform.Rotate(0, -0.2f, 0, Space.World);
         }
         else if(Input.GetKey(KeyCode.E))
         {
-            transform.Rotate(0, -0.2f, 0, Space.World);
+            transform.Rotate(0, 0.2f, 0, Space.World);
         }
     }
 }

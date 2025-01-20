@@ -55,7 +55,7 @@ public class TestGrid
 
 
     // convert world position to grid positon
-    private void GetXZ(Vector3 worldPosition, out int x, out int z)
+    public void GetXZ(Vector3 worldPosition, out int x, out int z)
     {
         x = Mathf.FloorToInt((worldPosition - originPosition).x / cellSize);
         z = Mathf.FloorToInt((worldPosition - originPosition).z / cellSize);
@@ -68,7 +68,15 @@ public class TestGrid
             return;
 
         gridArray[x, z] = value;
-        debugTextArray[x, z].text = gridArray[x, z].ToString();
+
+        if(gridArray[x, z] == 0)
+        {
+            debugTextArray[x, z].text = "";
+        }
+        else
+        {
+            debugTextArray[x, z].text = gridArray[x, z].ToString();
+        }
     }
 
 
@@ -95,6 +103,38 @@ public class TestGrid
         GetXZ(worldPosition, out x, out z);
 
         return GetValue(x, z);
+    }
+
+
+
+    public void ResetAllGrids()
+    {
+        for (int x = 0; x < gridArray.GetLength(0); x++) // width
+        {
+            for (int z = 0; z < gridArray.GetLength(1); z++) // height
+            {
+                SetValue(x, z, 0);
+            }
+        }
+    }
+
+
+
+    public void Increment(int x, int z, int value = 1)
+    {
+        if (x < 0 || z < 0 || x >= width || z >= height) // validation
+            return;
+
+        gridArray[x, z] += value;
+
+        if (gridArray[x, z] == 0)
+        {
+            debugTextArray[x, z].text = "";
+        }
+        else
+        {
+            debugTextArray[x, z].text = gridArray[x, z].ToString();
+        }
     }
 }
 

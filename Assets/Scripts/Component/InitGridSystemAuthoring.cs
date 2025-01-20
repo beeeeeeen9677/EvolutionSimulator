@@ -93,8 +93,16 @@ public struct GridCell : IBufferElementData
 public static class GridBufferUtils
 {
     // Get/Set the dynamic buffer by XY coordinate
-    public static GridCell GetGridCell(DynamicBuffer<GridCell> buffer, int width, int x, int y)
+    public static GridCell? GetGridCell(DynamicBuffer<GridCell> buffer, int width, int x, int y)
     {
+        int height = buffer.Length/width;
+        if (x < 0 || y < 0 || x >= width || y >= height) // validation
+        {
+            Debug.Log("Grid system: Invalid X/Y coordinate");
+            return null;
+        }
+
+
         int index = x * width + y;
         return buffer[index];
     }
@@ -114,11 +122,28 @@ public static class GridBufferUtils
     // Set grid by Cell coordinate
     public static void SetGridCell(DynamicBuffer<GridCell> buffer, int width, int x, int y, GridCell cell)
     {
+        int height = buffer.Length / width;
+        if (x < 0 || y < 0 || x >= width || y >= height) // validation
+        {
+            Debug.Log("Grid system: Invalid X/Y coordinate");
+            return;
+        }
+
+
+
         int index = x * width + y;
         buffer[index] = cell;
     }
     public static void SetGridCell(DynamicBuffer<GridCell> buffer, int width, int x, int y, Entity newEntity)     // Overload, set grid by Value
     {
+        int height = buffer.Length / width;
+        if (x < 0 || y < 0 || x >= width || y >= height) // validation
+        {
+            Debug.Log("Grid system: Invalid X/Y coordinate");
+            return;
+        }
+
+
         int index = x * width + y;
         buffer[index] = new GridCell { X = buffer[index].X, Y = buffer[index].Y, storingObject = newEntity };
     }
@@ -149,6 +174,12 @@ public static class GridBufferUtils
     {
         return new Vector3(x, 0, z) * cellSize + originPosition + new Vector3(0.5f * cellSize, 0, 0.5f * cellSize);
     }
+
+
+
+
+
+
 
 }
 

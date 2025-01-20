@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98da0e26cc3fe414bb411d227c2b3ec2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lakeRange: 20
+  lakeRange: 3
   numberOfGrass: 5
 --- !u!1001 &979473283850251223
 PrefabInstance:
