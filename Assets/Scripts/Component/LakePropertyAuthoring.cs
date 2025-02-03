@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 
@@ -7,6 +5,8 @@ public class LakePropertyAuthoring : MonoBehaviour
 {
     public int lakeRange; // number of grids
     public int numberOfGrass;
+    public int initSoilMoisture; // multiple of 2 (0 - 16)
+
 
 
     public class LakeBaker : Baker<LakePropertyAuthoring>
@@ -19,6 +19,7 @@ public class LakePropertyAuthoring : MonoBehaviour
                 size = 1,
                 lakeRange = authoring.lakeRange,
                 numberOfGrass = authoring.numberOfGrass,
+                initSoilMoisture = authoring.initSoilMoisture,
             });
         }
     }
@@ -29,4 +30,6 @@ public struct LakeProperty : IComponentData
     public float size;
     public int lakeRange; // number of grids
     public int numberOfGrass;
+    public int initSoilMoisture; // multiple of 2 (0 - 16)
+
 }

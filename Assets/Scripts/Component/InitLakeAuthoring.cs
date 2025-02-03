@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 
@@ -30,6 +28,5 @@ public struct InitLakeConfig : IComponentData
     public Entity lakePrefab;
     public int initLakeNumber; // number to spawn initially
     public int fieldSize;
-
 
 }

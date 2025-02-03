@@ -1,8 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEngine.Rendering.DebugUI.Table;
 
 public class TestGridManager : MonoBehaviour
 {
@@ -10,16 +7,32 @@ public class TestGridManager : MonoBehaviour
 
     [SerializeField]
     private Text modeText;
+    private int mode;
+
+    #region mode2
     [SerializeField]
     private GameObject rangeContainer;
     [SerializeField]
     private InputField rangeInputField;
-    private int mode;
+    #endregion
 
+    #region mode3
+    [SerializeField]
+    private GameObject mode3Container;
+    [SerializeField]
+    private InputField waterValueInputField;
+    #endregion
 
     [Header("Grid SetUp")]
     public int width;
     public int height;
+
+
+
+
+
+    private int global_center_X, global_center_Y;
+
 
 
     private TestGrid grids;
@@ -28,12 +41,13 @@ public class TestGridManager : MonoBehaviour
     {
         ChangeMode(1);
         rangeInputField.text = "3"; // DEFAULT
+        waterValueInputField.text = "10";
         grids = new TestGrid(width, height, 10f, new Vector3(-20, 0, 0));
     }
 
     private void Update()
     {
-        if(Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0))
         {
             /*
             Vector3 mousePos = Input.mousePosition;
@@ -54,11 +68,11 @@ public class TestGridManager : MonoBehaviour
                 grid.SetValue(worldPosition, 56);
             }
             */
-            if(mode == 1) // change selected grid value randomly
+            if (mode == 1) // change selected grid value randomly
             {
                 grids.SetValue(GetMouseRaycastPosition(), Random.Range(1, 50));
             }
-            else if(mode == 2) // get grids (change value) by range
+            else if (mode == 2) // get grids (change value) by range
             {
                 int range = int.Parse(rangeInputField.text);
                 int center_X, center_Y;
@@ -74,11 +88,11 @@ public class TestGridManager : MonoBehaviour
 
                 // surrounding grids
                 // 1. upper part    (starting from the first row)  (left part in game scene)
-                for (int row = range;  row > 0; row--) // loop (column in game scene)
+                for (int row = range; row > 0; row--) // loop (column in game scene)
                 {
                     int x = center_X - row;
 
-                    for(int y = center_Y - (range - row); y < center_Y + (range - row) + 1; y++)
+                    for (int y = center_Y - (range - row); y < center_Y + (range - row) + 1; y++)
                     {
                         grids.Increment(x, y);
                     }
@@ -86,7 +100,7 @@ public class TestGridManager : MonoBehaviour
                 // 2. middle part
                 for (int y = center_Y - range; y < center_Y + range + 1; y++)
                 {
-                    if(y == center_Y) // skip center gird
+                    if (y == center_Y) // skip center gird
                         continue;
 
                     grids.Increment(center_X, y);
@@ -106,10 +120,25 @@ public class TestGridManager : MonoBehaviour
                 // center grid
                 grids.Increment(center_X, center_Y, 10);
             }
+            else if (mode == 3)
+            {
+                // change all grids' value to zero
+                grids.ResetAllGrids();
+
+
+                int waterValue = int.Parse(waterValueInputField.text);
+                grids.GetXZ(GetMouseRaycastPosition(), out global_center_X, out global_center_Y); // get x y coordinate of selected grid
+
+                grids.SetValue(global_center_X, global_center_Y, waterValue); // set the selected grid's value to sepific value
+            }
         }
 
+
+
+
+
         // show value of that grid
-        if(Input.GetMouseButtonDown(1))
+        if (Input.GetMouseButtonDown(1))
         {
             Debug.Log("Value: " + grids.GetValue(GetMouseRaycastPosition()));
         }
@@ -124,6 +153,18 @@ public class TestGridManager : MonoBehaviour
         {
             ChangeMode(2);
         }
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            ChangeMode(3);
+        }
+
+
+        // water defussion simulation
+        if (mode == 3)
+        {
+            Mode3WaterDefussion();
+        }
+
     }
 
 
@@ -146,7 +187,39 @@ public class TestGridManager : MonoBehaviour
         modeText.text = "Mode: " + mode.ToString();
 
         rangeContainer.SetActive(mode == 2);
+
+        mode3Container.SetActive(mode == 3);
     }
 
-    
+
+
+    private void Mode3WaterDefussion()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            for (int w = 0; w < width; w++)
+            {
+                for (int h = 0; h < height; h++)
+                {
+                    if (grids.GetValue(w, h) <= 1)
+                    {
+                        // value not enough to defuse
+                        continue;
+                    }
+
+                    float centerValueBeforeDefuse = grids.GetValue(w, h);
+                    // up
+
+                    // down
+
+                    // left
+
+                    // right
+
+
+
+                }
+            }
+        }
+    }
 }

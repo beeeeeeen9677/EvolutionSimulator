@@ -424,7 +424,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lakePrefab: {fileID: 2543757849809389493, guid: 24be5f13c386512479d39c7c525e2cc7,
     type: 3}
-  initLakeNumber: 1
+  initLakeNumber: 5
   fieldSize: 100
 --- !u!1 &1520650632
 GameObject:

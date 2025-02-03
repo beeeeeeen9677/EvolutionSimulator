@@ -1,8 +1,5 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using Unity.Entities;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class InitGridSystemAuthoring : MonoBehaviour
@@ -17,7 +14,7 @@ public class InitGridSystemAuthoring : MonoBehaviour
     private Vector3 originPosition = Vector3.zero;
 
 
-   
+
     public class InitGridSystemBaker : Baker<InitGridSystemAuthoring>
     {
         public override void Bake(InitGridSystemAuthoring authoring)
@@ -39,7 +36,7 @@ public class InitGridSystemAuthoring : MonoBehaviour
             {
                 for (int y = 0; y < authoring.height; y++)
                 {
-                    buffer.Add(new GridCell { X = x, Y = y, storingObject = Entity.Null });
+                    buffer.Add(new GridCell { X = x, Y = y, storingObject = Entity.Null, soilMoisture = 0 });
                 }
             }
         }
@@ -78,6 +75,9 @@ public struct GridCell : IBufferElementData
     public int Y;
     // data storing in the Grid Cell
     public Entity storingObject;
+
+    // soil property
+    public int soilMoisture; // multiple of 2 (0 to 16)
 }
 
 
@@ -95,10 +95,10 @@ public static class GridBufferUtils
     // Get/Set the dynamic buffer by XY coordinate
     public static GridCell? GetGridCell(DynamicBuffer<GridCell> buffer, int width, int x, int y)
     {
-        int height = buffer.Length/width;
+        int height = buffer.Length / width;
         if (x < 0 || y < 0 || x >= width || y >= height) // validation
         {
-            Debug.Log("Grid system: Invalid X/Y coordinate");
+            Debug.Log($"Grid system: Invalid X/Y coordinate: x:{x} y:{y}");
             return null;
         }
 
@@ -108,13 +108,18 @@ public static class GridBufferUtils
     }
 
     // Set grid by buffer index
-    public static void SetGridCell(DynamicBuffer<GridCell> buffer, int bufferIndex, GridCell cell)
+    public static void SetGridCell(DynamicBuffer<GridCell> buffer, int bufferIndex, GridCell cell)      // set grid by GridCell
     {
         buffer[bufferIndex] = cell;
     }
-    public static void SetGridCell(DynamicBuffer<GridCell> buffer, int bufferIndex, Entity newEntity)     // Overload, set grid by Value
+    public static void SetGridCell(DynamicBuffer<GridCell> buffer, int bufferIndex, Entity newEntity)     // Overload, set grid by Entity
     {
-        buffer[bufferIndex] = new GridCell { X = buffer[bufferIndex].X, Y = buffer[bufferIndex].Y, storingObject = newEntity };
+        //buffer[bufferIndex] = new GridCell { X = buffer[bufferIndex].X, Y = buffer[bufferIndex].Y, storingObject = newEntity, soilMoisture = buffer[bufferIndex].soilMoisture };
+        SetGridCell(buffer, bufferIndex, newEntity, buffer[bufferIndex].soilMoisture);
+    }
+    public static void SetGridCell(DynamicBuffer<GridCell> buffer, int bufferIndex, Entity newEntity, int moisture)     // Overload, set grid by Entity and Moisture
+    {
+        buffer[bufferIndex] = new GridCell { X = buffer[bufferIndex].X, Y = buffer[bufferIndex].Y, storingObject = newEntity, soilMoisture = moisture };
     }
 
 
@@ -131,10 +136,11 @@ public static class GridBufferUtils
 
 
 
-        int index = x * width + y;
-        buffer[index] = cell;
+        int bufferIndex = x * width + y;
+        //buffer[bufferIndex] = cell;
+        SetGridCell(buffer, bufferIndex, cell);
     }
-    public static void SetGridCell(DynamicBuffer<GridCell> buffer, int width, int x, int y, Entity newEntity)     // Overload, set grid by Value
+    public static void SetGridCell(DynamicBuffer<GridCell> buffer, int width, int x, int y, Entity newEntity)     // Overload, set grid by Entity
     {
         int height = buffer.Length / width;
         if (x < 0 || y < 0 || x >= width || y >= height) // validation
@@ -144,9 +150,25 @@ public static class GridBufferUtils
         }
 
 
-        int index = x * width + y;
-        buffer[index] = new GridCell { X = buffer[index].X, Y = buffer[index].Y, storingObject = newEntity };
+        int bufferIndex = x * width + y;
+        //buffer[bufferIndex] = new GridCell { X = buffer[bufferIndex].X, Y = buffer[bufferIndex].Y, storingObject = newEntity };
+        SetGridCell(buffer, bufferIndex, newEntity);
     }
+    public static void SetGridCell(DynamicBuffer<GridCell> buffer, int width, int x, int y, Entity newEntity, int moisture)     // Overload, set grid by Entity and Moisture
+    {
+        int height = buffer.Length / width;
+        if (x < 0 || y < 0 || x >= width || y >= height) // validation
+        {
+            Debug.Log("Grid system: Invalid X/Y coordinate");
+            return;
+        }
+
+
+        int bufferIndex = x * width + y;
+        SetGridCell(buffer, bufferIndex, newEntity, moisture);
+    }
+
+
 
 
     // place a new entity/object (shelter/grass/lake) on an empty grid
@@ -155,11 +177,11 @@ public static class GridBufferUtils
         int bufferLenght = buffer.Length;
         // get random index
         int randIdx = -1;
-        while(true)
+        while (true)
         {
             randIdx = UnityEngine.Random.Range(0, bufferLenght);
             // loop until current random grid cell is empty
-            if(buffer[randIdx].storingObject == Entity.Null)
+            if (buffer[randIdx].storingObject == Entity.Null)
             {
                 //buffer[randIdx].storingObject = newEntity;
                 SetGridCell(buffer, randIdx, newEntity);
@@ -167,6 +189,24 @@ public static class GridBufferUtils
             }
         }
     }
+    public static GridCell SetObjectOnGridRandomly(DynamicBuffer<GridCell> buffer, Entity newEntity, int moisture)
+    {
+        int bufferLenght = buffer.Length;
+        // get random index
+        int randIdx = -1;
+        while (true)
+        {
+            randIdx = UnityEngine.Random.Range(0, bufferLenght);
+            // loop until current random grid cell is empty
+            if (buffer[randIdx].storingObject == Entity.Null)
+            {
+                //buffer[randIdx].storingObject = newEntity;
+                SetGridCell(buffer, randIdx, newEntity, moisture);
+                return buffer[randIdx];
+            }
+        }
+    }
+
 
 
 
@@ -178,7 +218,63 @@ public static class GridBufferUtils
 
 
 
+    public static List<GridCell> GetSurroundingGridCells(DynamicBuffer<GridCell> buffer, int arrayWidth, int range, int center_X, int center_Y)
+    {
+        List<GridCell> gridCellList = new List<GridCell>();
 
+        // surrounding grids
+        // 1. upper part    (starting from the first row)  (left part in game scene)
+        for (int row = range; row > 0; row--) // loop (column in game scene)
+        {
+            int x = center_X - row;
+
+            for (int y = center_Y - (range - row); y < center_Y + (range - row) + 1; y++)
+            {
+                AddGridIntoList(buffer, arrayWidth, gridCellList, x, y);
+            }
+        }
+        // 2. middle part
+        for (int y = center_Y - range; y < center_Y + range + 1; y++)
+        {
+            if (y == center_Y) // skip center gird
+                continue;
+
+            AddGridIntoList(buffer, arrayWidth, gridCellList, center_X, y);
+        }
+        // 3. lower part    (starting from the first row)  (right part in game scene)
+        for (int row = 1; row <= range; row++) // loop (column in game scene)
+        {
+            int x = center_X + row;
+
+            for (int y = center_Y - (range - row); y < center_Y + (range - row) + 1; y++)
+            {
+                AddGridIntoList(buffer, arrayWidth, gridCellList, x, y);
+            }
+        }
+
+
+        return gridCellList;
+    }
+
+    public static void AddGridIntoList(DynamicBuffer<GridCell> buffer, int arrayWidth, List<GridCell> gridCellList, int x, int y)
+    {
+        GridCell? cell = GridBufferUtils.GetGridCell(buffer, arrayWidth, x, y);
+        if (cell.HasValue) // if output is not null (valid)
+        {
+            gridCellList.Add(cell.Value);
+        }
+    }
+
+
+
+    public static void ExecuteStackedRecord(DynamicBuffer<GridCell> buffer, int arrayWidth, List<ModifyGridMoistureRecord> modifyMoistureStack)
+    {
+        foreach (ModifyGridMoistureRecord record in modifyMoistureStack)
+        {
+            int modifiedMoisture = record.gridCell.soilMoisture + record.moistureToBeAdded;
+            SetGridCell(buffer, arrayWidth, record.gridCell.X, record.gridCell.Y, record.gridCell.storingObject, modifiedMoisture);
+        }
+    }
 
 
 }

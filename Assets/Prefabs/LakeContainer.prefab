@@ -47,6 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lakeRange: 3
   numberOfGrass: 5
+  initSoilMoisture: 16
 --- !u!1001 &979473283850251223
 PrefabInstance:
   m_ObjectHideFlags: 0
