@@ -60,7 +60,7 @@ public class ShowGridTextMesh : MonoBehaviour
 
 
                 //GridHelper.CreateWorldText($"{x.ToString("00")}{y.ToString("00")}", wordTextContainer.transform, GetWorldPosition(x, y) + new Vector3(gridCellSize, 0, gridCellSize) * 0.5f, 20, Color.white, TextAnchor.MiddleCenter);
-                textMeshArray[x, y] = GridHelper.CreateWorldText("", wordTextContainer.transform, GetWorldPosition(x, y) + new Vector3(gridCellSize, 0, gridCellSize) * 0.5f, 30, Color.white, TextAnchor.MiddleCenter);
+                textMeshArray[x, y] = GridHelper.CreateWorldText("", wordTextContainer.transform, GetWorldPosition(x, y) + new Vector3(gridCellSize, 0, gridCellSize) * 0.5f, 20, Color.white, TextAnchor.MiddleCenter);
                 Debug.DrawLine(GetWorldPosition(x, y), GetWorldPosition(x, y + 1), Color.white, 100f);
                 Debug.DrawLine(GetWorldPosition(x, y), GetWorldPosition(x + 1, y), Color.white, 100f);
             }
@@ -77,21 +77,27 @@ public class ShowGridTextMesh : MonoBehaviour
 
     private void SetGridText(int x, int y, string text)
     {
-        textMeshArray[x, y].text = text;
 
 
         try
         {
-            if (int.Parse(text) > 0)
+            if (int.Parse(text.Split("\n")[0]) > 0)
             {
                 textMeshArray[x, y].color = Color.yellow;
             }
+            else
+            {
+                textMeshArray[x, y].color = Color.white;
+                text = "/";
+            }
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            Debug.Log(e);
+            Debug.Log("SetGridText: the moisture value is not an INT");
         }
 
+
+        textMeshArray[x, y].text = text;
     }
 
     private void RefreshAllText(DynamicBuffer<GridCell> gridCellBuffer)
@@ -108,7 +114,7 @@ public class ShowGridTextMesh : MonoBehaviour
                     printText = "Invalid";
                 else
                 {
-                    printText = cell.Value.soilMoisture.ToString();
+                    printText = cell.Value.soilMoisture_value + "\n<color=white>lv: " + cell.Value.soilMoisture_level + "</color>\nf: " + cell.Value.soilMoisture_flooredValue;
                 }
 
 

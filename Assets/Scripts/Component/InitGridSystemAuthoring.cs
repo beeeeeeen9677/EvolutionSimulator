@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Unity.Entities;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class InitGridSystemAuthoring : MonoBehaviour
@@ -36,7 +37,7 @@ public class InitGridSystemAuthoring : MonoBehaviour
             {
                 for (int y = 0; y < authoring.height; y++)
                 {
-                    buffer.Add(new GridCell { X = x, Y = y, storingObject = Entity.Null, soilMoisture = 0 });
+                    buffer.Add(new GridCell { X = x, Y = y, storingObject = Entity.Null, soilMoisture_value = 0 });
                 }
             }
         }
@@ -77,7 +78,29 @@ public struct GridCell : IBufferElementData
     public Entity storingObject;
 
     // soil property
-    public int soilMoisture; // multiple of 2 (0 to 16)
+    public int soilMoisture_value; // actual soil value (0 to 16)
+    public int soilMoisture_level // log2 of moisture value
+    {
+        get
+        {
+            if (soilMoisture_value == 0)
+                return 0;
+
+            return Mathf.FloorToInt(math.log2(soilMoisture_value));
+        }
+    }
+    public int soilMoisture_flooredValue // must be multiple of 2 (0 to 16)
+    {
+        get
+        {
+            if(soilMoisture_level == 0)
+            {
+                return 0;
+            }
+
+            return (int)Mathf.Pow(2, soilMoisture_level);
+        }
+    }
 }
 
 
@@ -115,11 +138,11 @@ public static class GridBufferUtils
     public static void SetGridCell(DynamicBuffer<GridCell> buffer, int bufferIndex, Entity newEntity)     // Overload, set grid by Entity
     {
         //buffer[bufferIndex] = new GridCell { X = buffer[bufferIndex].X, Y = buffer[bufferIndex].Y, storingObject = newEntity, soilMoisture = buffer[bufferIndex].soilMoisture };
-        SetGridCell(buffer, bufferIndex, newEntity, buffer[bufferIndex].soilMoisture);
+        SetGridCell(buffer, bufferIndex, newEntity, buffer[bufferIndex].soilMoisture_value);
     }
     public static void SetGridCell(DynamicBuffer<GridCell> buffer, int bufferIndex, Entity newEntity, int moisture)     // Overload, set grid by Entity and Moisture
     {
-        buffer[bufferIndex] = new GridCell { X = buffer[bufferIndex].X, Y = buffer[bufferIndex].Y, storingObject = newEntity, soilMoisture = moisture };
+        buffer[bufferIndex] = new GridCell { X = buffer[bufferIndex].X, Y = buffer[bufferIndex].Y, storingObject = newEntity, soilMoisture_value = moisture };
     }
 
 
@@ -271,8 +294,15 @@ public static class GridBufferUtils
     {
         foreach (ModifyGridMoistureRecord record in modifyMoistureStack)
         {
-            int modifiedMoisture = record.gridCell.soilMoisture + record.moistureToBeAdded;
-            SetGridCell(buffer, arrayWidth, record.gridCell.X, record.gridCell.Y, record.gridCell.storingObject, modifiedMoisture);
+            GridCell? recordGridCell = GetGridCell(buffer, arrayWidth, record.X, record.Y);
+
+
+            if (!recordGridCell.HasValue)
+                continue;
+
+
+            int modifiedMoisture = recordGridCell.Value.soilMoisture_value + record.moistureToBeAdded;
+            SetGridCell(buffer, arrayWidth, recordGridCell.Value.X, recordGridCell.Value.Y, recordGridCell.Value.storingObject, modifiedMoisture);
         }
     }
 

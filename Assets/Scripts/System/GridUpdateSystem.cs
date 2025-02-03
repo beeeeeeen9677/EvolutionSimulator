@@ -87,7 +87,7 @@ public partial class GridUpdateSystem : SystemBase
 
         foreach (GridCell centerGridCell in gridCellBuffer)
         {
-            if (centerGridCell.soilMoisture >= 2) // at least 2 unit of moisture to diffuse
+            if (centerGridCell.soilMoisture_flooredValue > 2) // at least larger than 2 unit of moisture to diffuse
             {
                 // get surrounding grids of the lake (center grid) by lake range
                 List<GridCell> surroundingGridList = GridBufferUtils.GetSurroundingGridCells(gridCellBuffer, gridBufferWidth, 1, centerGridCell.X, centerGridCell.Y);
@@ -101,13 +101,22 @@ public partial class GridUpdateSystem : SystemBase
                 foreach (GridCell surroundingGridCell in surroundingGridList)
                 {
                     // the moisture of grid to be diffused should not be higher than half of moisture of center grid
-                    if (surroundingGridCell.soilMoisture >= centerGridCell.soilMoisture / 2)
+                    if (surroundingGridCell.soilMoisture_value > centerGridCell.soilMoisture_flooredValue / 2)
                         continue;
 
-                    //GridBufferUtils.SetGridCell(gridCellBuffer, gridBufferWidth, surroundingGridCell.X, surroundingGridCell.Y, surroundingGridCell.storingObject, centerGridCell.soilMoisture / 2);
-                    modifyMoistureStack.Add(new ModifyGridMoistureRecord(surroundingGridCell, centerGridCell.soilMoisture / 2));
 
-                    //OnOneGridCellValueChanged?.Invoke(surroundingGridCell.X, surroundingGridCell.Y, (centerGridCell.soilMoisture / 2).ToString());
+                    // if moisture of surrounding ?? half of center
+                    //  = :  add 1/4 center moisture
+                    //  < :  add 1/2 center moisture
+                    int moistureToBeAdd = centerGridCell.soilMoisture_flooredValue /
+                        ((surroundingGridCell.soilMoisture_value == centerGridCell.soilMoisture_flooredValue / 2) ? 4 : 2);
+
+
+
+                    //GridBufferUtils.SetGridCell(gridCellBuffer, gridBufferWidth, surroundingGridCell.X, surroundingGridCell.Y, surroundingGridCell.storingObject, centerGridCell.soilMoisture_flooredValue / 2);
+                    modifyMoistureStack.Add(new ModifyGridMoistureRecord(surroundingGridCell.X, surroundingGridCell.Y, moistureToBeAdd));
+
+                    //OnOneGridCellValueChanged?.Invoke(surroundingGridCell.X, surroundingGridCell.Y, (centerGridCell.soilMoisture_flooredValue / 2).ToString());
                 }
 
             }
@@ -124,13 +133,16 @@ public partial class GridUpdateSystem : SystemBase
 // for storing records of soil moisture modification
 public class ModifyGridMoistureRecord
 {
-    public GridCell gridCell { get; private set; } // grid cell to be modified
+    //public GridCell gridCell { get; private set; } // cannot use struct since it is value type
+    public int X { get; private set; } // XY coordinate of grid cell to be modified
+    public int Y { get; private set; }
     public int moistureToBeAdded { get; private set; } // value of moisture to be added after modified
 
 
-    public ModifyGridMoistureRecord(GridCell gridCell, int moistureToBeAdded)
+    public ModifyGridMoistureRecord(int X, int Y, int moistureToBeAdded)
     {
-        this.gridCell = gridCell;
+        this.X = X;
+        this.Y = Y;
         this.moistureToBeAdded = moistureToBeAdded;
     }
 }
