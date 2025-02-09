@@ -81,7 +81,7 @@ public class ShowGridTextMesh : MonoBehaviour
 
         try
         {
-            if (int.Parse(text.Split("\n")[0]) > 0)
+            if (float.Parse(text.Split("\n")[0]) > 0)
             {
                 textMeshArray[x, y].color = Color.yellow;
             }

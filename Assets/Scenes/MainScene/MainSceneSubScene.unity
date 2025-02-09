@@ -327,7 +327,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animalPrefab: {fileID: 3302597946754029742, guid: 197a0ef542d16e940ac3db124350a93b,
     type: 3}
-  initAnimalNumber: 5
+  initAnimalNumber: 0
   fieldSize: 50
   minInitSize: 0.5
   maxInitSize: 1
@@ -472,7 +472,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   habitatPrefab: {fileID: 4775076221378813401, guid: 44c69313ddbd0ba4b97bce4df3b264ac,
     type: 3}
-  numberOfHabitat: 5
+  numberOfHabitat: 0
   interval: 0.3
   maxRadius: 30
   minRadius: 15
