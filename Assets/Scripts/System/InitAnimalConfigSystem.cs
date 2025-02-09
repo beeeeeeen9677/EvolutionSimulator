@@ -11,16 +11,26 @@ public partial struct InitAnimalConfigSystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<InitAnimalConfig>();
+        state.RequireForUpdate<InitGridSystemConfig>();
     }
 
-    public void OnDestroy(ref SystemState state)
-    {
-    }
 
 
     public void OnUpdate(ref SystemState state)
     {
         state.Enabled = false; // run for one loop only
+
+
+        InitGridSystemConfig initGridSystemConfig = SystemAPI.GetSingleton<InitGridSystemConfig>();
+        Entity initGridSystemConfigEntity = SystemAPI.GetSingletonEntity<InitGridSystemConfig>();
+        var gridCellBuffer = state.EntityManager.GetBuffer<GridCell>(initGridSystemConfigEntity);
+        int gridBufferWidth = initGridSystemConfig.width;
+        int gridBufferHeight = initGridSystemConfig.height;
+        int gridCellSize = initGridSystemConfig.gridCellSize;
+        Vector3 gridSystemOrigin = initGridSystemConfig.originPosition;
+
+
+
 
         InitAnimalConfig initAnimalConfig = SystemAPI.GetSingleton<InitAnimalConfig>(); 
 
@@ -48,9 +58,16 @@ public partial struct InitAnimalConfigSystem : ISystem
 
 
 
+            // get the position of a random grid cell
+            int randX = UnityEngine.Random.Range(0, gridBufferWidth);
+            int randY = UnityEngine.Random.Range(0, gridBufferHeight);
+            Vector3 newRandomPosition = GridBufferUtils.GetWorldPosition(randX, randY, gridCellSize, gridSystemOrigin);
+
+
             SystemAPI.SetComponent(newSpawnedAnimal, new LocalTransform
             {
-                Position = new float3(UnityEngine.Random.Range(-fieldSize, fieldSize), 1f, UnityEngine.Random.Range(-fieldSize, fieldSize)),
+                //Position = new float3(UnityEngine.Random.Range(-fieldSize, fieldSize), 1f, UnityEngine.Random.Range(-fieldSize, fieldSize)),
+                Position = newRandomPosition,
                 Rotation = quaternion.identity,
                 Scale = animalInitSize
             });

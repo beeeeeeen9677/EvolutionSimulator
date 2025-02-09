@@ -20,10 +20,8 @@ public partial class InitLakeSystem : SystemBase
         Enabled = false; // run for one loop only
 
         // grid system config
-        RefRW<InitGridSystemConfig> initGridSystemConfig;
-        initGridSystemConfig = SystemAPI.GetSingletonRW<InitGridSystemConfig>();
-        Entity initGridSystemConfigEntity;
-        initGridSystemConfigEntity = SystemAPI.GetSingletonEntity<InitGridSystemConfig>();
+        RefRW<InitGridSystemConfig> initGridSystemConfig = SystemAPI.GetSingletonRW<InitGridSystemConfig>();
+        Entity initGridSystemConfigEntity = SystemAPI.GetSingletonEntity<InitGridSystemConfig>();
         var gridCellBuffer = EntityManager.GetBuffer<GridCell>(initGridSystemConfigEntity);
         int gridBufferWidth = initGridSystemConfig.ValueRO.width;
         int gridCellSize = initGridSystemConfig.ValueRO.gridCellSize;
