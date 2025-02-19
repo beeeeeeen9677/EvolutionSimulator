@@ -44,8 +44,6 @@ public partial struct EatingSystem : ISystem
                 continue;
             }
 
-
-
             /*
             // Collide With, not working properly
             CollisionLayer collideWith = CollisionLayer.Grass;
@@ -58,6 +56,14 @@ public partial struct EatingSystem : ISystem
 
 
             float3 entityPosition = transform.ValueRO.Position;
+            float3 targetPosition = SystemAPI.GetComponent<LocalTransform>(target.ValueRO.targetEntity).Position;
+
+            if(MathHelpers.GetDistance(entityPosition, targetPosition) < 5)
+            {
+                // if distance between current animal and target is less than 5, do not check collision
+                continue;
+            }
+
 
             // change filter Collision Layer by checking target type
             // check collision

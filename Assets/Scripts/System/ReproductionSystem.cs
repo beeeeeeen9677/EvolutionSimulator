@@ -20,8 +20,13 @@ public partial struct ReproductionSystem : ISystem
 
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(state.WorldUpdateAllocator);
 
-        foreach ((GrowUpAspect animal, RefRO<Energy> energy) in SystemAPI.Query<GrowUpAspect, RefRO<Energy>>())
+        foreach ((GrowUpAspect animal, RefRO<Energy> energy) in SystemAPI.Query<GrowUpAspect, RefRO<Energy>>().WithAll<ReproductionTag>())
         {
+            entityCommandBuffer.SetComponentEnabled<ReproductionTag>(animal.entity, false); // disable the tag after the first update
+
+
+            // Check and Count Down do in Counter Handle System
+            /*
             //if (animal.currentStage != AgeStageEnum.mature)
             if (animal.currentStage == AgeStageEnum.infant)  // only generate offspring if not at infant stage
                continue;
@@ -34,6 +39,11 @@ public partial struct ReproductionSystem : ISystem
                     GenerateOffspring(animal.entity, entityCommandBuffer, ref state);
                 }
             }
+            */
+
+
+            GenerateOffspring(animal.entity, entityCommandBuffer, ref state);
+
         }
 
 

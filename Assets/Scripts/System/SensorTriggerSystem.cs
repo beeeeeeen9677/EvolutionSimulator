@@ -11,26 +11,16 @@ using Unity.Transforms;
 using UnityEngine;
 
 
-public struct AnimalBatch : IComponentData
-{
-    public int CurrentBatchIndex;
-    public int CycleCount;
-}
-
 
 public partial struct SensorTriggerSystem : ISystem
 {
-    private const int BatchSize = 1000;
-    private int totalAnimals;
-    private int totalBatches;
+
 
 
 
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<AnimalSensor>();
-
-        state.EntityManager.CreateEntity(typeof(AnimalBatch)); 
     }
 
 
@@ -52,13 +42,7 @@ public partial struct SensorTriggerSystem : ISystem
         //state.Enabled = false; // for debug lagging
 
         // for handling in batches
-        totalAnimals = state.EntityManager.CreateEntityQuery(typeof(AnimalTag)).CalculateEntityCount();
-        totalBatches = (totalAnimals + BatchSize - 1) / BatchSize; // ensure that we round up to the nearest whole number.
-
-        var animalBatch = SystemAPI.GetSingletonRW<AnimalBatch>();
-        int startIndex = animalBatch.ValueRO.CurrentBatchIndex * BatchSize;
-        int endIndex = math.min(startIndex + BatchSize, totalAnimals);
-
+        
 
 
 
@@ -67,24 +51,16 @@ public partial struct SensorTriggerSystem : ISystem
 
 
         //foreach ((RefRO<LocalTransform> localTransform, RefRO<AnimalSensor> trigger, Entity entity) in SystemAPI.Query< RefRO <LocalTransform>, RefRO <AnimalSensor>>().WithEntityAccess())
-        //foreach (AnimalAspect currentAnimal in SystemAPI.Query<AnimalAspect>())
-        //{
 
 
-
-        var query = state.EntityManager.CreateEntityQuery(typeof(AnimalTag));
-        var animalEntities = query.ToEntityArray(Allocator.Temp);
-        for (int ci = startIndex; ci < endIndex && ci < animalEntities.Length; ci++)
+        foreach (AnimalAspect currentAnimal in SystemAPI.Query<AnimalAspect>().WithAll<SensorTriggerTag>())
         {
-            AnimalAspect currentAnimal = SystemAPI.GetAspect<AnimalAspect>(animalEntities[ci]);
-
-
 
             //Debug.Log(currentAnimal.entity.Index + " is going to start sensor loop");
+            SystemAPI.SetComponentEnabled<SensorTriggerTag>(currentAnimal.entity, false);
 
 
-
-            // Existing logic here
+            // Existing logic here (for batch)
 
 
 
@@ -481,17 +457,6 @@ public partial struct SensorTriggerSystem : ISystem
         }
 
 
-        animalEntities.Dispose();
-
-
-
-        animalBatch.ValueRW.CurrentBatchIndex = (animalBatch.ValueRO.CurrentBatchIndex + 1) % totalBatches;
-        if (animalBatch.ValueRO.CurrentBatchIndex == 0)
-        {
-            animalBatch.ValueRW.CycleCount++;
-        }
-
-        //Debug.Log(animalBatch.ValueRO.CycleCount);
     }
 
     private static void UpdateNearestTargetList(List<float> minDistance, List<Entity> nearestTargetEntity, ColliderCastHit hit, float targetDistance, int listIndex)
