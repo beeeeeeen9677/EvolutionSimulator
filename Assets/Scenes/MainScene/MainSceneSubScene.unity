@@ -360,7 +360,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7599567a9068284eade1f7502dd6848, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BatchSize: 1000
+  BatchSize: 100
 --- !u!4 &856808893
 Transform:
   m_ObjectHideFlags: 0

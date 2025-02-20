@@ -1,11 +1,8 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 public partial class PlayerShootingSystem : SystemBase// SystemBase: other class can reference you and use SystemAPI
 {
@@ -14,7 +11,7 @@ public partial class PlayerShootingSystem : SystemBase// SystemBase: other class
 
     protected override void OnCreate()
     {
-        RequireForUpdate <Player>();
+        RequireForUpdate<Player>();
     }
 
     protected override void OnUpdate()
@@ -45,7 +42,7 @@ public partial class PlayerShootingSystem : SystemBase// SystemBase: other class
 
 
         //              WithEntityAccess():         use with this ¡õ
-        foreach ((RefRO<LocalTransform> localTransform, Entity entity) in 
+        foreach ((RefRO<LocalTransform> localTransform, Entity entity) in
             SystemAPI.Query<RefRO<LocalTransform>>().WithAll<Player>().WithDisabled<Stunned>().WithEntityAccess())
         {
             //the code may be broke if the new instantiated entity has Player TAG,
@@ -74,5 +71,6 @@ public partial class PlayerShootingSystem : SystemBase// SystemBase: other class
         }
 
         entityCommandBuffer.Playback(EntityManager);//execute the recorded commands
+        entityCommandBuffer.Dispose();
     }
 }

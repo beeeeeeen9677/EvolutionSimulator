@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using Unity.Burst.CompilerServices;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Entities.UniversalDelegates;
 using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Transforms;
@@ -42,8 +39,8 @@ public partial struct SensorTriggerSystem : ISystem
         //state.Enabled = false; // for debug lagging
 
         // for handling in batches
-        
 
+        EntityCommandBuffer ecb = new EntityCommandBuffer(state.WorldUpdateAllocator); // for disabling tag
 
 
         PhysicsWorldSingleton physicsWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
@@ -57,7 +54,7 @@ public partial struct SensorTriggerSystem : ISystem
         {
 
             //Debug.Log(currentAnimal.entity.Index + " is going to start sensor loop");
-            SystemAPI.SetComponentEnabled<SensorTriggerTag>(currentAnimal.entity, false);
+            ecb.SetComponentEnabled<SensorTriggerTag>(currentAnimal.entity, false);
 
 
             // Existing logic here (for batch)
@@ -79,9 +76,9 @@ public partial struct SensorTriggerSystem : ISystem
             {
 
                 // if energy larger than certain value, no need to eat
-                if(currentAnimal.GetEnergy() >= 0.7f * currentAnimal.maxEnergy)
+                if (currentAnimal.GetEnergy() >= 0.7f * currentAnimal.maxEnergy)
                 {
-                    continue; 
+                    continue;
                 }
 
 
@@ -149,7 +146,7 @@ public partial struct SensorTriggerSystem : ISystem
                 for (int i = 0; i < sequenceListLength; i++)
                 {
                     minDistance.Add(-1); // set init value to negative number
-                    nearestTargetEntity.Add(Entity.Null); 
+                    nearestTargetEntity.Add(Entity.Null);
                 }
 
 
@@ -158,7 +155,7 @@ public partial struct SensorTriggerSystem : ISystem
                 // loop through all scaned entities
                 foreach (ColliderCastHit hit in hits)
                 {
-                    
+
 
                     //Debug.Log("Scaned Target: " + hit.Entity.Index);
 
@@ -183,7 +180,7 @@ public partial struct SensorTriggerSystem : ISystem
                     // check animal
                     else if (sensorNumber == 1)
                     {
-                        if(hit.Entity == currentAnimal.entity) // hit itself
+                        if (hit.Entity == currentAnimal.entity) // hit itself
                             continue;
 
                         if (!SystemAPI.HasComponent<AnimalTag>(hit.Entity)) // do not has AnimalTag
@@ -193,7 +190,7 @@ public partial struct SensorTriggerSystem : ISystem
                         }
 
                         // compare size
-                        if(!currentAnimal.IsAbleToHuntTarget(SystemAPI.GetAspect<AnimalAspect>(hit.Entity)))
+                        if (!currentAnimal.IsAbleToHuntTarget(SystemAPI.GetAspect<AnimalAspect>(hit.Entity)))
                         {
                             Debug.Log(currentAnimal.entity.Index + " not able to hunt target, give up");
                             continue; // smaller than this hitted animal
@@ -206,7 +203,7 @@ public partial struct SensorTriggerSystem : ISystem
                         {
                             // get random number (0 - 1) and check with effect of hiding 
                             float hideEffectRandomNumber = UnityEngine.Random.Range(0, 1);
-                            if(hideEffectRandomNumber < targetAnimal.habitatProperty.Value.effectOfHiding)
+                            if (hideEffectRandomNumber < targetAnimal.habitatProperty.Value.effectOfHiding)
                             {
                                 Debug.Log("Success to hide from predator"); // Success
                                 continue;
@@ -227,12 +224,12 @@ public partial struct SensorTriggerSystem : ISystem
 
 
                     // if no problem, compare distance
-                    if(sensorNumber == 1) // check animal
+                    if (sensorNumber == 1) // check animal
                     {
                         int listIndex = 0;
                         UpdateNearestTargetList(minDistance, nearestTargetEntity, hit, targetDistance, listIndex);
                     }
-                    else if(sensorNumber == 0) // check grass
+                    else if (sensorNumber == 0) // check grass
                     {
                         int listIndex = -1;
 
@@ -271,10 +268,10 @@ public partial struct SensorTriggerSystem : ISystem
                             if (state.EntityManager.HasComponent(hit.Entity, typeOfCurrentColor)) // if this grass has same color with current looping color
                             {
                                 listIndex = i;
-                                break;  
+                                break;
                             }
                         }
-                        if(listIndex == -1) // error
+                        if (listIndex == -1) // error
                         {
                             Debug.Log("Error: listIndex == -1 - grass color not matching");
                             listIndex = 0;
@@ -318,7 +315,7 @@ public partial struct SensorTriggerSystem : ISystem
                 }
 
 
-                for(int i = 0; i < nearestTargetEntity.Count; i++)
+                for (int i = 0; i < nearestTargetEntity.Count; i++)
                 {
                     // if scanned any entity
                     if (nearestTargetEntity[i] != Entity.Null)
@@ -362,7 +359,7 @@ public partial struct SensorTriggerSystem : ISystem
                 // check status of locked target 
                 Entity targetEntity = currentAnimal.GetTargetEntity();
 
-                
+
                 // check if target entity was destroyed
                 if (!SystemAPI.Exists(targetEntity))
                 {
@@ -429,7 +426,7 @@ public partial struct SensorTriggerSystem : ISystem
 
                             targetAnimal.ClearThreat(currentAnimal.entity); // clear target threat
 
-                            continue; 
+                            continue;
                         }
                         //Debug.Log(currentAnimal.entity.Index + " End of Checking Chase Time: " + currentAnimal.remainChaseTime.ToString("0.000"));
                     }
@@ -456,6 +453,9 @@ public partial struct SensorTriggerSystem : ISystem
             }
         }
 
+
+        ecb.Playback(state.EntityManager);//execute the recorded commands (disable tag)
+        ecb.Dispose();
 
     }
 

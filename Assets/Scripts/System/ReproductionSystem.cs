@@ -1,10 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
 
 public partial struct ReproductionSystem : ISystem
 {
@@ -48,6 +45,7 @@ public partial struct ReproductionSystem : ISystem
 
 
         entityCommandBuffer.Playback(state.EntityManager);//execute the recorded commands
+        entityCommandBuffer.Dispose();
     }
 
     private void GenerateOffspring(Entity parentEntity, EntityCommandBuffer entityCommandBuffer, ref SystemState state)
@@ -63,7 +61,7 @@ public partial struct ReproductionSystem : ISystem
 
         for (int i = 0; i < numberToSpawn; i++)
         {
-            Debug.Log($"{parentEntity.Index} Born offspring: {i+1} of {numberToSpawn}");
+            Debug.Log($"{parentEntity.Index} Born offspring: {i + 1} of {numberToSpawn}");
 
 
             // born new animal
@@ -122,7 +120,7 @@ public partial struct ReproductionSystem : ISystem
             {
                 interval = SystemAPI.GetComponent<ReproductionCounter>(parentEntity).interval,
                 currentCD = SystemAPI.GetComponent<ReproductionCounter>(parentEntity).interval,
-            }); 
+            });
         }
     }
 }
