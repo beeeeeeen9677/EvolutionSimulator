@@ -156,6 +156,32 @@ public static class GridBufferUtils
     }
 
 
+    public static void AddGridNutrient(DynamicBuffer<GridCell> buffer, int width, int x, int y, float nutrient) // Add nutrient by the input parameter
+    {
+        int height = buffer.Length / width;
+        if (x < 0 || y < 0 || x >= width || y >= height) // validation
+        {
+            Debug.Log("Grid system: Invalid X/Y coordinate");
+            return;
+        }
+
+
+
+        int bufferIndex = x * width + y;
+
+
+
+        buffer[bufferIndex] = new GridCell
+        {
+            X = buffer[bufferIndex].X,
+            Y = buffer[bufferIndex].Y,
+            storingObject = buffer[bufferIndex].storingObject,
+            soilMoisture_value = buffer[bufferIndex].soilMoisture_value,
+            soilNutrient = buffer[bufferIndex].soilNutrient + nutrient,
+        };
+    }
+
+
 
     // Set grid by Cell coordinate
     public static void SetGridCell(DynamicBuffer<GridCell> buffer, int width, int x, int y, GridCell cell)
@@ -250,10 +276,16 @@ public static class GridBufferUtils
 
 
 
+    public static void GetCoordinateByWorldPosition(Vector3 worldPosition, out int gridX, out int gridZ, int cellSize, Vector3 originPosition)
+    {
+        gridX = Mathf.FloorToInt((worldPosition - originPosition).x / cellSize);
+        gridZ = Mathf.FloorToInt((worldPosition - originPosition).z / cellSize);
+    }
 
 
 
 
+    // get surrounding grid cells in diamond shape range
     public static List<GridCell> GetSurroundingGridCells(DynamicBuffer<GridCell> buffer, int arrayWidth, int range, int center_X, int center_Y)
     {
         List<GridCell> gridCellList = new List<GridCell>();
@@ -291,6 +323,29 @@ public static class GridBufferUtils
 
         return gridCellList;
     }
+
+
+    // get surrounding grids in square shape range
+    public static List<GridCell> GetSurroundingGridCellsInSquare(DynamicBuffer<GridCell> buffer, int arrayWidth, int range, int center_X, int center_Y)
+    {
+        List<GridCell> gridCellList = new List<GridCell>();
+
+
+        // get square range of girds
+        for (int x = center_X - range; x < center_X + range + 1; x++)
+        {
+            for (int y = center_Y - range; y < center_Y + range + 1; y++)
+            {
+                AddGridIntoList(buffer, arrayWidth, gridCellList, x, y);
+            }
+        }
+
+
+        return gridCellList;
+    }
+
+
+
 
     public static void AddGridIntoList(DynamicBuffer<GridCell> buffer, int arrayWidth, List<GridCell> gridCellList, int x, int y)
     {

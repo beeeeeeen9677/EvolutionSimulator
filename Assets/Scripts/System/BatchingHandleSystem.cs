@@ -19,6 +19,8 @@ public partial struct BatchingHandleSystem : ISystem
 
     public void OnCreate(ref SystemState state)
     {
+        state.RequireForUpdate<AnimalBatch>();
+
         //state.EntityManager.CreateEntity(typeof(AnimalBatch));
         animalEntities = new NativeArray<Entity>(0, Allocator.Persistent);
     }
@@ -54,33 +56,37 @@ public partial struct BatchingHandleSystem : ISystem
             totalNumOfBatches = (totalNumOfAnimals + BatchSize - 1) / BatchSize; // ensure that we round up to the nearest whole number.
 
 
-
-
-            /*
-            Debug.Log("BatchSize: " + BatchSize);
-            Debug.Log("totalNumOfAnimals: " + totalNumOfAnimals);
-            Debug.Log("totalNumOfBatches: " + totalNumOfBatches);
-            */
-            if(totalNumOfAnimals == 0)
+            if (totalNumOfAnimals != 0)
             {
-                Debug.Log("Batching: No animal exist in current update, wait for next update ");
-                return;
+
+                /*
+                Debug.Log("BatchSize: " + BatchSize);
+                Debug.Log("totalNumOfAnimals: " + totalNumOfAnimals);
+                Debug.Log("totalNumOfBatches: " + totalNumOfBatches);
+                */
+
+
+                // Recreate and shuffle the animalEntities array at the start of each cycle
+                if (animalEntities.IsCreated)
+                {
+                    animalEntities.Dispose();
+                }
+
+
+
+                var query = state.EntityManager.CreateEntityQuery(typeof(AnimalTag));
+                animalEntities = query.ToEntityArray(Allocator.Persistent);
+
+                // Shuffle the array
+                ShuffleArray();
             }
-
-
-            // Recreate and shuffle the animalEntities array at the start of each cycle
-            if (animalEntities.IsCreated)
-            {
-                animalEntities.Dispose();
-            }
-
-            var query = state.EntityManager.CreateEntityQuery(typeof(AnimalTag));
-            animalEntities = query.ToEntityArray(Allocator.Persistent);
-
-            // Shuffle the array
-            ShuffleArray();
         }
-
+        /*
+        else
+        {
+            //Debug.Log("Batching: No animal exist in current update, wait for next update ");
+        }
+        */
 
         int startIndex = animalBatch.ValueRO.CurrentBatchIndex * BatchSize;
         int endIndex = math.min(startIndex + BatchSize, totalNumOfAnimals);
@@ -132,13 +138,24 @@ public partial struct BatchingHandleSystem : ISystem
 
 
         // add one to the current batch index, set back to 0 if it exceeds the total number of batches
-        animalBatch.ValueRW.CurrentBatchIndex = (animalBatch.ValueRO.CurrentBatchIndex + 1) % totalNumOfBatches;
+        if(totalNumOfBatches != 0)
+        {
+            animalBatch.ValueRW.CurrentBatchIndex = (animalBatch.ValueRO.CurrentBatchIndex + 1) % totalNumOfBatches;
+        }
+        else
+        {
+            animalBatch.ValueRW.CurrentBatchIndex = 0;
+        }
+
         // if finished one cycle
         if (animalBatch.ValueRO.CurrentBatchIndex == 0)
         {
             animalBatch.ValueRW.CycleCount++;
 
 
+
+
+            // water diffusion
             if (animalBatch.ValueRO.CycleCount % 24 == 0) // 24 cycles = 1 day
             {
                 // Get a reference to GridUpdateSystem

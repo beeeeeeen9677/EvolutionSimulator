@@ -67,21 +67,21 @@ public partial class GridUpdateSystem : SystemBase
         }
 
 
-
-        // Usual update
+        /*
+        // Usual update by pressing Space key
         if (Input.GetKeyDown(KeyCode.Space))
         {
             //DynamicBuffer<GridCell> gridCellBuffer = EntityManager.GetBuffer<GridCell>(initGridSystemConfigEntity);
 
             DiffuseSoilWater();
         }
-
+        */
 
     }
 
     public void DiffuseSoilWater()
     {
-        Debug.Log("Diffuse Soil Water");
+        //Debug.Log("Diffuse Soil Water");
 
         DynamicBuffer<GridCell> gridCellBuffer = EntityManager.GetBuffer<GridCell>(initGridSystemConfigEntity);
 

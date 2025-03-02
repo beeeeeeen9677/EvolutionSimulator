@@ -79,22 +79,28 @@ public class ShowGridTextMesh : MonoBehaviour
     {
 
 
-        try
+        if (float.Parse(text.Split("n: ")[1]) <= 0)
         {
-            if (float.Parse(text.Split("\n")[0]) > 0)
+            // if nutrient is 0, check if moisture is greater than 0
+            try
             {
-                textMeshArray[x, y].color = Color.yellow;
+                if (float.Parse(text.Split("\n")[0]) > 0)
+                {
+                    textMeshArray[x, y].color = Color.yellow;
+                }
+                else
+                {
+                    textMeshArray[x, y].color = Color.white;
+                    text = "/";
+                }
             }
-            else
+            catch (Exception)
             {
-                textMeshArray[x, y].color = Color.white;
-                text = "/";
+                Debug.Log("SetGridText: the moisture value is invalid");
             }
         }
-        catch (Exception)
-        {
-            Debug.Log("SetGridText: the moisture value is not an INT");
-        }
+
+        
 
 
         textMeshArray[x, y].text = text;
@@ -114,7 +120,8 @@ public class ShowGridTextMesh : MonoBehaviour
                     printText = "Invalid";
                 else
                 {
-                    printText = cell.Value.soilMoisture_value + "\n<color=white>lv: " + cell.Value.soilMoisture_level + "</color>\nf: " + cell.Value.soilMoisture_flooredValue;
+                    //printText = cell.Value.soilMoisture_value + "\n<color=white>lv: " + cell.Value.soilMoisture_level + "</color>\nf: " + cell.Value.soilMoisture_flooredValue;
+                    printText = cell.Value.soilMoisture_value + "\n<color=white>lv: " + cell.Value.soilMoisture_level + "</color>\nn: " + cell.Value.soilNutrient;
                 }
 
 

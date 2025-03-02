@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -70,7 +71,7 @@ public class TestGridManager : MonoBehaviour
             */
             if (mode == 1) // change selected grid value randomly
             {
-                grids.SetValue(GetMouseRaycastPosition(), Random.Range(1, 50));
+                grids.SetValue(GetMouseRaycastPosition(), UnityEngine.Random.Range(1, 50));
             }
             else if (mode == 2) // get grids (change value) by range
             {
@@ -86,35 +87,8 @@ public class TestGridManager : MonoBehaviour
 
 
 
-                // surrounding grids
-                // 1. upper part    (starting from the first row)  (left part in game scene)
-                for (int row = range; row > 0; row--) // loop (column in game scene)
-                {
-                    int x = center_X - row;
-
-                    for (int y = center_Y - (range - row); y < center_Y + (range - row) + 1; y++)
-                    {
-                        grids.Increment(x, y);
-                    }
-                }
-                // 2. middle part
-                for (int y = center_Y - range; y < center_Y + range + 1; y++)
-                {
-                    if (y == center_Y) // skip center gird
-                        continue;
-
-                    grids.Increment(center_X, y);
-                }
-                // 3. lower part    (starting from the first row)  (right part in game scene)
-                for (int row = 1; row <= range; row++) // loop (column in game scene)
-                {
-                    int x = center_X + row;
-
-                    for (int y = center_Y - (range - row); y < center_Y + (range - row) + 1; y++)
-                    {
-                        grids.Increment(x, y);
-                    }
-                }
+                //GetRange(range, center_X, center_Y);
+                GetSquareRange(range, center_X, center_Y);
 
 
                 // center grid
@@ -167,6 +141,50 @@ public class TestGridManager : MonoBehaviour
 
     }
 
+    private void GetSquareRange(int range, int center_X, int center_Y)
+    {
+        // get square range of girds
+        for (int x = center_X - range; x < center_X + range + 1; x++)
+        {
+            for (int y = center_Y - range; y < center_Y + range + 1; y++)
+            {
+                grids.Increment(x, y);
+            }
+        }
+    }
+
+    private void GetRange(int range, int center_X, int center_Y)
+    {
+        // surrounding grids
+        // 1. upper part    (starting from the first row)  (left part in game scene)
+        for (int row = range; row > 0; row--) // loop (column in game scene)
+        {
+            int x = center_X - row;
+
+            for (int y = center_Y - (range - row); y < center_Y + (range - row) + 1; y++)
+            {
+                grids.Increment(x, y);
+            }
+        }
+        // 2. middle part
+        for (int y = center_Y - range; y < center_Y + range + 1; y++)
+        {
+            if (y == center_Y) // skip center gird
+                continue;
+
+            grids.Increment(center_X, y);
+        }
+        // 3. lower part    (starting from the first row)  (right part in game scene)
+        for (int row = 1; row <= range; row++) // loop (column in game scene)
+        {
+            int x = center_X + row;
+
+            for (int y = center_Y - (range - row); y < center_Y + (range - row) + 1; y++)
+            {
+                grids.Increment(x, y);
+            }
+        }
+    }
 
     private Vector3 GetMouseRaycastPosition()
     {

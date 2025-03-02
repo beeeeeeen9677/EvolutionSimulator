@@ -39,6 +39,7 @@ public readonly partial struct AnimalAspect : IAspect
         private set => _localTransform.ValueRW.Position = value;
     }
 
+  
 
     private float moveSpeed => _movement.ValueRO.speed;
 

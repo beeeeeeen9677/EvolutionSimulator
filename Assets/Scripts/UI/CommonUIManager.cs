@@ -12,6 +12,8 @@ public class CommonUIManager : MonoBehaviour
 
     [SerializeField]
     private Text cycleText;
+    [SerializeField]
+    private Text dayText;
 
     // Start is called before the first frame update
     void Start()
@@ -31,5 +33,6 @@ public class CommonUIManager : MonoBehaviour
     {
         AnimalBatch animalBatch = entityManager.GetComponentData<AnimalBatch>(animalBatchEntity);
         cycleText.text = animalBatch.CycleCount.ToString();
+        dayText.text = (animalBatch.CycleCount / 24).ToString(); // 24 cycle as 1 day
     }
 }

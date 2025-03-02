@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -30,24 +31,31 @@ public partial struct EnergySystem : ISystem
         foreach (AnimalAspect animal in SystemAPI.Query<AnimalAspect>())
         {
             animal.ConsumeEnergy(deltaTime);
+
+
             // dead if no more energy
             if (animal.GetEnergy() <= 0)
             {
 
-                
+
                 // clear target's threat
                 if (animal.IsTargetExist())
                 {
                     // if target is an animal, clear target's threat
-                    if (!SystemAPI.HasComponent<AnimalTag>(animal.GetTargetEntity()))
-                        return; 
+                    if (SystemAPI.HasComponent<AnimalTag>(animal.GetTargetEntity()))
+                    {
+                        AnimalAspect targetAnimal = SystemAPI.GetAspect<AnimalAspect>(animal.GetTargetEntity());
+                        targetAnimal.ClearThreat(animal.entity);
+                        Debug.Log("Threat clear since threat died");
+                    }
+                        
 
-
-                    AnimalAspect targetAnimal = SystemAPI.GetAspect<AnimalAspect>(animal.GetTargetEntity());
-                    targetAnimal.ClearThreat(animal.entity);
-                    Debug.Log("Threat clear since threat died");
                 }
-                
+
+
+
+                // add nutrition to soil
+                AddNutrientToSoil(animal, ref state);
 
 
                 // destroy itself
@@ -60,6 +68,38 @@ public partial struct EnergySystem : ISystem
             }
         }
         
+    }
+
+    private void AddNutrientToSoil(AnimalAspect animal, ref SystemState state)
+    {
+        Debug.Log("Add Nutrient To Soil");
+
+        // grid system config var
+        InitGridSystemConfig initGridSystemConfig = SystemAPI.GetSingleton<InitGridSystemConfig>();
+        Entity initGridSystemConfigEntity = SystemAPI.GetSingletonEntity<InitGridSystemConfig>();
+        DynamicBuffer<GridCell> gridCellBuffer = state.EntityManager.GetBuffer<GridCell>(initGridSystemConfigEntity);
+        int gridBufferWidth = initGridSystemConfig.width;
+        int gridCellSize = initGridSystemConfig.gridCellSize;
+        Vector3 gridSystemOrigin = initGridSystemConfig.originPosition;
+
+        // get world position of the died animal
+        int x, z;
+        GridBufferUtils.GetCoordinateByWorldPosition(animal.position, out x, out z, gridCellSize, gridSystemOrigin);
+
+        int range = 1;
+
+        // get surrounding grid cells in square shape range
+        List<GridCell> surroundingGridList = GridBufferUtils.GetSurroundingGridCellsInSquare(gridCellBuffer, gridBufferWidth, range, x, z);
+
+        Debug.Log("Length: "+ surroundingGridList.Count);
+
+        // Set the soil nutrient of surrounding grids according to the animal's size
+        foreach (GridCell surroundingGridCell in surroundingGridList)
+        {
+            float nutrient = animal.currentSize;
+            GridBufferUtils.AddGridNutrient(gridCellBuffer, gridBufferWidth, surroundingGridCell.X, surroundingGridCell.Y, nutrient);
+            //SetGridCell(buffer, arrayWidth, recordGridCell.Value.X, recordGridCell.Value.Y, recordGridCell.Value.storingObject, modifiedMoisture);
+        }
     }
 }
 

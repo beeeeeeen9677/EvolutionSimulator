@@ -327,7 +327,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animalPrefab: {fileID: 3302597946754029742, guid: 197a0ef542d16e940ac3db124350a93b,
     type: 3}
-  initAnimalNumber: 1000
+  initAnimalNumber: 1
   fieldSize: 50
   minInitSize: 0.5
   maxInitSize: 1
