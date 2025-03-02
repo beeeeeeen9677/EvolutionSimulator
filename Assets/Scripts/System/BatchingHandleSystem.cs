@@ -2,14 +2,15 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Rendering.VirtualTexturing;
 
 
 
-public partial struct CounterHandleSystem : ISystem
+public partial struct BatchingHandleSystem : ISystem
 {
     private int BatchSize;// number of animals to be processed in each batch
-    private int totalAnimals;
-    private int totalBatches;
+    private int totalNumOfAnimals;
+    private int totalNumOfBatches;
 
     private NativeArray<Entity> animalEntities; // will be updated in every Cycle 
 
@@ -34,6 +35,8 @@ public partial struct CounterHandleSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
+        //return;
+
         RefRW<AnimalBatch> animalBatch = animalBatch = SystemAPI.GetSingletonRW<AnimalBatch>();
         if (BatchSize == 0)
         {
@@ -47,8 +50,23 @@ public partial struct CounterHandleSystem : ISystem
         // update batching parameters in the start of every Cycle
         if (animalBatch.ValueRO.CurrentBatchIndex == 0)
         {
-            totalAnimals = state.EntityManager.CreateEntityQuery(typeof(AnimalTag)).CalculateEntityCount();
-            totalBatches = (totalAnimals + BatchSize - 1) / BatchSize; // ensure that we round up to the nearest whole number.
+            totalNumOfAnimals = state.EntityManager.CreateEntityQuery(typeof(AnimalTag)).CalculateEntityCount();
+            totalNumOfBatches = (totalNumOfAnimals + BatchSize - 1) / BatchSize; // ensure that we round up to the nearest whole number.
+
+
+
+
+            /*
+            Debug.Log("BatchSize: " + BatchSize);
+            Debug.Log("totalNumOfAnimals: " + totalNumOfAnimals);
+            Debug.Log("totalNumOfBatches: " + totalNumOfBatches);
+            */
+            if(totalNumOfAnimals == 0)
+            {
+                Debug.Log("Batching: No animal exist in current update, wait for next update ");
+                return;
+            }
+
 
             // Recreate and shuffle the animalEntities array at the start of each cycle
             if (animalEntities.IsCreated)
@@ -65,7 +83,7 @@ public partial struct CounterHandleSystem : ISystem
 
 
         int startIndex = animalBatch.ValueRO.CurrentBatchIndex * BatchSize;
-        int endIndex = math.min(startIndex + BatchSize, totalAnimals);
+        int endIndex = math.min(startIndex + BatchSize, totalNumOfAnimals);
 
 
 
@@ -113,11 +131,22 @@ public partial struct CounterHandleSystem : ISystem
         //animalEntities.Dispose(); no need to dispose while using Permantent Native Array
 
 
-
-        animalBatch.ValueRW.CurrentBatchIndex = (animalBatch.ValueRO.CurrentBatchIndex + 1) % totalBatches;
+        // add one to the current batch index, set back to 0 if it exceeds the total number of batches
+        animalBatch.ValueRW.CurrentBatchIndex = (animalBatch.ValueRO.CurrentBatchIndex + 1) % totalNumOfBatches;
+        // if finished one cycle
         if (animalBatch.ValueRO.CurrentBatchIndex == 0)
         {
             animalBatch.ValueRW.CycleCount++;
+
+
+            if (animalBatch.ValueRO.CycleCount % 24 == 0) // 24 cycles = 1 day
+            {
+                // Get a reference to GridUpdateSystem
+                GridUpdateSystem gridUpdateSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<GridUpdateSystem>();
+
+                // Call grid update (water diffusion) function from GridUpdateSystem
+                gridUpdateSystem.DiffuseSoilWater();
+            }
         }
 
         //Debug.Log(animalBatch.ValueRO.CycleCount);

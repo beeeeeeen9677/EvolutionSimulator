@@ -32,7 +32,7 @@ public partial class GridUpdateSystem : SystemBase
     }
     protected override void OnUpdate()
     {
-        // Initiation
+        // Initiation, execute only once
         if (!initialized)
         {
             // grid system config var
@@ -53,10 +53,10 @@ public partial class GridUpdateSystem : SystemBase
             Debug.Log("Init Diffusion");
 
             // Init water diffusion
-            int initDiffusionTime = 0; // Do 3 times at first
+            int initDiffusionTime = 3; // Do 3 times at first
             for (int i = 0; i < initDiffusionTime; i++)
             {
-                DiffuseSoilWater(gridCellBuffer, gridBufferWidth);
+                DiffuseSoilWater();
             }
 
 
@@ -71,16 +71,22 @@ public partial class GridUpdateSystem : SystemBase
         // Usual update
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            DynamicBuffer<GridCell> gridCellBuffer = EntityManager.GetBuffer<GridCell>(initGridSystemConfigEntity);
+            //DynamicBuffer<GridCell> gridCellBuffer = EntityManager.GetBuffer<GridCell>(initGridSystemConfigEntity);
 
-            DiffuseSoilWater(gridCellBuffer, gridBufferWidth);
+            DiffuseSoilWater();
         }
 
 
     }
 
-    private void DiffuseSoilWater(DynamicBuffer<GridCell> gridCellBuffer, int gridBufferWidth)
+    public void DiffuseSoilWater()
     {
+        Debug.Log("Diffuse Soil Water");
+
+        DynamicBuffer<GridCell> gridCellBuffer = EntityManager.GetBuffer<GridCell>(initGridSystemConfigEntity);
+
+
+
         int diffusionMode = 2;
 
 
