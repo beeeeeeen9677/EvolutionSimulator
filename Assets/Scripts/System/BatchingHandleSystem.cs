@@ -3,6 +3,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Rendering.VirtualTexturing;
+using static GrassPropertiesSystem;
 
 
 
@@ -154,15 +155,21 @@ public partial struct BatchingHandleSystem : ISystem
 
 
 
-
-            // water diffusion
+            // if finished one day
             if (animalBatch.ValueRO.CycleCount % 24 == 0) // 24 cycles = 1 day
             {
+                // water diffusion
+
                 // Get a reference to GridUpdateSystem
                 GridUpdateSystem gridUpdateSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<GridUpdateSystem>();
 
                 // Call grid update (water diffusion) function from GridUpdateSystem
-                gridUpdateSystem.DiffuseSoilWater();
+                gridUpdateSystem.UpdateGridCellsInformation();
+
+
+                // plant growth
+                //var grassFlag = SystemAPI.GetSingletonRW<GrassGrowUpSystemFlag>();
+                //grassFlag.ValueRW.flag = true;
             }
         }
 

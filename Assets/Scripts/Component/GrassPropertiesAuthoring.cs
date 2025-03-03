@@ -23,6 +23,8 @@ public class GrassPropertiesAuthoring : MonoBehaviour
                 maxSize = authoring.maxSize,
                 provideEnergy = authoring.provideEnergy,
                 activated = false,
+                grid_Moisture = 0,
+                grid_Nutrient = 0
             });
         }
     }
@@ -35,4 +37,9 @@ public struct GrassProperties : IComponentData
     public float maxSize;
     public bool activated; // true: eatable
     public float provideEnergy; // how many energy can be obtained after eating
+
+
+    // grid cell properties, set by GridUpdateSystem
+    public float grid_Moisture;
+    public float grid_Nutrient;
 }

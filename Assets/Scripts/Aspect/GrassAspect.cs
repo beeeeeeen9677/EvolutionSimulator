@@ -30,6 +30,17 @@ public readonly partial struct GrassAspect : IAspect
         private set => _grassProperties.ValueRW.activated = value;
     }
 
+    public float grid_Moisture
+    {
+        get => _grassProperties.ValueRO.grid_Moisture;
+        set => _grassProperties.ValueRW.grid_Moisture = value;
+    }
+
+    public float grid_Nutrient
+    {
+        get => _grassProperties.ValueRO.grid_Nutrient;
+        set => _grassProperties.ValueRW.grid_Nutrient = value;
+    }
 
     public void GrowUp(float deltaTime) 
     {
@@ -40,7 +51,7 @@ public readonly partial struct GrassAspect : IAspect
             return;
         }
 
-        currentSize += deltaTime * 0.1f;
+        currentSize += deltaTime * (0.02f + grid_Moisture * 0.2f + grid_Nutrient * 0.5f);
         currentSize = Mathf.Clamp(currentSize, 0, maxSize);
 
         _localTransform.ValueRW.Scale = currentSize;

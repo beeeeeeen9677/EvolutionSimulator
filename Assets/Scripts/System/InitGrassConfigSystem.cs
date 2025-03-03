@@ -6,6 +6,8 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 
+
+// Deprecated
 public partial struct InitGrassConfigSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
@@ -17,6 +19,8 @@ public partial struct InitGrassConfigSystem : ISystem
     {
     }
 
+
+    // Deprecated
     public void OnUpdate(ref SystemState state)
     {
         state.Enabled = false; // run for one loop only

@@ -56,7 +56,7 @@ public partial class GridUpdateSystem : SystemBase
             int initDiffusionTime = 3; // Do 3 times at first
             for (int i = 0; i < initDiffusionTime; i++)
             {
-                DiffuseSoilWater();
+                UpdateGridCellsInformation();
             }
 
 
@@ -79,7 +79,7 @@ public partial class GridUpdateSystem : SystemBase
 
     }
 
-    public void DiffuseSoilWater()
+    public void UpdateGridCellsInformation()
     {
         //Debug.Log("Diffuse Soil Water");
 
@@ -95,9 +95,27 @@ public partial class GridUpdateSystem : SystemBase
         List<ModifyGridMoistureRecord> modifyMoistureStack = new List<ModifyGridMoistureRecord>();
 
 
+        // loop through all grid cells
         foreach (GridCell centerGridCell in gridCellBuffer)
         {
 
+            // check if there is grass on the grid cell
+            // if yes, update the moisture and nutrient of the grass
+            if (SystemAPI.HasComponent<GrassProperties>(centerGridCell.storingObject))
+            {
+                GrassAspect grassAspect = SystemAPI.GetAspect<GrassAspect>(centerGridCell.storingObject);
+
+                grassAspect.grid_Moisture = centerGridCell.soilMoisture_value;
+                grassAspect.grid_Nutrient = centerGridCell.soilNutrient;
+            }
+
+
+
+
+
+
+
+            // Diffusion
 
             // Mode 1: > 2          Mode 2: >= 2
             if (IsValidToDiffuse(diffusionMode, centerGridCell.soilMoisture_flooredValue)) // at least larger than 2 unit of moisture to diffuse
