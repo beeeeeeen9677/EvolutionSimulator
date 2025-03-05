@@ -51,6 +51,13 @@ MonoBehaviour:
   currentSize: 0
   maxSize: 1
   provideEnergy: 15
+  baseGrowthRate: 0.8
+  lowerLimit_Moisture: 0
+  upperLimit_Moisture: 0.5
+  growthRate_Moisture: 0.1
+  lowerLimit_Nutrient: 0
+  upperLimit_Nutrient: 1
+  growthRate_Nutrient: 0.1
 --- !u!33 &2886462709284655733
 MeshFilter:
   m_ObjectHideFlags: 0

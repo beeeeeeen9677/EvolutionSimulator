@@ -172,6 +172,7 @@ public partial class InitLakeSystem : SystemBase
                 // set grass property
                 GrassProperties grassPropertyData = SystemAPI.GetComponent<GrassProperties>(newSpawnedGrass);
                 float randomMaxSize = UnityEngine.Random.Range(0.7f, 1f);
+                /*
                 SystemAPI.SetComponent(newSpawnedGrass, new GrassProperties
                 {
                     currentSize = 0,
@@ -179,6 +180,12 @@ public partial class InitLakeSystem : SystemBase
                     provideEnergy = grassPropertyData.provideEnergy,
                     activated = grassPropertyData.activated,
                 });
+                */
+                RefRW<GrassProperties> grassProperties = SystemAPI.GetComponentRW<GrassProperties>(newSpawnedGrass);
+                grassProperties.ValueRW.currentSize = 0;
+                grassProperties.ValueRW.maxSize = randomMaxSize;
+                grassProperties.ValueRW.provideEnergy = grassPropertyData.provideEnergy;
+                grassProperties.ValueRW.activated = grassPropertyData.activated;
 
             }
         }

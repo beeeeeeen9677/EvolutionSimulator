@@ -42,6 +42,9 @@ public readonly partial struct GrassAspect : IAspect
         set => _grassProperties.ValueRW.grid_Nutrient = value;
     }
 
+    public float growthRate => _grassProperties.ValueRO.GetGrowthRate();
+
+
     public void GrowUp(float deltaTime) 
     {
         // eatable
@@ -51,7 +54,15 @@ public readonly partial struct GrassAspect : IAspect
             return;
         }
 
-        currentSize += deltaTime * (0.02f + grid_Moisture * 0.2f + grid_Nutrient * 0.5f);
+        //float temp = deltaTime * (0.02f + grid_Moisture * 0.2f + grid_Nutrient * 0.5f);
+        //currentSize += temp;
+        //Debug.Log("currentSize: " + temp);
+
+        currentSize += deltaTime * growthRate;
+
+
+
+
         currentSize = Mathf.Clamp(currentSize, 0, maxSize);
 
         _localTransform.ValueRW.Scale = currentSize;
