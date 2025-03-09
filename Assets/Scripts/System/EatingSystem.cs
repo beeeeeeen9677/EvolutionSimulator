@@ -53,21 +53,21 @@ public partial struct EatingSystem : ISystem
             }
             */
 
-            //Debug.Log("Eating: Target found");
+            Debug.Log(entity.Index + " Eating: Target found");
 
             float3 entityPosition = transform.ValueRO.Position;
             float3 targetPosition = SystemAPI.GetComponent<LocalTransform>(target.ValueRO.targetEntity).Position;
 
 
             
-            if(MathHelpers.GetDistance(entityPosition, targetPosition) < 5)
+            if(MathHelpers.GetDistance(entityPosition, targetPosition) > 3)
             {
-                // if distance between current animal and target is less than 5, do not check collision
+                // if distance between current animal and target is larger than 5, do not check collision
                 continue;
             }
             
 
-            //Debug.Log("Eating: Ready");
+            Debug.Log(entity.Index + " Eating: Ready");
 
 
 
@@ -85,7 +85,7 @@ public partial struct EatingSystem : ISystem
             }
 
 
-            //Debug.Log("Eating: Collided");
+            Debug.Log(entity.Index + " Eating: Collided");
 
 
             //Debug.Log(collidedEntity.Index == target.ValueRO.targetEntity.Index);
