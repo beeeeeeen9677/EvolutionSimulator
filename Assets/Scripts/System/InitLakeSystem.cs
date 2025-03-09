@@ -100,6 +100,25 @@ public partial class InitLakeSystem : SystemBase
             // get surrounding grids of the lake (center grid) by lake range
             List<GridCell> surroundingGrids = GridBufferUtils.GetSurroundingGridCells(gridCellBuffer, gridBufferWidth, lakeProperty.lakeRange, allocatedGridCell.X, allocatedGridCell.Y);
 
+
+            // set grid density of center grid
+            if (allocatedGridCell.soilDensity < 4)
+            {
+                // set to 4
+                GridBufferUtils.ModifyGridDensity(gridCellBuffer, gridBufferWidth, allocatedGridCell.X, allocatedGridCell.Y, 4);
+            }
+
+            // set grid density of surrounding grids
+            foreach (GridCell gridCell in surroundingGrids)
+            {
+                if(gridCell.soilDensity < 4)
+                {
+                    // set to 4
+                    GridBufferUtils.ModifyGridDensity(gridCellBuffer, gridBufferWidth, gridCell.X, gridCell.Y, 4);
+                }
+            }
+
+
             // remove all occupied (not available) grids 
             surroundingGrids.RemoveAll(gridCell => gridCell.storingObject != Entity.Null);
 

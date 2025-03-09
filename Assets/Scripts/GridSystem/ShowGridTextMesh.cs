@@ -79,26 +79,27 @@ public class ShowGridTextMesh : MonoBehaviour
     {
 
 
-        if (float.Parse(text.Split("n: ")[1]) <= 0)
-        {
-            // if nutrient is 0, check if moisture is greater than 0
             try
             {
-                if (float.Parse(text.Split("\n")[0]) > 0)
+                if (float.Parse(text.Split("n: ")[1]) <= 0)
                 {
-                    textMeshArray[x, y].color = Color.yellow;
-                }
-                else
-                {
-                    textMeshArray[x, y].color = Color.white;
-                    text = "/";
+                    // if nutrient is 0, check if moisture is greater than 0
+                    if (float.Parse(text.Split("\n")[0]) > 0)
+                    {
+                        textMeshArray[x, y].color = Color.yellow;
+                    }
+                    else
+                    {
+                        textMeshArray[x, y].color = Color.white;
+                        //text = "/";
+                    }
                 }
             }
             catch (Exception)
             {
                 Debug.Log("SetGridText: the moisture value is invalid");
             }
-        }
+        
 
         
 
@@ -117,16 +118,19 @@ public class ShowGridTextMesh : MonoBehaviour
                 GridCell? cell = GridBufferUtils.GetGridCell(gridCellBuffer, width, x, y);
 
                 if (!cell.HasValue) // if output is null (invalid)
+                {
                     printText = "Invalid";
+                }
                 else
                 {
                     //printText = cell.Value.soilMoisture_value + "\n<color=white>lv: " + cell.Value.soilMoisture_level + "</color>\nf: " + cell.Value.soilMoisture_flooredValue;
-                    printText = cell.Value.soilMoisture_value + "\n<color=white>lv: " + cell.Value.soilMoisture_level + "</color>\nn: " + cell.Value.soilNutrient;
+                    printText = cell.Value.soilMoisture_value + "\n<color=white>d: " + cell.Value.soilDensity + "</color>\nn: " + cell.Value.soilNutrient;
+
                 }
 
 
-
                 SetGridText(x, y, printText);
+
             }
         }
     }

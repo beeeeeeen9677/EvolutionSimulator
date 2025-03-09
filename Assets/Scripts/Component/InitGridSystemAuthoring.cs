@@ -37,7 +37,7 @@ public class InitGridSystemAuthoring : MonoBehaviour
             {
                 for (int y = 0; y < authoring.height; y++)
                 {
-                    buffer.Add(new GridCell { X = x, Y = y, storingObject = Entity.Null, soilMoisture_value = 0 });
+                    buffer.Add(new GridCell { X = x, Y = y, storingObject = Entity.Null, soilMoisture_value = 0, soilNutrient = 0, soilDensity = 1 });
                 }
             }
         }
@@ -106,6 +106,8 @@ public struct GridCell : IBufferElementData
 
 
     public float soilNutrient; // nutrient
+
+    public int soilDensity; // depends on surrounding environment, stop diffusion if water is less than this value + nutrient * 0.1
 }
 
 
@@ -152,7 +154,9 @@ public static class GridBufferUtils
     {
         buffer[bufferIndex] = new GridCell { X = buffer[bufferIndex].X, Y = buffer[bufferIndex].Y, storingObject = newEntity, 
             soilMoisture_value = moisture, 
-            soilNutrient = buffer[bufferIndex].soilNutrient };
+            soilNutrient = buffer[bufferIndex].soilNutrient,
+            soilDensity = buffer[bufferIndex].soilDensity
+        };
     }
 
 
@@ -178,6 +182,35 @@ public static class GridBufferUtils
             storingObject = buffer[bufferIndex].storingObject,
             soilMoisture_value = buffer[bufferIndex].soilMoisture_value,
             soilNutrient = buffer[bufferIndex].soilNutrient + nutrient,
+            soilDensity = buffer[bufferIndex].soilDensity
+        };
+    }
+
+
+
+    public static void ModifyGridDensity(DynamicBuffer<GridCell> buffer, int width, int x, int y, int density) // Modify density by the input parameter
+    {
+        int height = buffer.Length / width;
+        if (x < 0 || y < 0 || x >= width || y >= height) // validation
+        {
+            Debug.Log("Grid system: Invalid X/Y coordinate");
+            return;
+        }
+
+        if (density < 0)
+            return;
+
+
+        int bufferIndex = x * width + y;
+
+        buffer[bufferIndex] = new GridCell
+        {
+            X = buffer[bufferIndex].X,
+            Y = buffer[bufferIndex].Y,
+            storingObject = buffer[bufferIndex].storingObject,
+            soilMoisture_value = buffer[bufferIndex].soilMoisture_value,
+            soilNutrient = buffer[bufferIndex].soilNutrient,
+            soilDensity = density
         };
     }
 

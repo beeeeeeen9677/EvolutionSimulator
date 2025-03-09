@@ -113,17 +113,18 @@ public partial class GridUpdateSystem : SystemBase
 
 
 
-
+            float diffusionThreshold = centerGridCell.soilDensity + centerGridCell.soilNutrient * 0.1f;
 
             // Diffusion
 
-            // Mode 1: > 2          Mode 2: >= 2
-            if (IsValidToDiffuse(diffusionMode, centerGridCell.soilMoisture_flooredValue)) // at least larger than 2 unit of moisture to diffuse
+            if (IsValidToDiffuse(diffusionMode, centerGridCell.soilMoisture_flooredValue, diffusionThreshold)) // at least larger than threshold to diffuse
             {
                 // get surrounding grids of the lake (center grid) by lake range
                 List<GridCell> surroundingGridList = GridBufferUtils.GetSurroundingGridCells(gridCellBuffer, gridBufferWidth, 1, centerGridCell.X, centerGridCell.Y);
 
                 //Debug.Log("Moisture: " + centerGridCell.soilMoisture_value + "   " + surroundingGridList.Count);
+
+
 
 
 
@@ -181,6 +182,8 @@ public partial class GridUpdateSystem : SystemBase
 
 
                     //GridBufferUtils.SetGridCell(gridCellBuffer, gridBufferWidth, surroundingGridCell.X, surroundingGridCell.Y, surroundingGridCell.storingObject, centerGridCell.soilMoisture_flooredValue / 2);
+
+                    // add water to the surrounding grid
                     modifyMoistureStack.Add(new ModifyGridMoistureRecord(surroundingGridCell.X, surroundingGridCell.Y, moistureToBeAdded));
 
                     //OnOneGridCellValueChanged?.Invoke(surroundingGridCell.X, surroundingGridCell.Y, (centerGridCell.soilMoisture_flooredValue / 2).ToString());
@@ -197,14 +200,15 @@ public partial class GridUpdateSystem : SystemBase
     }
 
 
-    private bool IsValidToDiffuse(int diffusionMode, int moistureValue)
+    private bool IsValidToDiffuse(int diffusionMode, int moistureValue, float diffusionThreshold)
     {
+    
         switch (diffusionMode)
         {
             // Mode 1: > 2          Mode 2: >= 2
             // at least larger than 2 unit of moisture to diffuse
             case 1:
-                if (moistureValue > 2)
+                if (moistureValue > diffusionThreshold)
                 {
                     //validToDiffuse = true;
                     return true;
@@ -212,7 +216,7 @@ public partial class GridUpdateSystem : SystemBase
                 break;
 
             case 2:
-                if (moistureValue >= 2)
+                if (moistureValue >= diffusionThreshold)
                 {
                     //validToDiffuse = true;
                     return true;

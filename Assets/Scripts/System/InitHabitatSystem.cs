@@ -127,6 +127,23 @@ public partial struct InitHabitatSystem : ISystem
                 Rotation = quaternion.identity,
                 Scale = radius * 2,
             });
+
+
+
+            // get surrounding grids of the lake (center grid) by lake range
+            int gridBufferWidth = initGridSystemConfig.ValueRO.width;
+
+            List<GridCell> surroundingGrids = GridBufferUtils.GetSurroundingGridCellsInSquare(gridCellBuffer, gridBufferWidth, 4, allocatedGridCell.X, allocatedGridCell.Y);
+
+            // set grid density
+            foreach (GridCell gridCell in surroundingGrids)
+            {
+                if (gridCell.soilDensity < 2)
+                {
+                    // set to 4
+                    GridBufferUtils.ModifyGridDensity(gridCellBuffer, gridBufferWidth, gridCell.X, gridCell.Y, 2);
+                }
+            }
         }
     }
 }
