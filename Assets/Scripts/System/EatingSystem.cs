@@ -53,7 +53,7 @@ public partial struct EatingSystem : ISystem
             }
             */
 
-            Debug.Log(entity.Index + " Eating: Target found");
+            //Debug.Log(entity.Index + " Eating: Target found");
 
             float3 entityPosition = transform.ValueRO.Position;
             float3 targetPosition = SystemAPI.GetComponent<LocalTransform>(target.ValueRO.targetEntity).Position;
@@ -67,7 +67,7 @@ public partial struct EatingSystem : ISystem
             }
             
 
-            Debug.Log(entity.Index + " Eating: Ready");
+            //Debug.Log(entity.Index + " Eating: Ready");
 
 
 
@@ -85,7 +85,7 @@ public partial struct EatingSystem : ISystem
             }
 
 
-            Debug.Log(entity.Index + " Eating: Collided");
+            //Debug.Log(entity.Index + " Eating: Collided");
 
 
             //Debug.Log(collidedEntity.Index == target.ValueRO.targetEntity.Index);

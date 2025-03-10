@@ -101,11 +101,16 @@ public readonly partial struct AnimalAspect : IAspect
     }
 
 
-    private float maxCooldown
+    
+
+
+    private float originalMaxCooldown // trigger sensor
     {
         get => _animalSensor.ValueRO.maxCooldown;
         set => _animalSensor.ValueRW.maxCooldown = value;
     }
+
+
 
 
     private float currentCooldown
@@ -181,6 +186,7 @@ public readonly partial struct AnimalAspect : IAspect
         get => _target.ValueRO.maxChaseTime;
         set => _target.ValueRW.maxChaseTime = value;
     }
+
 
 
     public float remainChaseTime
@@ -378,18 +384,29 @@ public readonly partial struct AnimalAspect : IAspect
 
 
 
-    public float GetSensorSize()
+    public float GetSensorSize() // affercted by orange and pink cells
     {
-        return sensorSize * cell * 0.0001f; 
+        return sensorSize * cell * 0.0001f * (1 + 0.1f * Mathf.Log(1 + orangeCell) + 0.2f * Mathf.Log(1 + pinkCell)); 
     }
 
-    public float GetWarningRange()
+    public float GetOriginalSensorSize()
+    {
+        return sensorSize * cell * 0.0001f;
+    }
+
+    public float GetWarningRange() // affected by green & purple cells
+    {
+        return warningRange * cell * 0.0001f * (1 + 0.01f * Mathf.Log(1 + greenCell) + 0.1f * Mathf.Log(1 + purpleCell));
+    }
+
+    public float GetOriginalWarningRange()
     {
         return warningRange * cell * 0.0001f;
     }
 
 
-  
+
+
 
     public void SetThreatEntity(Entity threat, float3 threatPos)
     {
@@ -435,11 +452,20 @@ public readonly partial struct AnimalAspect : IAspect
 
 
 
+    private float maxCooldown
+    {
+        get => _animalSensor.ValueRO.maxCooldown * (1 - 0.1f * Mathf.Log(1 + greenCell * 0.1f));
+    }
+
+
 
     public bool SensorIsReady(float deltaTime) // cooldown, return whether CD is 0
     {
         // decrease Cooldown
         currentCooldown = Mathf.Clamp(currentCooldown - deltaTime, 0, maxCooldown);
+
+
+        //Debug.Log("maxCooldown: " + maxCooldown);
 
         // check if finished cooldown 
         if (currentCooldown == 0)

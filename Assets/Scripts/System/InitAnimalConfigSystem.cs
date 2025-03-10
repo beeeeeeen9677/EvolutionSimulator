@@ -96,8 +96,8 @@ public partial struct InitAnimalConfigSystem : ISystem
 
                 warningRange = 10f,
 
-                maxCooldown = 3,
-                currentCooldown = 0,
+                maxCooldown = 6,
+                currentCooldown = 3,
 
                 grassSensorProbability = grassSensorProbability,
                 animalSensorProbability = 1 - grassSensorProbability,
