@@ -81,10 +81,10 @@ public class ShowGridTextMesh : MonoBehaviour
 
             try
             {
-                if (float.Parse(text.Split("n: ")[1]) <= 0)
+                if (float.Parse(text.Split("n: ")[1]) <= 0) // nutrient
                 {
                     // if nutrient is 0, check if moisture is greater than 0
-                    if (float.Parse(text.Split("\n")[0]) > 0)
+                    if (float.Parse(text.Split("\n")[0]) > 0) // moisture
                     {
                         textMeshArray[x, y].color = Color.yellow;
                     }
@@ -107,6 +107,40 @@ public class ShowGridTextMesh : MonoBehaviour
         textMeshArray[x, y].text = text;
     }
 
+
+    private void SetGridText(int x, int y, float m, float d, float n)
+    {
+
+
+        try
+        {
+            if (n <= 0) // nutrient
+            {
+                // if nutrient is 0, check if moisture is greater than 0
+                if (m > 0) // moisture
+                {
+                    textMeshArray[x, y].color = Color.yellow;
+                }
+                else
+                {
+                    textMeshArray[x, y].color = Color.white;
+                    //text = "/";
+                }
+            }
+        }
+        catch (Exception)
+        {
+            Debug.Log("SetGridText: the moisture value is invalid");
+        }
+
+
+
+        string printText = m.ToString("0.##") + "\n<color=white>d: " + d.ToString("0.##") + "</color>\nn: " + n.ToString("0.##");
+
+
+        textMeshArray[x, y].text = printText;
+    }
+
     private void RefreshAllText(DynamicBuffer<GridCell> gridCellBuffer)
     {
         for (int x = 0; x < width; x++)
@@ -120,16 +154,17 @@ public class ShowGridTextMesh : MonoBehaviour
                 if (!cell.HasValue) // if output is null (invalid)
                 {
                     printText = "Invalid";
+                    SetGridText(x, y, printText);
                 }
                 else
                 {
                     //printText = cell.Value.soilMoisture_value + "\n<color=white>lv: " + cell.Value.soilMoisture_level + "</color>\nf: " + cell.Value.soilMoisture_flooredValue;
-                    printText = cell.Value.soilMoisture_value + "\n<color=white>d: " + cell.Value.soilDensity + "</color>\nn: " + cell.Value.soilNutrient;
+                    //printText = cell.Value.soilMoisture_value + "\n<color=white>d: " + cell.Value.soilDensity + "</color>\nn: " + cell.Value.soilNutrient;
+                    SetGridText(x, y, cell.Value.soilMoisture_value, cell.Value.soilDensity, cell.Value.soilNutrient);
 
                 }
 
 
-                SetGridText(x, y, printText);
 
             }
         }

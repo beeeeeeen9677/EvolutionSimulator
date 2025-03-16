@@ -45,6 +45,10 @@ public readonly partial struct GrassAspect : IAspect
     public float growthRate => _grassProperties.ValueRO.GetGrowthRate();
 
 
+    public float growthRate_Nutrient => _grassProperties.ValueRO.growthRate_Nutrient;
+    public float growthRate_Moisture => _grassProperties.ValueRO.growthRate_Moisture;
+
+
     public void GrowUp(float deltaTime) 
     {
         // eatable

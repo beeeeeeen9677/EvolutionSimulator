@@ -98,16 +98,61 @@ public partial class GridUpdateSystem : SystemBase
         // loop through all grid cells
         foreach (GridCell centerGridCell in gridCellBuffer)
         {
+            // Update grass variables     AND     Consume Moisture and Nutrient
 
-            // check if there is grass on the grid cell
-            // if yes, update the moisture and nutrient of the grass
-            if (SystemAPI.HasComponent<GrassProperties>(centerGridCell.storingObject))
+            if (SystemAPI.HasComponent<GrassProperties>(centerGridCell.storingObject))  // check if there is grass on the grid cell
             {
+                // if yes, update the moisture and nutrient of the grass
+
                 GrassAspect grassAspect = SystemAPI.GetAspect<GrassAspect>(centerGridCell.storingObject);
 
                 grassAspect.grid_Moisture = centerGridCell.soilMoisture_value;
                 grassAspect.grid_Nutrient = centerGridCell.soilNutrient;
+
+
+                // Consume Moisture and Nutrient
+                float consumeRate_Moi = 0.001f * grassAspect.growthRate_Moisture;
+                GridBufferUtils.SetGridCell(gridCellBuffer, gridBufferWidth, centerGridCell.X, centerGridCell.Y, centerGridCell.storingObject, centerGridCell.soilMoisture_value - consumeRate_Moi);
+
+
+                float consumeRate_Ntr = 0.001f * grassAspect.growthRate_Nutrient;
+                GridBufferUtils.AddGridNutrient(gridCellBuffer, gridBufferWidth, centerGridCell.X, centerGridCell.Y,  -1 * consumeRate_Ntr);
+
             }
+
+
+
+            // Assign nutrient to grids from Tree (shelter)
+            if (SystemAPI.HasComponent<HabitatProperty>(centerGridCell.storingObject))
+            {
+                // if yes, update the nutrient of surrounding grids
+                int range = 3;
+                List<GridCell> surroundingGridList = GridBufferUtils.GetSurroundingGridCellsInSquare(gridCellBuffer, gridBufferWidth, range, centerGridCell.X, centerGridCell.Y);
+                foreach (GridCell cell in surroundingGridList)
+                {
+                    // add nutrient for grids having less than 1 of nutrient only
+                    if (cell.soilNutrient >= 1)
+                        continue;
+
+                    GridBufferUtils.AddGridNutrient(gridCellBuffer, gridBufferWidth, cell.X, cell.Y, 0.001f);
+                }
+
+                // Debug.Log("Tree: Assign Nutrient");
+            }
+
+
+
+
+            // Update moisture when higher/lower than 0.6 density
+            float modifyRate = 0.001f;
+            if(centerGridCell.soilMoisture_value <= centerGridCell.soilDensity * 0.6f)
+            {
+                // decrease density if lower than
+                modifyRate *= -1;
+            }
+            // else increase
+            GridBufferUtils.ModifyGridDensity(gridCellBuffer, gridBufferWidth, centerGridCell.X, centerGridCell.Y, modifyRate + centerGridCell.soilDensity);
+            // Debug.Log("Update Density: " + modifyRate);
 
 
 
@@ -164,7 +209,7 @@ public partial class GridUpdateSystem : SystemBase
 
 
                         // the moisture of grid to be diffused should not be higher than moisture of center grid
-                        if (surroundingGridCell.soilMoisture_value > centerGridCell.soilMoisture_flooredValue)
+                        if (surroundingGridCell.soilMoisture_value > centerGridCell.soilMoisture_value)
                             continue;
                         float diffusionScaler = 0.05f;
 

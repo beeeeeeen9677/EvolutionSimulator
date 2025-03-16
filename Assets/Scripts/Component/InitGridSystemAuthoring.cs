@@ -107,7 +107,7 @@ public struct GridCell : IBufferElementData
 
     public float soilNutrient; // nutrient
 
-    public int soilDensity; // depends on surrounding environment, stop diffusion if water is less than this value + nutrient * 0.1
+    public float soilDensity; // depends on surrounding environment, stop diffusion if water is less than this value + nutrient * 0.1
 }
 
 
@@ -152,6 +152,11 @@ public static class GridBufferUtils
     }
     public static void SetGridCell(DynamicBuffer<GridCell> buffer, int bufferIndex, Entity newEntity, float moisture)     // Overload, set grid by Entity and Moisture
     {
+
+        if (moisture < 0)
+            moisture = 0;
+
+
         buffer[bufferIndex] = new GridCell { X = buffer[bufferIndex].X, Y = buffer[bufferIndex].Y, storingObject = newEntity, 
             soilMoisture_value = moisture, 
             soilNutrient = buffer[bufferIndex].soilNutrient,
@@ -170,9 +175,11 @@ public static class GridBufferUtils
         }
 
 
+        if (nutrient < 0)
+            nutrient = 0;
+
 
         int bufferIndex = x * width + y;
-
 
 
         buffer[bufferIndex] = new GridCell
@@ -188,7 +195,7 @@ public static class GridBufferUtils
 
 
 
-    public static void ModifyGridDensity(DynamicBuffer<GridCell> buffer, int width, int x, int y, int density) // Modify density by the input parameter
+    public static void ModifyGridDensity(DynamicBuffer<GridCell> buffer, int width, int x, int y, float density) // Modify density by the input parameter
     {
         int height = buffer.Length / width;
         if (x < 0 || y < 0 || x >= width || y >= height) // validation
@@ -198,7 +205,7 @@ public static class GridBufferUtils
         }
 
         if (density < 0)
-            return;
+            density = 0;
 
 
         int bufferIndex = x * width + y;
