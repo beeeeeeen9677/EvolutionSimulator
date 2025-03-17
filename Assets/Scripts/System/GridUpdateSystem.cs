@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Unity.Entities;
+using Unity.Mathematics;
+using Unity.Transforms;
 using UnityEngine;
 
 
@@ -98,8 +100,58 @@ public partial class GridUpdateSystem : SystemBase
         // loop through all grid cells
         foreach (GridCell centerGridCell in gridCellBuffer)
         {
-            // Update grass variables     AND     Consume Moisture and Nutrient
 
+
+            // Spawn new object on empty grid rarely
+            if (centerGridCell.storingObject == Entity.Null) // storing nothing
+            {
+
+                int maxProbNum = 1000;
+                if (UnityEngine.Random.Range(0, maxProbNum) < 1) // spawn a new grass
+                {
+                    InitGrassConfig initGrassConfig = SystemAPI.GetSingleton<InitGrassConfig>();
+                    Entity initGrassConfigEntity = SystemAPI.GetSingletonEntity<InitGrassConfig>();
+                    var grassTypeBuffer = EntityManager.GetBuffer<GrassPrefabElement>(initGrassConfigEntity);
+
+                    // get random type of grasses
+                    int grassIndex = UnityEngine.Random.Range(0, grassTypeBuffer.Length);
+                    Entity newSpawnedGrass = EntityManager.Instantiate(grassTypeBuffer[grassIndex].grassPrefabs);
+
+                    // Set the new grass into the grid storing object property
+                    GridBufferUtils.SetGridCell(gridCellBuffer, gridBufferWidth, centerGridCell.X, centerGridCell.Y, newSpawnedGrass);
+
+                    Vector3 newGrassPosition = GridBufferUtils.GetWorldPosition(centerGridCell.X, centerGridCell.Y, gridCellSize, gridSystemOrigin);
+
+                    SystemAPI.SetComponent(newSpawnedGrass, new LocalTransform
+                    {
+                        Position = newGrassPosition,
+                        Rotation = quaternion.identity,
+                        Scale = 1
+                    });
+
+                    // set grass property
+                    GrassProperties grassPropertyData = SystemAPI.GetComponent<GrassProperties>(newSpawnedGrass);
+                    float randomMaxSize = UnityEngine.Random.Range(0.7f, 1f);
+      
+                    RefRW<GrassProperties> grassProperties = SystemAPI.GetComponentRW<GrassProperties>(newSpawnedGrass);
+                    grassProperties.ValueRW.currentSize = 0;
+                    grassProperties.ValueRW.maxSize = randomMaxSize;
+                    grassProperties.ValueRW.provideEnergy = grassPropertyData.provideEnergy;
+                    grassProperties.ValueRW.activated = grassPropertyData.activated;
+                }
+            }
+
+
+
+
+
+
+
+
+
+
+
+            // Update grass variables     AND     Consume Moisture and Nutrient
             if (SystemAPI.HasComponent<GrassProperties>(centerGridCell.storingObject))  // check if there is grass on the grid cell
             {
                 // if yes, update the moisture and nutrient of the grass
