@@ -8,6 +8,8 @@ using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.UI;
 using static PropertyContainer;
+using static UnityEngine.Rendering.DebugUI;
+using Button = UnityEngine.UI.Button;
 
 public class PropertyInspectorUIManager : MonoBehaviour
 {
@@ -32,6 +34,8 @@ public class PropertyInspectorUIManager : MonoBehaviour
     //[SerializeField] private GameObject propertyValuePrefab; // put in property container, stores the value of that property
 
 
+
+    private UnitSelectionSystem unitSelectionSystem;
 
     public static Entity selectedEntity { get; private set; }
     public static EntityManager entityManager { get; private set; }
@@ -59,7 +63,7 @@ public class PropertyInspectorUIManager : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        UnitSelectionSystem unitSelectionSystem = 
+        unitSelectionSystem = 
             World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<UnitSelectionSystem>();
 
         unitSelectionSystem.OnAnimalSelected += SetSelectedEntityAndOpenInspector;
@@ -67,11 +71,40 @@ public class PropertyInspectorUIManager : MonoBehaviour
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
         closeButton.onClick.AddListener(() => CloseInspectorAndResetTarget());
+
+
+        unitSelectionSystem.ToggleSystem(false);
     }
 
 
+
+    public void ToggleInspectorSystem()
+    {
+        bool value = !unitSelectionSystem.Enabled; // toggle the system
+        HandleToggle(value);
+    }
+
+    public void ToggleInspectorSystem(bool value)
+    {
+        HandleToggle(value);
+    }
+
+    private void HandleToggle(bool value)
+    {
+        unitSelectionSystem.ToggleSystem(value);
+
+
+        if (value == false)
+        {
+            ToolsBarController.instance.ResetButtonState();
+        }
+    }
+
     private void SetSelectedEntityAndOpenInspector(Entity entity)
     {
+        ToggleInspectorSystem(false);
+
+
         selectedEntity = entity;
 
         inspectorPanel.SetActive(true); // open inspector

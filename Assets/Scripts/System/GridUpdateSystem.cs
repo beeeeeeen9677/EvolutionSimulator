@@ -106,7 +106,7 @@ public partial class GridUpdateSystem : SystemBase
             if (centerGridCell.storingObject == Entity.Null) // storing nothing
             {
 
-                int maxProbNum = 1000;
+                int maxProbNum = 100000;
                 if (UnityEngine.Random.Range(0, maxProbNum) < 1) // spawn a new grass
                 {
                     InitGrassConfig initGrassConfig = SystemAPI.GetSingleton<InitGrassConfig>();
@@ -214,7 +214,7 @@ public partial class GridUpdateSystem : SystemBase
 
             // Diffusion
 
-            if (IsValidToDiffuse(diffusionMode, centerGridCell.soilMoisture_flooredValue, diffusionThreshold)) // at least larger than threshold to diffuse
+            if (IsValidToDiffuse(diffusionMode, centerGridCell.soilMoisture_value, diffusionThreshold)) // at least larger than threshold to diffuse
             {
                 // get surrounding grids of the lake (center grid) by lake range
                 List<GridCell> surroundingGridList = GridBufferUtils.GetSurroundingGridCells(gridCellBuffer, gridBufferWidth, 1, centerGridCell.X, centerGridCell.Y);
@@ -297,7 +297,7 @@ public partial class GridUpdateSystem : SystemBase
     }
 
 
-    private bool IsValidToDiffuse(int diffusionMode, int moistureValue, float diffusionThreshold)
+    private bool IsValidToDiffuse(int diffusionMode, float moistureValue, float diffusionThreshold)
     {
     
         switch (diffusionMode)

@@ -90,4 +90,9 @@ public partial class UnitSelectionSystem : SystemBase  // SystemBase: other clas
 
         return collisionWorld.CastRay(raycastInput, out raycastHit);
     }
+
+    public void ToggleSystem(bool value)
+    {
+        Enabled = value;
+    }
 }

@@ -17,6 +17,7 @@ public readonly partial struct GrowUpAspect : IAspect
     public readonly RefRW<ReproductionCounter> _reproductionCounter;
 
 
+
     public float currentAge
     {
         get => _age.ValueRO.currentAge;
@@ -98,13 +99,20 @@ public readonly partial struct GrowUpAspect : IAspect
             cell += (int)(deltaTime * 10000); // deltaTime = 0.004 in most of the time
         }
 
-        if(currentStage == AgeStageEnum.aging)
+        if (currentStage != AgeStageEnum.aging) 
+        {
+            //if()
+        }
+
+
+
+        if (currentStage == AgeStageEnum.aging)
         {    
             cell -= (int)(deltaTime * 1000);
 
-            // wont smaller than 0
-            if(cell < 0)
-                cell = 0;
+            // wont smaller than 100
+            if(cell < 100)
+                cell = 100;
         }
     }
 
