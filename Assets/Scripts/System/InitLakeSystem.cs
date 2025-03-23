@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 public partial class InitLakeSystem : SystemBase
 {
@@ -18,6 +20,14 @@ public partial class InitLakeSystem : SystemBase
     protected override void OnUpdate()
     {
         Enabled = false; // run for one loop only
+
+        SpawnLakes();
+    }
+
+    private void SpawnLakes(int lakeToBeSpawned = 0, float3 providedPosition = default)
+    {
+
+
 
         // grid system config
         RefRW<InitGridSystemConfig> initGridSystemConfig = SystemAPI.GetSingletonRW<InitGridSystemConfig>();
@@ -55,7 +65,13 @@ public partial class InitLakeSystem : SystemBase
         */
 
         // spawn lake & coresponding grass
-        for (int i = 0; i < initLakeConfig.initLakeNumber; i++)
+        if (lakeToBeSpawned == 0)
+            lakeToBeSpawned = initLakeConfig.initLakeNumber;
+
+
+        Debug.Log("lakeToBeSpawned: "+lakeToBeSpawned);
+
+        for (int i = 0; i < lakeToBeSpawned; i++)
         {
             // ensure number of gird cells larger than total number of Objects (grasses & trees & )
             // if number of objects exceeding remaining quotas, stop adding new objects
@@ -78,14 +94,55 @@ public partial class InitLakeSystem : SystemBase
             LakeProperty lakeProperty = SystemAPI.GetComponent<LakeProperty>(newSpawnedLake);
 
 
-            // place new spawned lake into an empty cell
-            GridCell allocatedGridCell = GridBufferUtils.SetObjectOnGridRandomly(gridCellBuffer, newSpawnedLake, lakeProperty.initSoilMoisture);
+
+            GridCell allocatedGridCell;
+            float3 lakePosition;
+
+
+            if (providedPosition.Equals(default)) // if no position provided
+            {
+                // get random position for new lake
+                // place new spawned lake into an empty cell
+                allocatedGridCell = GridBufferUtils.SetObjectOnGridRandomly(gridCellBuffer, newSpawnedLake, lakeProperty.initSoilMoisture);
+
+                lakePosition = GridBufferUtils.GetWorldPosition(allocatedGridCell.X, allocatedGridCell.Y, gridCellSize, gridSystemOrigin);
+                //float3 lakePosition = new float3(UnityEngine.Random.Range(-fieldSize, fieldSize), 0, UnityEngine.Random.Range(-fieldSize, fieldSize));
+            }
+            else
+            {
+                GridBufferUtils.GetCoordinateByWorldPosition(providedPosition, out int gridX, out int gridZ, gridCellSize, gridSystemOrigin);
+                GridCell? tempGridCell = GridBufferUtils.GetGridCell(gridCellBuffer, gridBufferWidth, gridX, gridZ);
+
+
+                if (!tempGridCell.HasValue) // cannot find such grid cell
+                {
+                    EntityManager.DestroyEntity(newSpawnedLake);
+                    continue;
+                }
+
+
+                allocatedGridCell = (GridCell)tempGridCell;
+
+
+                if (allocatedGridCell.storingObject != Entity.Null) // if the grid cell is occupied
+                {
+                    EntityManager.DestroyEntity(newSpawnedLake);
+                    continue;
+                }
+
+
+                // Assign the lake to cell
+                GridBufferUtils.SetGridCell(gridCellBuffer, gridBufferWidth, allocatedGridCell.X, allocatedGridCell.Y, newSpawnedLake, lakeProperty.initSoilMoisture);
+
+                allocatedGridCell = (GridCell)GridBufferUtils.GetGridCell(gridCellBuffer, gridBufferWidth, gridX, gridZ); // update value (value type)
+
+                lakePosition = GridBufferUtils.GetWorldPosition(gridX, gridZ, gridCellSize, gridSystemOrigin);
+                //     public static GridCell? GetGridCell(DynamicBuffer<GridCell> buffer, int width, int x, int y)
+
+            }
 
 
 
-
-            float3 lakePosition = GridBufferUtils.GetWorldPosition(allocatedGridCell.X, allocatedGridCell.Y, gridCellSize, gridSystemOrigin);
-            //float3 lakePosition = new float3(UnityEngine.Random.Range(-fieldSize, fieldSize), 0, UnityEngine.Random.Range(-fieldSize, fieldSize));
 
             SystemAPI.SetComponent(newSpawnedLake, new LocalTransform
             {
@@ -111,7 +168,7 @@ public partial class InitLakeSystem : SystemBase
             // set grid density of surrounding grids
             foreach (GridCell gridCell in surroundingGrids)
             {
-                if(gridCell.soilDensity < 4)
+                if (gridCell.soilDensity < 4)
                 {
                     // set to 4
                     GridBufferUtils.ModifyGridDensity(gridCellBuffer, gridBufferWidth, gridCell.X, gridCell.Y, 4);
@@ -210,7 +267,12 @@ public partial class InitLakeSystem : SystemBase
         }
     }
 
+    public void ReadyToSpawnLake(float3 position)
+    {
+
+        SpawnLakes(1, position);
 
 
+    }
 }
 

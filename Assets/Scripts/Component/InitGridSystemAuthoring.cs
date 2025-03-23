@@ -128,7 +128,7 @@ public static class GridBufferUtils
         int height = buffer.Length / width;
         if (x < 0 || y < 0 || x >= width || y >= height) // validation
         {
-            Debug.Log($"Grid system: Invalid X/Y coordinate: x:{x} y:{y}");
+            //Debug.Log($"Grid system: Invalid X/Y coordinate: x:{x} y:{y}");
             return null;
         }
 

@@ -53,7 +53,7 @@ public class ToolsBarController : MonoBehaviour
     {
         SetButtonState(lakeButotn);
 
-        // functions to be implemented
+        PlaceObjectManager.instance.ToggleInspectorSystem(PlaceObjectType.Lake);
     }
 
     private void SetButtonState(Button button) // hide all buttons except the one clicked

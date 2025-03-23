@@ -55,7 +55,7 @@ public partial class GridUpdateSystem : SystemBase
             Debug.Log("Init Diffusion");
 
             // Init water diffusion
-            int initDiffusionTime = 3; // Do 3 times at first
+            int initDiffusionTime = 0; // Do 3 times at first
             for (int i = 0; i < initDiffusionTime; i++)
             {
                 UpdateGridCellsInformation();

@@ -190,7 +190,7 @@ GameObject:
   - component: {fileID: 664051738}
   m_Layer: 11
   m_Name: Ground
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -276,7 +276,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -0.5, z: 0}
-  m_LocalScale: {x: 1500, y: 1, z: 1500}
+  m_LocalScale: {x: 5000, y: 1, z: 5000}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -469,7 +469,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lakePrefab: {fileID: 2543757849809389493, guid: 24be5f13c386512479d39c7c525e2cc7,
     type: 3}
-  initLakeNumber: 2
+  initLakeNumber: 5
   fieldSize: 100
 --- !u!1 &1520650632
 GameObject:
