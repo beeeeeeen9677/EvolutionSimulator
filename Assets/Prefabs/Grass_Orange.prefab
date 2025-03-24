@@ -50,7 +50,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentSize: 0
   maxSize: 1
-  provideEnergy: 15
+  provideEnergy: 25
   baseGrowthRate: 0.2
   lowerLimit_Moisture: 1
   upperLimit_Moisture: 2

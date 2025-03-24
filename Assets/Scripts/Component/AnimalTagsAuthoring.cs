@@ -19,6 +19,11 @@ public class AnimalTagsAuthoring : MonoBehaviour
 
             AddComponent(entity, new ReproductionTag());
             SetComponentEnabled<ReproductionTag>(entity, false);
+
+            AddComponent(entity, new Family
+            {
+                parent = Entity.Null,
+            });
         }
     }
 }

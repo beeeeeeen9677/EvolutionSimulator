@@ -197,6 +197,15 @@ public partial struct SensorTriggerSystem : ISystem
                         }
 
 
+                        // check if target is family
+                        if (currentAnimal.IsFamily(SystemAPI.GetAspect<AnimalAspect>(hit.Entity)))
+                        {
+                            Debug.Log(currentAnimal.entity.Index + " Target is family");
+                            continue; // current target is family
+                        }
+
+
+
                         // check if target in habitat
                         AnimalAspect targetAnimal = SystemAPI.GetAspect<AnimalAspect>(hit.Entity);
                         if (targetAnimal.IsInsideHabitat())

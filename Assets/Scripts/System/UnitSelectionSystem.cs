@@ -6,6 +6,7 @@ using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.Systems;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using RaycastHit = Unity.Physics.RaycastHit;
 
 
@@ -30,6 +31,9 @@ public partial class UnitSelectionSystem : SystemBase  // SystemBase: other clas
         // on mouse release
         if (Input.GetMouseButtonUp(0))
         {
+            if (EventSystem.current.IsPointerOverGameObject()) // Pointer Over UI Element
+                return;
+
             SelectSingleUnit();
         }
 

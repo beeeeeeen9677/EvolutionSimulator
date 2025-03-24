@@ -29,6 +29,8 @@ public readonly partial struct AnimalAspect : IAspect
 
     public readonly RefRO<AnimalHabitatInfo> _habitatInfo;
 
+    public readonly RefRO<Family> _family;
+
 
     //public readonly RefRO<SizeProperty> _sizeProperty;
 
@@ -723,5 +725,26 @@ public readonly partial struct AnimalAspect : IAspect
         {
             return false;
         }
+    }
+
+
+    public Entity parent => _family.ValueRO.parent; 
+
+    public bool IsFamily(AnimalAspect target) // check if target is family
+    {
+        // case 1: if target is parent
+        if(target.entity == parent)
+            return true;
+
+        // case 2: if target is child
+        if (target.parent == entity) // (if you are target's parent)
+            return true;
+
+        // case 3: if target is sibling
+        if (target.parent == parent) // (if you and target have same parent)
+            return true;
+
+
+        return false;
     }
 }

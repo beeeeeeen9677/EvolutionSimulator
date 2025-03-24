@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using static UnityEngine.Rendering.DebugUI;
 
 
@@ -113,9 +114,12 @@ public class PlaceObjectManager : MonoBehaviour
             {
                 //Debug.Log("Hit ground");
                 Vector3 position = hit.point;
-                currentPlaceHolder.transform.position = position;   
+                currentPlaceHolder.transform.position = position;
                 if (Input.GetMouseButtonDown(0)) // interact with initLakeSystem
                 {
+                    if (EventSystem.current.IsPointerOverGameObject()) // Pointer Over UI Element
+                        return;
+
                     ToggleInspectorSystem(false, (PlaceObjectType)Array.IndexOf(placeHolders, currentPlaceHolder));
 
                     initLakeSystem.ReadyToSpawnLake(position);

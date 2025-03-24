@@ -196,11 +196,11 @@ public partial class GridUpdateSystem : SystemBase
 
 
             // Update moisture when higher/lower than 0.6 density
-            float modifyRate = 0.001f;
+            float modifyRate = 0.0001f;
             if(centerGridCell.soilMoisture_value <= centerGridCell.soilDensity * 0.6f)
             {
                 // decrease density if lower than
-                modifyRate *= -1;
+                modifyRate *= -10;
             }
             // else increase
             GridBufferUtils.ModifyGridDensity(gridCellBuffer, gridBufferWidth, centerGridCell.X, centerGridCell.Y, modifyRate + centerGridCell.soilDensity);
@@ -299,7 +299,11 @@ public partial class GridUpdateSystem : SystemBase
 
     private bool IsValidToDiffuse(int diffusionMode, float moistureValue, float diffusionThreshold)
     {
-    
+        if(diffusionThreshold < 1)
+            diffusionThreshold = 1;
+
+
+
         switch (diffusionMode)
         {
             // Mode 1: > 2          Mode 2: >= 2

@@ -121,6 +121,19 @@ public partial struct ReproductionSystem : ISystem
                 interval = SystemAPI.GetComponent<ReproductionCounter>(parentEntity).interval,
                 currentCD = SystemAPI.GetComponent<ReproductionCounter>(parentEntity).interval,
             });
+
+
+            // Family Component
+            entityCommandBuffer.SetComponent(newSpawnedAnimal, new Family
+            {
+                parent = parentEntity,
+            });
         }
     }
 }
+
+public struct Family : IComponentData
+{
+    public Entity parent;
+}
+ 
