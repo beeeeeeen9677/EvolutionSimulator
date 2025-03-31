@@ -102,13 +102,17 @@ public partial class GridUpdateSystem : SystemBase
         {
 
 
-            // Spawn new object on empty grid rarely
+            // Spawn new object on empty grid randomly
             if (centerGridCell.storingObject == Entity.Null) // storing nothing
             {
 
-                int maxProbNum = 100000;
-                if (UnityEngine.Random.Range(0, maxProbNum) < 1) // spawn a new grass
+                int maxProbNum = 100000; // probability for spawning a new grass
+                if (UnityEngine.Random.Range(0, maxProbNum) < 1 && initGridSystemConfig.ValueRO.remainingGrids > 0) // spawn a new grass if fulfill probability and grid remains
                 {
+                    initGridSystemConfig.ValueRW.remainingGrids--;
+                    //Debug.Log("Placed new object (Grass)");
+
+
                     InitGrassConfig initGrassConfig = SystemAPI.GetSingleton<InitGrassConfig>();
                     Entity initGrassConfigEntity = SystemAPI.GetSingletonEntity<InitGrassConfig>();
                     var grassTypeBuffer = EntityManager.GetBuffer<GrassPrefabElement>(initGrassConfigEntity);
@@ -132,12 +136,13 @@ public partial class GridUpdateSystem : SystemBase
                     // set grass property
                     GrassProperties grassPropertyData = SystemAPI.GetComponent<GrassProperties>(newSpawnedGrass);
                     float randomMaxSize = UnityEngine.Random.Range(0.7f, 1f);
-      
+
                     RefRW<GrassProperties> grassProperties = SystemAPI.GetComponentRW<GrassProperties>(newSpawnedGrass);
                     grassProperties.ValueRW.currentSize = 0;
                     grassProperties.ValueRW.maxSize = randomMaxSize;
                     grassProperties.ValueRW.provideEnergy = grassPropertyData.provideEnergy;
                     grassProperties.ValueRW.activated = grassPropertyData.activated;
+
                 }
             }
 
@@ -168,7 +173,7 @@ public partial class GridUpdateSystem : SystemBase
 
 
                 float consumeRate_Ntr = 0.001f * grassAspect.growthRate_Nutrient;
-                GridBufferUtils.AddGridNutrient(gridCellBuffer, gridBufferWidth, centerGridCell.X, centerGridCell.Y,  -1 * consumeRate_Ntr);
+                GridBufferUtils.AddGridNutrient(gridCellBuffer, gridBufferWidth, centerGridCell.X, centerGridCell.Y, -1 * consumeRate_Ntr);
 
             }
 
@@ -197,7 +202,7 @@ public partial class GridUpdateSystem : SystemBase
 
             // Update moisture when higher/lower than 0.6 density
             float modifyRate = 0.0001f;
-            if(centerGridCell.soilMoisture_value <= centerGridCell.soilDensity * 0.6f)
+            if (centerGridCell.soilMoisture_value <= centerGridCell.soilDensity * 0.6f)
             {
                 // decrease density if lower than
                 modifyRate *= -10;
@@ -235,7 +240,7 @@ public partial class GridUpdateSystem : SystemBase
 
 
                     #region Diffusion Mode 1 
-                    if(diffusionMode == 1)
+                    if (diffusionMode == 1)
                     {
                         // Minecraft water diffusion logic, water of source grid will NOT be decreased
 
@@ -254,7 +259,7 @@ public partial class GridUpdateSystem : SystemBase
 
 
                     #region Diffusion Mode 2
-                    if(diffusionMode == 2)
+                    if (diffusionMode == 2)
                     {
                         // water of source grid will be decreased
 
@@ -272,7 +277,7 @@ public partial class GridUpdateSystem : SystemBase
                     #endregion
 
 
-                    if(moistureToBeAdded == 0)
+                    if (moistureToBeAdded == 0)
                     {
                         Debug.Log("moisture To Be Added = 0");
                     }
@@ -299,7 +304,7 @@ public partial class GridUpdateSystem : SystemBase
 
     private bool IsValidToDiffuse(int diffusionMode, float moistureValue, float diffusionThreshold)
     {
-        if(diffusionThreshold < 1)
+        if (diffusionThreshold < 1)
             diffusionThreshold = 1;
 
 

@@ -1,10 +1,8 @@
-using System;
 using System.Collections.Generic;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
 public partial class InitLakeSystem : SystemBase
 {
@@ -69,7 +67,7 @@ public partial class InitLakeSystem : SystemBase
             lakeToBeSpawned = initLakeConfig.initLakeNumber;
 
 
-        Debug.Log("lakeToBeSpawned: "+lakeToBeSpawned);
+        // Debug.Log("lakeToBeSpawned: " + lakeToBeSpawned);
 
         for (int i = 0; i < lakeToBeSpawned; i++)
         {
@@ -269,10 +267,7 @@ public partial class InitLakeSystem : SystemBase
 
     public void ReadyToSpawnLake(float3 position)
     {
-
         SpawnLakes(1, position);
-
-
     }
 }
 

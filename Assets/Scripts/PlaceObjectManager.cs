@@ -1,10 +1,7 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using static UnityEngine.Rendering.DebugUI;
 
 
 
@@ -24,13 +21,17 @@ public class PlaceObjectManager : MonoBehaviour
 {
     public static PlaceObjectManager instance;
 
-    [SerializeField] private GameObject lakePlaceHolder;
+    [SerializeField] private GameObject lakePlaceHolder, treePlaceHolder;
     private GameObject[] placeHolders;
     private GameObject currentPlaceHolder;
 
     private bool activated;
 
+    // Systems
     private InitLakeSystem initLakeSystem;
+    private InitHabitatSystem initHabitatSystem;
+
+
 
     private void Awake()
     {
@@ -50,11 +51,14 @@ public class PlaceObjectManager : MonoBehaviour
         activated = false;
 
         lakePlaceHolder.SetActive(false);
-        placeHolders = new GameObject[] { lakePlaceHolder, null, null };
+        placeHolders = new GameObject[] { lakePlaceHolder, treePlaceHolder, null };
 
 
         initLakeSystem =
             World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<InitLakeSystem>();
+
+        initHabitatSystem =
+            World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<InitHabitatSystem>();
     }
 
 
@@ -89,6 +93,8 @@ public class PlaceObjectManager : MonoBehaviour
     {
         lakePlaceHolder.SetActive(objectType == PlaceObjectType.Lake && value == true);
 
+        treePlaceHolder.SetActive(objectType == PlaceObjectType.Tree && value == true);
+
         currentPlaceHolder = placeHolders[(int)objectType];
     }
 
@@ -120,11 +126,33 @@ public class PlaceObjectManager : MonoBehaviour
                     if (EventSystem.current.IsPointerOverGameObject()) // Pointer Over UI Element
                         return;
 
-                    ToggleInspectorSystem(false, (PlaceObjectType)Array.IndexOf(placeHolders, currentPlaceHolder));
-
-                    initLakeSystem.ReadyToSpawnLake(position);
+                    CreateNewObject(position);
                 }
             }
+        }
+
+    }
+
+    private void CreateNewObject(Vector3 position)
+    {
+
+        PlaceObjectType typeToBeAdded = (PlaceObjectType)Array.IndexOf(placeHolders, currentPlaceHolder);
+
+        ToggleInspectorSystem(false, typeToBeAdded); // hide place holder
+
+
+        switch (typeToBeAdded)
+        {
+            case PlaceObjectType.Lake:
+                initLakeSystem.ReadyToSpawnLake(position);
+                break;
+
+            case PlaceObjectType.Tree:
+                initHabitatSystem.ReadyToSpawnTree(position);
+                break;
+
+            default:
+                break;
         }
 
     }

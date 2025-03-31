@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,6 +9,7 @@ public class ToolsBarController : MonoBehaviour
     [SerializeField] private GameObject toolsbar;
     [SerializeField] private Button inspectButton;
     [SerializeField] private Button lakeButotn;
+    [SerializeField] private Button treeButton;
     private Button[] buttons;
 
 
@@ -29,7 +28,7 @@ public class ToolsBarController : MonoBehaviour
             Destroy(this);
         }
 
-        buttons = new Button[] { inspectButton, lakeButotn };
+        buttons = new Button[] { inspectButton, lakeButotn, treeButton };
     }
 
 
@@ -40,6 +39,7 @@ public class ToolsBarController : MonoBehaviour
 
         inspectButton.onClick.AddListener(OnInspectButtonClick);
         lakeButotn.onClick.AddListener(OnLakeButtonClick);
+        treeButton.onClick.AddListener(OnTreeButtonClick);
     }
 
     private void OnInspectButtonClick()
@@ -54,6 +54,13 @@ public class ToolsBarController : MonoBehaviour
         SetButtonState(lakeButotn);
 
         PlaceObjectManager.instance.ToggleInspectorSystem(PlaceObjectType.Lake);
+    }
+
+    private void OnTreeButtonClick()
+    {
+        SetButtonState(treeButton);
+
+        PlaceObjectManager.instance.ToggleInspectorSystem(PlaceObjectType.Tree);
     }
 
     private void SetButtonState(Button button) // hide all buttons except the one clicked

@@ -1,30 +1,33 @@
-using System.Collections;
 using System.Collections.Generic;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 
-public partial struct InitHabitatSystem : ISystem
+public partial class InitHabitatSystem : SystemBase
 {
-    public void OnCreate(ref SystemState state)
+    protected override void OnCreate()
     {
-        state.RequireForUpdate<InitHabitatConfig>();
-        state.RequireForUpdate<InitGridSystemConfig>();
+        RequireForUpdate<InitHabitatConfig>();
+        RequireForUpdate<InitGridSystemConfig>();
     }
 
 
-    public void OnUpdate(ref SystemState state)
+    protected override void OnUpdate()
     {
-        state.Enabled = false; // run for one loop only
+        Enabled = false; // run for one loop only
 
 
 
-        RefRW<InitGridSystemConfig> initGridSystemConfig;
-        initGridSystemConfig = SystemAPI.GetSingletonRW<InitGridSystemConfig>();
+        SpawnShelter();
+    }
+
+    private void SpawnShelter(int treeToBeSpawned = 0, float3 providedPosition = default)
+    {
+        RefRW<InitGridSystemConfig> initGridSystemConfig = SystemAPI.GetSingletonRW<InitGridSystemConfig>();
         Entity initGridSystemConfigEntity;
         initGridSystemConfigEntity = SystemAPI.GetSingletonEntity<InitGridSystemConfig>();
-        var gridCellBuffer = state.EntityManager.GetBuffer<GridCell>(initGridSystemConfigEntity);
+        var gridCellBuffer = EntityManager.GetBuffer<GridCell>(initGridSystemConfigEntity);
 
 
 
@@ -53,10 +56,12 @@ public partial struct InitHabitatSystem : ISystem
         float effectOfHiding = initHabitatConfig.effectOfHiding;
 
 
+        if (treeToBeSpawned == 0)
+            treeToBeSpawned = initHabitatConfig.numberOfHabitat;
 
 
 
-        for (int i = 0; i < initHabitatConfig.numberOfHabitat; i++)
+        for (int i = 0; i < treeToBeSpawned; i++)
         {
 
             // ensure number of gird cells larger than total number of Objects (grasses & trees & )
@@ -76,7 +81,7 @@ public partial struct InitHabitatSystem : ISystem
 
 
 
-            Entity newSpawnedHabitat = state.EntityManager.Instantiate(initHabitatConfig.habitatPrefab);
+            Entity newSpawnedHabitat = EntityManager.Instantiate(initHabitatConfig.habitatPrefab);
 
             // place new spawned habitat/shelter into an empty cell
             GridCell allocatedGridCell = GridBufferUtils.SetObjectOnGridRandomly(gridCellBuffer, newSpawnedHabitat);
@@ -120,7 +125,7 @@ public partial struct InitHabitatSystem : ISystem
 
 
             // create domain effect by radius
-            Entity newDomainEffect = state.EntityManager.Instantiate(initHabitatConfig.domainEffectPrefab);
+            Entity newDomainEffect = EntityManager.Instantiate(initHabitatConfig.domainEffectPrefab);
             SystemAPI.SetComponent(newDomainEffect, new LocalTransform
             {
                 Position = habitatPosition,
@@ -145,6 +150,11 @@ public partial struct InitHabitatSystem : ISystem
                 }
             }
         }
+    }
+
+    public void ReadyToSpawnTree(float3 position)
+    {
+        SpawnShelter(1, position);
     }
 }
 
