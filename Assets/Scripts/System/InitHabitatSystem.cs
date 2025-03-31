@@ -28,6 +28,7 @@ public partial class InitHabitatSystem : SystemBase
         Entity initGridSystemConfigEntity;
         initGridSystemConfigEntity = SystemAPI.GetSingletonEntity<InitGridSystemConfig>();
         var gridCellBuffer = EntityManager.GetBuffer<GridCell>(initGridSystemConfigEntity);
+        int gridBufferWidth = initGridSystemConfig.ValueRO.width;
 
 
 
@@ -84,13 +85,59 @@ public partial class InitHabitatSystem : SystemBase
             Entity newSpawnedHabitat = EntityManager.Instantiate(initHabitatConfig.habitatPrefab);
 
             // place new spawned habitat/shelter into an empty cell
-            GridCell allocatedGridCell = GridBufferUtils.SetObjectOnGridRandomly(gridCellBuffer, newSpawnedHabitat);
+            GridCell allocatedGridCell;
+            float3 habitatPosition;
 
 
 
-            // random position
-            float3 habitatPosition = GridBufferUtils.GetWorldPosition(allocatedGridCell.X, allocatedGridCell.Y, initGridSystemConfig.ValueRO.gridCellSize, initGridSystemConfig.ValueRO.originPosition);
-            //float3 habitatPosition = new float3(UnityEngine.Random.Range(-fieldSize, fieldSize), 0, UnityEngine.Random.Range(-fieldSize, fieldSize));
+            if (providedPosition.Equals(default)) // if no position provided
+            {
+                allocatedGridCell = GridBufferUtils.SetObjectOnGridRandomly(gridCellBuffer, newSpawnedHabitat);
+
+                // random position
+                habitatPosition = GridBufferUtils.GetWorldPosition(allocatedGridCell.X, allocatedGridCell.Y, initGridSystemConfig.ValueRO.gridCellSize, initGridSystemConfig.ValueRO.originPosition);
+                //float3 habitatPosition = new float3(UnityEngine.Random.Range(-fieldSize, fieldSize), 0, UnityEngine.Random.Range(-fieldSize, fieldSize));
+            }
+            else
+            {
+                int gridCellSize = initGridSystemConfig.ValueRO.gridCellSize;
+                Vector3 gridSystemOrigin = initGridSystemConfig.ValueRO.originPosition;
+
+
+                GridBufferUtils.GetCoordinateByWorldPosition(providedPosition, out int gridX, out int gridZ, gridCellSize, gridSystemOrigin);
+                GridCell? tempGridCell = GridBufferUtils.GetGridCell(gridCellBuffer, gridBufferWidth, gridX, gridZ);
+
+
+                if (!tempGridCell.HasValue) // cannot find such grid cell
+                {
+                    EntityManager.DestroyEntity(newSpawnedHabitat);
+                    continue;
+                }
+
+
+                allocatedGridCell = (GridCell)tempGridCell;
+
+
+                if (allocatedGridCell.storingObject != Entity.Null) // if the grid cell is occupied
+                {
+                    EntityManager.DestroyEntity(newSpawnedHabitat);
+                    continue;
+                }
+
+
+                // Assign the lake to cell
+                GridBufferUtils.SetGridCell(gridCellBuffer, gridBufferWidth, allocatedGridCell.X, allocatedGridCell.Y, newSpawnedHabitat);
+
+                allocatedGridCell = (GridCell)GridBufferUtils.GetGridCell(gridCellBuffer, gridBufferWidth, gridX, gridZ); // update value (value type)
+
+                habitatPosition = GridBufferUtils.GetWorldPosition(gridX, gridZ, gridCellSize, gridSystemOrigin);
+
+            }
+
+
+
+
+
             SystemAPI.SetComponent(newSpawnedHabitat, new LocalTransform
             {
                 Position = habitatPosition,
@@ -136,7 +183,6 @@ public partial class InitHabitatSystem : SystemBase
 
 
             // get surrounding grids of the lake (center grid) by lake range
-            int gridBufferWidth = initGridSystemConfig.ValueRO.width;
 
             List<GridCell> surroundingGrids = GridBufferUtils.GetSurroundingGridCellsInSquare(gridCellBuffer, gridBufferWidth, 4, allocatedGridCell.X, allocatedGridCell.Y);
 
