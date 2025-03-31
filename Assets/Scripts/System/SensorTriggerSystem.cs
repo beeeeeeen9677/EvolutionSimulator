@@ -70,6 +70,10 @@ public partial struct SensorTriggerSystem : ISystem
 
 
 
+            if (currentAnimal.IsCurious())
+                continue;
+
+
 
             // if no existing target, scan
             if (!currentAnimal.IsTargetExist())

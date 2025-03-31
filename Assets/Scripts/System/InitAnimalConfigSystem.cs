@@ -85,7 +85,7 @@ public partial struct InitAnimalConfigSystem : ISystem
             SystemAPI.SetComponent(newSpawnedAnimal, new Energy
             {
                 maxEnergy = maxEnergy,
-                currentEnergy = maxEnergy * 0.1f,
+                currentEnergy = maxEnergy * 0.8f,
             });
 
 
@@ -118,6 +118,12 @@ public partial struct InitAnimalConfigSystem : ISystem
                 interval = 10f,
                 currentCD = 10f,
             });
+
+
+            RefRW<Curiousity> curiousity = SystemAPI.GetComponentRW<Curiousity>(newSpawnedAnimal);
+            curiousity.ValueRW.probability = 0.5f;
+            curiousity.ValueRW.remainTime = 10;
+            curiousity.ValueRW.maxTime = 10;
         }
     }
 }

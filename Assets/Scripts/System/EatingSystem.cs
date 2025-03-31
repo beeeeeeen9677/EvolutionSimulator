@@ -158,7 +158,7 @@ public partial struct EatingSystem : ISystem
 
 
                 // find/update habitat after finishing eating successfully
-                UpdateHabitat(ref state, animal.entity);
+                FinishedEating(ref state, animal.entity);
 
 
 
@@ -206,7 +206,7 @@ public partial struct EatingSystem : ISystem
 
 
                 // find/update habitat after finishing eating successfully
-                UpdateHabitat(ref state, animal.entity);
+                FinishedEating(ref state, animal.entity);
 
             }
 
@@ -214,10 +214,13 @@ public partial struct EatingSystem : ISystem
         }
     }
 
-    private void UpdateHabitat(ref SystemState state, Entity animal)
+    private void FinishedEating(ref SystemState state, Entity animal)
     {
         // enable the IsFindingHabitat tag
-        state.EntityManager.SetComponentEnabled<IsFindingHabitat>(animal, true);
+        state.EntityManager.SetComponentEnabled<IsFindingHabitat>(animal, true); // find habitat
+
+        // take curiousity action
+        SystemAPI.GetAspect<AnimalAspect>(animal).TakeCuriousityAction();
     }
 
 

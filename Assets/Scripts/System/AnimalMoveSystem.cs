@@ -58,6 +58,16 @@ public partial struct MoveAnimalJob : IJobEntity
             float heading = MathHelpers.GetHeading(animal.threatPosition, animal.position);
             animal.FaceTarget(heading);
         }
+        else if (animal.IsCurious())
+        {
+            animal.ConsumeCuriousityTime(deltaTime); // consume curiousity time
+
+            if (animal.IsHabitatExist())
+            {
+                float heading = MathHelpers.GetHeading(animal.habitatPosition, animal.position);
+                animal.FaceTarget(heading);
+            }
+        }
         else if (animal.IsTargetExist())
         {
 
@@ -79,7 +89,7 @@ public partial struct MoveAnimalJob : IJobEntity
             // go to habitat or turn randomly if do not have habitat
             bool isTakingRest = TakeRest(animal); // true: inside habitat
 
-            if(isTakingRest)
+            if (isTakingRest)
             {
                 return; // This acts like 'continue' in Execute()
             }

@@ -127,6 +127,7 @@ public class PropertyInspectorUIManager : MonoBehaviour
         InspectCell();
         InspectSize();
         InspectHabitat();
+        InspectCuriousity();
     }
 
 
@@ -487,6 +488,21 @@ public class PropertyInspectorUIManager : MonoBehaviour
         };
     }
 
+    private void InspectCuriousity()
+    {
+        PropertyContainer propertyContainer = CreateNewPropertyContainer("Curiousity"); // Curiousity
+
+        propertyContainer.valueUpdateFunc = () => {
+            Curiousity curiousity = entityManager.GetComponentData<Curiousity>(selectedEntity);
+
+            return
+            //$"status: {(isFindingHabitat?"finding":"/")}";
+            $"probability: {(curiousity.probability)}\n" +
+            $"remain time: {curiousity.remainTime.ToString("F1")}\n" +
+            $"max time: {curiousity.maxTime.ToString("F1")}";
+
+        };
+    }
 
 
 

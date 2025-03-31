@@ -31,6 +31,8 @@ public readonly partial struct AnimalAspect : IAspect
 
     public readonly RefRO<Family> _family;
 
+    public readonly RefRW<Curiousity> _curiousity;
+
 
     //public readonly RefRO<SizeProperty> _sizeProperty;
 
@@ -242,6 +244,23 @@ public readonly partial struct AnimalAspect : IAspect
     }
     // sprint effect total time 
     public float effectITotalTime => _sprint.ValueRW.effectTotalTime;
+
+
+
+    public float curiousityProbability => _curiousity.ValueRO.probability;
+
+    public float curiousityRemainTime
+    {
+        get => _curiousity.ValueRO.remainTime;
+        private set => _curiousity.ValueRW.remainTime = value;
+    }
+
+    public float curiousityMaxTime
+    {
+        get => _curiousity.ValueRO.maxTime;
+        private set => _curiousity.ValueRW.maxTime = value;
+    }
+
 
 
 
@@ -746,5 +765,47 @@ public readonly partial struct AnimalAspect : IAspect
 
 
         return false;
+    }
+
+
+    public void TakeCuriousityAction()
+    {
+        // take curiousity action if habitat exist only
+        if (!IsHabitatExist())
+            return;
+
+        if (currentEnergy < 0.7f * maxEnergy)
+            return;
+
+
+        // pooling for probability of curiousity action
+        float curiousityProbResult = UnityEngine.Random.Range(0f, 1f);
+
+        if (curiousityProbResult < curiousityProbability)
+        {
+            // take curiousity action
+            curiousityRemainTime = curiousityMaxTime;
+
+            Debug.Log("Take curiousity action");
+        }
+    }
+
+
+    public bool IsCurious()
+    {
+        if (curiousityRemainTime > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+
+    public void ConsumeCuriousityTime(float deltaTime)
+    {
+        curiousityRemainTime = Mathf.Clamp(curiousityRemainTime - deltaTime, 0, curiousityMaxTime);
     }
 }

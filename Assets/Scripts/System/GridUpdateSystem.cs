@@ -20,7 +20,6 @@ public partial class GridUpdateSystem : SystemBase
 
 
 
-    RefRW<InitGridSystemConfig> initGridSystemConfig;
     Entity initGridSystemConfigEntity;
     Vector3 gridSystemOrigin;
     int gridBufferWidth;
@@ -38,17 +37,17 @@ public partial class GridUpdateSystem : SystemBase
         if (!initialized)
         {
             // grid system config var
-            initGridSystemConfig = SystemAPI.GetSingletonRW<InitGridSystemConfig>();
+            var initGridSystemConfig = SystemAPI.GetSingleton<InitGridSystemConfig>();
             initGridSystemConfigEntity = SystemAPI.GetSingletonEntity<InitGridSystemConfig>();
             DynamicBuffer<GridCell> gridCellBuffer = EntityManager.GetBuffer<GridCell>(initGridSystemConfigEntity);
-            gridBufferWidth = initGridSystemConfig.ValueRO.width;
-            gridCellSize = initGridSystemConfig.ValueRO.gridCellSize;
-            gridSystemOrigin = initGridSystemConfig.ValueRO.originPosition;
+            gridBufferWidth = initGridSystemConfig.width;
+            gridCellSize = initGridSystemConfig.gridCellSize;
+            gridSystemOrigin = initGridSystemConfig.originPosition;
 
 
 
             // init grid mesh text
-            OnGridsInit?.Invoke(gridBufferWidth, initGridSystemConfig.ValueRO.height, gridCellSize, gridCellBuffer);
+            OnGridsInit?.Invoke(gridBufferWidth, initGridSystemConfig.height, gridCellSize, gridCellBuffer);
 
 
 
@@ -83,6 +82,9 @@ public partial class GridUpdateSystem : SystemBase
 
     public void UpdateGridCellsInformation()
     {
+        var initGridSystemConfig = SystemAPI.GetSingletonRW<InitGridSystemConfig>();
+
+
         //Debug.Log("Diffuse Soil Water");
 
         DynamicBuffer<GridCell> gridCellBuffer = EntityManager.GetBuffer<GridCell>(initGridSystemConfigEntity);
