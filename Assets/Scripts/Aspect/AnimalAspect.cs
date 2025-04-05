@@ -31,7 +31,7 @@ public readonly partial struct AnimalAspect : IAspect
 
     public readonly RefRO<Family> _family;
 
-    public readonly RefRW<Curiousity> _curiousity;
+    public readonly RefRW<Curiosity> _curiousity;
 
 
     //public readonly RefRO<SizeProperty> _sizeProperty;

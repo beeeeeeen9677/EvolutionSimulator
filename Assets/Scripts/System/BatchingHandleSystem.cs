@@ -2,8 +2,6 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Rendering.VirtualTexturing;
-using static GrassPropertiesSystem;
 
 
 
@@ -40,7 +38,7 @@ public partial struct BatchingHandleSystem : ISystem
     {
         //return;
 
-        RefRW<AnimalBatch> animalBatch = animalBatch = SystemAPI.GetSingletonRW<AnimalBatch>();
+        RefRW<AnimalBatch> animalBatch = SystemAPI.GetSingletonRW<AnimalBatch>();
         if (BatchSize == 0)
         {
             BatchSize = animalBatch.ValueRO.BatchSize;
@@ -139,7 +137,7 @@ public partial struct BatchingHandleSystem : ISystem
 
 
         // add one to the current batch index, set back to 0 if it exceeds the total number of batches
-        if(totalNumOfBatches != 0)
+        if (totalNumOfBatches != 0)
         {
             animalBatch.ValueRW.CurrentBatchIndex = (animalBatch.ValueRO.CurrentBatchIndex + 1) % totalNumOfBatches;
         }
@@ -156,7 +154,7 @@ public partial struct BatchingHandleSystem : ISystem
 
 
             // if finished one day
-            if (animalBatch.ValueRO.CycleCount % 24 == 0) // 24 cycles = 1 day
+            if (animalBatch.ValueRO.CycleCount % animalBatch.ValueRO.CycleOfDay == 0) // 24 cycles = 1 day
             {
                 // water diffusion
 

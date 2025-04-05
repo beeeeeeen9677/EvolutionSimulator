@@ -128,6 +128,16 @@ public partial struct ReproductionSystem : ISystem
             {
                 parent = parentEntity,
             });
+
+
+
+            // Curiosity
+            entityCommandBuffer.SetComponent(newSpawnedAnimal, new Curiosity
+            {
+                probability = parentAnimal.curiousityProbability,
+                maxTime = parentAnimal.curiousityMaxTime,
+                remainTime = parentAnimal.curiousityMaxTime
+            });
         }
     }
 }
@@ -136,4 +146,3 @@ public struct Family : IComponentData
 {
     public Entity parent;
 }
- 

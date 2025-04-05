@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,6 +19,7 @@ public class CommonUIManager : MonoBehaviour
         entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
         animalBatchEntity = entityManager.CreateEntityQuery(typeof(AnimalBatch)).GetSingletonEntity();
+
     }
 
     // Update is called once per frame
@@ -33,6 +32,6 @@ public class CommonUIManager : MonoBehaviour
     {
         AnimalBatch animalBatch = entityManager.GetComponentData<AnimalBatch>(animalBatchEntity);
         cycleText.text = animalBatch.CycleCount.ToString();
-        dayText.text = (animalBatch.CycleCount / 24).ToString(); // 24 cycle as 1 day
+        dayText.text = (animalBatch.CycleCount / animalBatch.CycleOfDay).ToString(); // 24 cycle as 1 day
     }
 }

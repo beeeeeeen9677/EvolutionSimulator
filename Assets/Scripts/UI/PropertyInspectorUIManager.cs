@@ -493,7 +493,7 @@ public class PropertyInspectorUIManager : MonoBehaviour
         PropertyContainer propertyContainer = CreateNewPropertyContainer("Curiousity"); // Curiousity
 
         propertyContainer.valueUpdateFunc = () => {
-            Curiousity curiousity = entityManager.GetComponentData<Curiousity>(selectedEntity);
+            Curiosity curiousity = entityManager.GetComponentData<Curiosity>(selectedEntity);
 
             return
             //$"status: {(isFindingHabitat?"finding":"/")}";

@@ -120,7 +120,7 @@ public partial struct InitAnimalConfigSystem : ISystem
             });
 
 
-            RefRW<Curiousity> curiousity = SystemAPI.GetComponentRW<Curiousity>(newSpawnedAnimal);
+            RefRW<Curiosity> curiousity = SystemAPI.GetComponentRW<Curiosity>(newSpawnedAnimal);
             curiousity.ValueRW.probability = 0.5f;
             curiousity.ValueRW.remainTime = 10;
             curiousity.ValueRW.maxTime = 10;

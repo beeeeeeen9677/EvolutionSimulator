@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 
@@ -7,6 +5,8 @@ public class BatchSettingAuthoring : MonoBehaviour
 {
     [SerializeField]
     private int BatchSize; // number of animals to be processed in each batch
+    [SerializeField]
+    private int CycleOfDay; // how many cycles in one day
 
 
     public class BatchSettingBaker : Baker<BatchSettingAuthoring>
@@ -19,6 +19,7 @@ public class BatchSettingAuthoring : MonoBehaviour
                 BatchSize = authoring.BatchSize,
                 CurrentBatchIndex = 0,
                 CycleCount = 0,
+                CycleOfDay = authoring.CycleOfDay,
             });
         }
     }
@@ -29,4 +30,5 @@ public struct AnimalBatch : IComponentData
     public int BatchSize; // number of animals to be processed in each batch
     public int CurrentBatchIndex;
     public int CycleCount;
+    public int CycleOfDay;
 }

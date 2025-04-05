@@ -361,6 +361,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BatchSize: 100
+  CycleOfDay: 24
 --- !u!4 &856808893
 Transform:
   m_ObjectHideFlags: 0

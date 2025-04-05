@@ -3,23 +3,23 @@ using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 
-public class CuriousityAuthoring : MonoBehaviour
+public class CuriosityAuthoring : MonoBehaviour
 {
 
 
-    public class CuriousityAuthoringBaker : Baker<CuriousityAuthoring>
+    public class CuriousityAuthoringBaker : Baker<CuriosityAuthoring>
     {
-        public override void Bake(CuriousityAuthoring authoring)
+        public override void Bake(CuriosityAuthoring authoring)
         {
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-            AddComponent(entity, new Curiousity());
+            AddComponent(entity, new Curiosity());
         }
     }
 }
 
 
 
-public struct Curiousity : IComponentData
+public struct Curiosity : IComponentData
 {
     public float probability; // probability of taking curiousity action, between 0 - 1
     public float remainTime;
