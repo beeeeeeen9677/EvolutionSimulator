@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
+using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
+using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 
 
-
+[BurstCompile]
 [UpdateAfter(typeof(InitLakeSystem))]
 public partial class GridUpdateSystem : SystemBase
 {
@@ -16,6 +19,7 @@ public partial class GridUpdateSystem : SystemBase
     public Action<int, int, int, DynamicBuffer<GridCell>> OnGridsInit;
     public Action<int, int, string> OnOneGridCellValueChanged;
     public Action<DynamicBuffer<GridCell>> OnAllGridCellValueChanged;
+    public Action<ExportData> OnDataExport;
 
 
 
@@ -26,16 +30,25 @@ public partial class GridUpdateSystem : SystemBase
     int gridCellSize;
 
 
+
     protected override void OnCreate()
     {
         RequireForUpdate<InitGridSystemConfig>();
         initialized = false;
     }
+
+
+    [BurstCompile]
     protected override void OnUpdate()
     {
+        Enabled = false;
         // Initiation, execute only once
         if (!initialized)
         {
+
+
+
+
             // grid system config var
             var initGridSystemConfig = SystemAPI.GetSingleton<InitGridSystemConfig>();
             initGridSystemConfigEntity = SystemAPI.GetSingletonEntity<InitGridSystemConfig>();
@@ -80,8 +93,13 @@ public partial class GridUpdateSystem : SystemBase
 
     }
 
-    public void UpdateGridCellsInformation()
+    [BurstCompile]
+    public void UpdateGridCellsInformation(int day = 0)
     {
+        if (initGridSystemConfigEntity == Entity.Null)
+            return;
+
+
         var initGridSystemConfig = SystemAPI.GetSingletonRW<InitGridSystemConfig>();
 
 
@@ -89,8 +107,7 @@ public partial class GridUpdateSystem : SystemBase
 
         DynamicBuffer<GridCell> gridCellBuffer = EntityManager.GetBuffer<GridCell>(initGridSystemConfigEntity);
 
-
-
+        // Debug.Log("Grid Cell Buffer Length: " );
         int diffusionMode = 2;
 
 
@@ -301,6 +318,11 @@ public partial class GridUpdateSystem : SystemBase
         GridBufferUtils.ExecuteStackedRecord(gridCellBuffer, gridBufferWidth, modifyMoistureStack);
 
         OnAllGridCellValueChanged?.Invoke(gridCellBuffer);
+
+
+        ExportData exportData = CalculateAverageAnimalData(day);
+        // Debug.Log($"Day: {exportData.day}   Speed: {exportData.moveSpeed}");
+        OnDataExport?.Invoke(exportData);
     }
 
 
@@ -338,6 +360,42 @@ public partial class GridUpdateSystem : SystemBase
 
         return false;
     }
+
+
+
+    [BurstCompile]
+    public ExportData CalculateAverageAnimalData(int simulationDay)
+    {
+        var query = EntityManager.CreateEntityQuery(typeof(AnimalTag)); // Adjust query as needed
+        var entityCount = query.CalculateEntityCount();
+
+        if (entityCount == 0)
+            return new ExportData();
+
+        var averages = new NativeArray<float>(4, Allocator.TempJob); // [moveSpeed, maxEnergy, size, sensorProb]
+
+        new CalculateAveragesJob
+        {
+            Averages = averages
+        }
+        .Schedule(new JobHandle())
+        .Complete();
+
+
+
+
+        var result = new ExportData
+        {
+            day = simulationDay,
+            moveSpeed = averages[0] / entityCount,
+            maxEnergy = averages[1] / entityCount,
+            size = averages[2] / entityCount,
+            animalSensorProb = averages[3] / entityCount
+        };
+
+        averages.Dispose();
+        return result;
+    }
 }
 
 // for storing records of soil moisture modification
@@ -354,5 +412,19 @@ public class ModifyGridMoistureRecord
         this.X = X;
         this.Y = Y;
         this.moistureToBeAdded = moistureToBeAdded;
+    }
+}
+
+[BurstCompile]
+public partial struct CalculateAveragesJob : IJobEntity
+{
+    public NativeArray<float> Averages;
+
+    public void Execute(AnimalAspect animal)
+    {
+        Averages[0] += animal.GetMoveSpeed();
+        Averages[1] += animal.maxEnergy;
+        Averages[2] += animal.currentSize;
+        Averages[3] += animal.animalSensorProbability;
     }
 }

@@ -1,10 +1,12 @@
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
 
 
-
+[BurstCompile]
 public partial struct BatchingHandleSystem : ISystem
 {
     private int BatchSize;// number of animals to be processed in each batch
@@ -33,7 +35,7 @@ public partial struct BatchingHandleSystem : ISystem
         }
     }
 
-
+    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         //return;
@@ -42,7 +44,7 @@ public partial struct BatchingHandleSystem : ISystem
         if (BatchSize == 0)
         {
             BatchSize = animalBatch.ValueRO.BatchSize;
-            Debug.Log("BatchSize is Assigned: " + BatchSize);
+            Debug.Log("BatchSize is Assigned: " + BatchSize.ToString());
         }
 
 
@@ -162,8 +164,12 @@ public partial struct BatchingHandleSystem : ISystem
                 GridUpdateSystem gridUpdateSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<GridUpdateSystem>();
 
                 // Call grid update (water diffusion) function from GridUpdateSystem
-                gridUpdateSystem.UpdateGridCellsInformation();
 
+
+
+
+                gridUpdateSystem.UpdateGridCellsInformation(animalBatch.ValueRO.CycleCount / animalBatch.ValueRO.CycleOfDay);
+                
 
                 // plant growth
                 //var grassFlag = SystemAPI.GetSingletonRW<GrassGrowUpSystemFlag>();
@@ -187,4 +193,7 @@ public partial struct BatchingHandleSystem : ISystem
             animalEntities[j] = temp;
         }
     }
+
+
 }
+

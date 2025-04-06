@@ -124,16 +124,16 @@ public readonly partial struct AnimalAspect : IAspect
     }
 
 
-    private float grassSensorProbability
+    public float grassSensorProbability
     {
         get => _animalSensor.ValueRO.grassSensorProbability;
-        set => _animalSensor.ValueRW.grassSensorProbability = value;
+        private set => _animalSensor.ValueRW.grassSensorProbability = value;
     }
 
-    private float animalSensorProbability
+    public float animalSensorProbability
     {
         get => _animalSensor.ValueRO.animalSensorProbability;
-        set => _animalSensor.ValueRW.animalSensorProbability = value;
+        private set => _animalSensor.ValueRW.animalSensorProbability = value;
     }
 
 
