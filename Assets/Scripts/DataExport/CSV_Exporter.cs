@@ -41,14 +41,15 @@ public class CSV_Exporter : MonoBehaviour
         {
             if (!headersWritten)
             {
-                writer.WriteLine("Day,MoveSpeed,MaxEnergy,Size,SensorProbability");
+                writer.WriteLine(data.GetHeader());
                 headersWritten = true;
 #if UNITY_EDITOR
                 UnityEditor.AssetDatabase.Refresh(); // Make file visible in Editor
 #endif
             }
 
-            string newLine = $"{data.day},{data.moveSpeed},{data.maxEnergy},{data.size},{data.animalSensorProb}";
+            //string newLine = $"{data.day},{data.moveSpeed},{data.maxEnergy},{data.size},{data.animalSensorProb}";
+            string newLine = data.GetRecord();
             writer.WriteLine(newLine);
             Debug.Log("csv: " + newLine);
 
