@@ -32,12 +32,12 @@ public class CSV_Exporter : MonoBehaviour
 
         GridUpdateSystem gridUpdateSystem =
             World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<GridUpdateSystem>();
-        gridUpdateSystem.OnDataExport += ExportCSV;
+        gridUpdateSystem.OnAvgDataExport += ExportCSV;
     }
 
     private void ExportCSV(ExportData data)
     {
-        return; // disable export for now
+        //return; // disable export for now
 
         try
         {

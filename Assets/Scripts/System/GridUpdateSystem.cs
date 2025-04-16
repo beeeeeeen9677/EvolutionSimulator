@@ -19,7 +19,8 @@ public partial class GridUpdateSystem : SystemBase
     public Action<int, int, int, DynamicBuffer<GridCell>> OnGridsInit;
     public Action<int, int, string> OnOneGridCellValueChanged;
     public Action<DynamicBuffer<GridCell>> OnAllGridCellValueChanged;
-    public Action<ExportData> OnDataExport;
+    public Action<ExportData> OnAvgDataExport;
+    public Action<ExportData> OnSeperrateDataExport;
 
 
 
@@ -320,9 +321,13 @@ public partial class GridUpdateSystem : SystemBase
         OnAllGridCellValueChanged?.Invoke(gridCellBuffer);
 
 
-        ExportData exportData = CalculateAverageAnimalData(day);
-        // Debug.Log($"Day: {exportData.day}   Speed: {exportData.moveSpeed}");
-        OnDataExport?.Invoke(exportData);
+
+        if (day % 100 == 0) // export for every 100 days
+        {
+            ExportData exportData = RecordSeparateAnimalData(day);
+            // Debug.Log($"Day: {exportData.day}   Speed: {exportData.moveSpeed}");
+            OnAvgDataExport?.Invoke(exportData);
+        }
     }
 
 
@@ -396,7 +401,46 @@ public partial class GridUpdateSystem : SystemBase
         averages.Dispose();
         return result;
     }
+
+    [BurstCompile]
+    public ExportData RecordSeparateAnimalData(int simulationDay)
+    {
+        var query = SystemAPI.QueryBuilder().WithAll<AnimalTag>().Build();
+        var entityCount = query.CalculateEntityCount();
+
+        if (entityCount == 0)
+            return new ExportData();
+
+        // Use NativeList to collect all animal data
+        var animalData = new NativeList<FixedString128Bytes>(entityCount, Allocator.TempJob);
+
+        // Schedule job to collect individual animal data
+        new RecordAnimalSeparateDataJob
+        {
+            Day = simulationDay,
+            AnimalData = animalData
+        }
+        .Schedule(new JobHandle())
+        .Complete();
+
+
+
+        // Combine all records into one string with newlines
+        var result = new ExportData
+        {
+            day = simulationDay,
+            separateData = string.Join("\n", animalData.AsArray().ToArray())
+        };
+
+        animalData.Dispose();
+        return result;
+    }
 }
+
+
+
+
+
 
 // for storing records of soil moisture modification
 public class ModifyGridMoistureRecord
@@ -426,5 +470,21 @@ public partial struct CalculateAveragesJob : IJobEntity
         Averages[1] += animal.maxEnergy;
         Averages[2] += animal.currentSize;
         Averages[3] += animal.animalSensorProbability;
+    }
+}
+
+[BurstCompile]
+partial struct RecordAnimalSeparateDataJob : IJobEntity
+{
+    public int Day;
+    public NativeList<FixedString128Bytes> AnimalData;
+
+
+    void Execute(AnimalAspect animal)
+    {
+        // Format: "day,moveSpeed,maxEnergy,size,sensorProb" per animal
+        AnimalData.Add(new FixedString128Bytes(
+            $"{Day},{animal.GetMoveSpeed()},{animal.maxEnergy},{animal.currentSize},{animal.animalSensorProbability},{animal.entity.Index}"
+        ));
     }
 }

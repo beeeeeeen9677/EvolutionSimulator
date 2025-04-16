@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ExportData 
+public class ExportData
 {
     // store the average data of all animals
 
@@ -14,13 +14,19 @@ public class ExportData
     public float animalSensorProb;
 
 
+    public string separateData;
+
+
     public string GetHeader()
     {
-        return "Day,MoveSpeed,MaxEnergy,Size,SensorProbability";
+        return "Day,MoveSpeed,MaxEnergy,Size,SensorProbability,EntityID";
     }
 
     public string GetRecord()
     {
-        return $"{day},{moveSpeed},{maxEnergy},{size},{animalSensorProb}";
-    }   
+        if (separateData != null)
+            return separateData;
+        else
+            return $"{day},{moveSpeed},{maxEnergy},{size},{animalSensorProb},0";
+    }
 }

@@ -588,7 +588,13 @@ public readonly partial struct AnimalAspect : IAspect
 
     public void AdjustSensorProbability(bool isSuccess) //Call after every round of scanning & hunting
     {
+        return; // add to counter later
+
+
+
         float adjustRate = 0.1f;
+
+        
         if(currentSensor == CollisionLayer.Grass)
         {
             if (isSuccess) // success to eat grass

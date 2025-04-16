@@ -6,7 +6,6 @@ using Unity.Mathematics;
 using UnityEngine;
 
 
-[BurstCompile]
 public partial struct BatchingHandleSystem : ISystem
 {
     private int BatchSize;// number of animals to be processed in each batch
@@ -35,7 +34,6 @@ public partial struct BatchingHandleSystem : ISystem
         }
     }
 
-    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         //return;
