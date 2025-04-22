@@ -1,3 +1,4 @@
+using System;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -104,27 +105,33 @@ public partial struct BatchingHandleSystem : ISystem
             Entity currentEntity = animalEntities[ci];
 
 
-
-            // Find target
-            SystemAPI.SetComponentEnabled<SensorTriggerTag>(currentEntity, true);
-
-
-
-
-            // Reproduction
-            GrowUpAspect animal = SystemAPI.GetAspect<GrowUpAspect>(animalEntities[ci]);
-            RefRO<Energy> energy = SystemAPI.GetComponentRO<Energy>(animalEntities[ci]);
-            //if (animal.currentStage != AgeStageEnum.mature)
-            if (animal.currentStage == AgeStageEnum.infant)  // only generate offspring if not at infant stage
-                continue;
-
-            // if current energy more than 50% of max energy, born offspring
-            if (energy.ValueRO.currentEnergy >= 0.7f * energy.ValueRO.maxEnergy)
+            try
             {
-                if (animal.IsReadyToGenerateOffspring(SystemAPI.Time.DeltaTime))
+                // Find target
+                SystemAPI.SetComponentEnabled<SensorTriggerTag>(currentEntity, true);
+
+
+
+
+                // Reproduction
+                GrowUpAspect animal = SystemAPI.GetAspect<GrowUpAspect>(animalEntities[ci]);
+                RefRO<Energy> energy = SystemAPI.GetComponentRO<Energy>(animalEntities[ci]);
+                //if (animal.currentStage != AgeStageEnum.mature)
+                if (animal.currentStage == AgeStageEnum.infant)  // only generate offspring if not at infant stage
+                    continue;
+
+                // if current energy more than 50% of max energy, born offspring
+                if (energy.ValueRO.currentEnergy >= 0.5f * energy.ValueRO.maxEnergy)
                 {
-                    SystemAPI.SetComponentEnabled<ReproductionTag>(currentEntity, true);
+                    if (animal.IsReadyToGenerateOffspring(SystemAPI.Time.DeltaTime))
+                    {
+                        SystemAPI.SetComponentEnabled<ReproductionTag>(currentEntity, true);
+                    }
                 }
+            }
+            catch (ArgumentException)
+            {
+                Debug.LogError($"Batching System: Entity {currentEntity.Index} ArgumentException");
             }
 
 

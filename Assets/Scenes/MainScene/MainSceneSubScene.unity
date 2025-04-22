@@ -328,7 +328,7 @@ MonoBehaviour:
   animalPrefab: {fileID: 3302597946754029742, guid: 197a0ef542d16e940ac3db124350a93b,
     type: 3}
   initAnimalNumber: 50
-  fieldSize: 50
+  fieldSize: 100
   minInitSize: 0.5
   maxInitSize: 1
 --- !u!1 &856808891
@@ -406,8 +406,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 558491ccb84d3dc438e12a19e466419e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 20
-  height: 20
+  width: 50
+  height: 50
   gridCellSize: 10
 --- !u!4 &913008441
 Transform:

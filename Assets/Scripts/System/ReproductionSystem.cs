@@ -1,5 +1,6 @@
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
 
@@ -52,7 +53,7 @@ public partial struct ReproductionSystem : ISystem
     {
         AnimalAspect parentAnimal = SystemAPI.GetAspect<AnimalAspect>(parentEntity);
 
-        parentAnimal.ConsumeFixedEnergy(0.2f * parentAnimal.maxEnergy);        // Consume 20% energy
+        parentAnimal.ConsumeFixedEnergy(0.1f * parentAnimal.maxEnergy);        // Consume 10% energy
 
 
         InitAnimalConfig initAnimalConfig = SystemAPI.GetSingleton<InitAnimalConfig>();
@@ -89,11 +90,28 @@ public partial struct ReproductionSystem : ISystem
 
 
             // Energy Component
-            entityCommandBuffer.SetComponent(newSpawnedAnimal, SystemAPI.GetComponent<Energy>(parentEntity));
+            var parentEnergy = SystemAPI.GetComponent<Energy>(parentEntity);
+
+
+            entityCommandBuffer.SetComponent(newSpawnedAnimal, new Energy
+            {
+                maxEnergy = parentEnergy.maxEnergy,
+                currentEnergy = parentAnimal.maxEnergy,
+            });
 
 
             // AnimalSensor Component
             AnimalSensor parentSensor = SystemAPI.GetComponent<AnimalSensor>(parentEntity);
+
+
+
+
+            // store as variable, will be used to set the color
+            float newGrassSensorProb = parentSensor.grassSensorProbability;
+            float newAnimalSensorProb = 1 - parentSensor.grassSensorProbability;
+
+
+
             entityCommandBuffer.SetComponent(newSpawnedAnimal, new AnimalSensor
             {
                 size = parentSensor.size,
@@ -103,8 +121,8 @@ public partial struct ReproductionSystem : ISystem
                 maxCooldown = parentSensor.maxCooldown,
                 currentCooldown = parentSensor.maxCooldown,
 
-                grassSensorProbability = parentSensor.grassSensorProbability,
-                animalSensorProbability = 1 - parentSensor.grassSensorProbability,
+                grassSensorProbability = newGrassSensorProb,
+                animalSensorProbability = newAnimalSensorProb,
 
                 currentSensor = null,
 
@@ -138,6 +156,64 @@ public partial struct ReproductionSystem : ISystem
                 maxTime = parentAnimal.curiousityMaxTime,
                 remainTime = parentAnimal.curiousityMaxTime
             });
+
+
+
+            // Set Color
+            entityCommandBuffer.AddComponent(newSpawnedAnimal, new NeedsColorInitialization
+            {
+                grassProb = newGrassSensorProb,
+                animalProb = newAnimalSensorProb
+            });
+            /*
+            if (state.EntityManager.HasBuffer<LinkedEntityGroup>(newSpawnedAnimal))
+            {
+                var linkedEntityGroupBuffer = state.EntityManager.GetBuffer<LinkedEntityGroup>(newSpawnedAnimal);
+
+                // Assuming the child entity is the second entity in the LinkedEntityGroup
+                Entity childEntity = linkedEntityGroupBuffer[1].Value;
+
+
+                if (state.EntityManager.HasComponent<URPMaterialPropertyBaseColor>(childEntity))
+                {
+                    // food preference
+                    AnimalSensor animalSensor = state.EntityManager.GetComponentData<AnimalSensor>(newSpawnedAnimal);
+                    float grassProb = newGrassSensorProb;
+                    float animalProb = newAnimalSensorProb;
+
+
+
+                    // Define the colors
+                    float4 herbivorousColor = new float4(1.0f, 0.8f, 0.0f, 1.0f); // eat grass --- Yellow (FFCB00)
+                    float4 carnivorousColor = new float4(1.0f, 0.3f, 0.3f, 1.0f); // eat meat  --- Red (FF4C4C)
+                    float4 medianColor = new float4(0.76f, 1.0f, 1.0f, 1.0f); // median value(0.5) --- Cyan (C2FFFF)
+
+
+
+                    // Interpolate between the three colors
+                    float4 newAnimalColor;
+                    if (grassProb > 0.5f)
+                    {
+                        // Blend between grassColor and medianColor
+                        newAnimalColor = math.lerp(medianColor, herbivorousColor, (grassProb - 0.5f) * 2);
+                    }
+                    else
+                    {
+                        // Blend between animalColor and medianColor
+                        newAnimalColor = math.lerp(carnivorousColor, medianColor, grassProb * 2);
+                    }
+
+
+
+
+
+                    var baseColor = state.EntityManager.GetComponentData<URPMaterialPropertyBaseColor>(childEntity);
+                    baseColor.Value = newAnimalColor;
+                    state.EntityManager.SetComponentData(childEntity, baseColor);
+                }
+            }
+            */
+
         }
     }
 }
@@ -145,4 +221,10 @@ public partial struct ReproductionSystem : ISystem
 public struct Family : IComponentData
 {
     public Entity parent;
+}
+
+public struct NeedsColorInitialization : IComponentData
+{
+    public float grassProb;
+    public float animalProb;
 }

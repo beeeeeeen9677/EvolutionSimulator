@@ -86,7 +86,7 @@ public partial struct InitAnimalConfigSystem : ISystem
             SystemAPI.SetComponent(newSpawnedAnimal, new Energy
             {
                 maxEnergy = maxEnergy,
-                currentEnergy = maxEnergy * 0.8f,
+                currentEnergy = maxEnergy * 1.0f,
             });
 
 

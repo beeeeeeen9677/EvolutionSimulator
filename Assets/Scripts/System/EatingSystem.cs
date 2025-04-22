@@ -146,7 +146,7 @@ public partial struct EatingSystem : ISystem
                 // if the grass has color tag
                 if(grassColor != "")
                 {
-                    animal.IncreaseColorCell(Mathf.FloorToInt(grass.currentSize * 5), grassColor);
+                    animal.IncreaseColorCell(Mathf.FloorToInt(grass.currentSize * 10), grassColor);
                 }
 
 
@@ -194,7 +194,7 @@ public partial struct EatingSystem : ISystem
 
 
                 // increase meat cell by target size
-                animal.IncreaseMeatCell(Mathf.FloorToInt(targetAnimal.currentSize * 10));
+                animal.IncreaseMeatCell(Mathf.FloorToInt(targetAnimal.currentSize * 20));
 
 
                 // clear target threat
