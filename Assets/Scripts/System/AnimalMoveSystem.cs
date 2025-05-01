@@ -108,7 +108,7 @@ public partial struct MoveAnimalJob : IJobEntity
 
     private bool TakeRest(AnimalAspect animal)
     {
-        if(animal.IsHabitatExist())
+        if(animal.IsHabitatExist() && animal.hungerState == HungerStatusEnum.full)
         {
             float heading = MathHelpers.GetHeading(animal.position, animal.habitatPosition);
             animal.FaceTarget(heading);

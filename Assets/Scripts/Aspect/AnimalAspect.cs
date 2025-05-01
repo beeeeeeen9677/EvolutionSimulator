@@ -21,6 +21,7 @@ public readonly partial struct AnimalAspect : IAspect
 
 
     public readonly RefRW<Energy> _energy;
+    public readonly RefRW<HungerStatus> _hungerStatus;
     public readonly RefRW<AnimalSensor> _animalSensor;
     public readonly RefRW<Target> _target;
     public readonly RefRW<Threat> _threat;
@@ -82,6 +83,12 @@ public readonly partial struct AnimalAspect : IAspect
 
 
     public float maxEnergy => _energy.ValueRO.maxEnergy;
+
+    public HungerStatusEnum hungerState
+    {
+        get => _hungerStatus.ValueRO.currentState;
+    }
+
     private float currentEnergy
     {
         get => _energy.ValueRO.currentEnergy;
@@ -676,7 +683,7 @@ public readonly partial struct AnimalAspect : IAspect
 
     public bool IsAbleToHuntTarget(AnimalAspect targetEntity) // return True if able to hunt
     {
-        return 0.7f * currentSize >= targetEntity.currentSize; // compare size
+        return 0.9f * currentSize >= targetEntity.currentSize; // compare size
     }
 
 

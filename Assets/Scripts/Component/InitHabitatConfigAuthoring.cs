@@ -15,6 +15,8 @@ public class InitHabitatConfigAuthoring : MonoBehaviour
     private float maxRadius;
     [SerializeField]
     private float minRadius;
+    [SerializeField] 
+    private int capacity;
     [SerializeField]
     private float effectOfHiding;
 
@@ -52,6 +54,7 @@ public struct InitHabitatConfig : IComponentData
     public float maxRadius;
     public float minRadius;
     public float effectOfHiding; // a number between 0 - 1 to decide whether can be detected by enemy, larger better
+    public int capacity; // number of animals that can live here
 
     public Entity domainEffectPrefab; // show the range (radius) of the habitat
 }

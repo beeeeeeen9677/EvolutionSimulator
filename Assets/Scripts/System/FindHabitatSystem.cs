@@ -1,6 +1,7 @@
 using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
+using static UnityEditor.Experimental.GraphView.Port;
 
 public partial struct FindHabitatSystem : ISystem
 {
@@ -35,13 +36,14 @@ public partial struct FindHabitatSystem : ISystem
 
 
             // loop through all habitat
-            foreach ((RefRO<LocalTransform> habitatLocalTransform, RefRO<HabitatProperty> habitatProperty) in
-                SystemAPI.Query<RefRO<LocalTransform>, RefRO<HabitatProperty>>())
+            //foreach ((RefRO<LocalTransform> habitatLocalTransform, RefRO<HabitatProperty> habitatProperty) in
+            //    SystemAPI.Query<RefRO<LocalTransform>, RefRO<HabitatProperty>>())
+            foreach (HabitatAspect habitat in SystemAPI.Query<HabitatAspect>())
             {
                 // Habitat limitation size of the animals' max size
                 // animals' max size should be between the following two values
-                float habMinSize = habitatProperty.ValueRO.minSize;
-                float habMaxSize = habitatProperty.ValueRO.maxSize;
+                float habMinSize = habitat.minSize;
+                float habMaxSize = habitat.maxSize;
 
 
 
@@ -51,15 +53,15 @@ public partial struct FindHabitatSystem : ISystem
                     // this animal is able to use this habitat
                     // compare the min distance with other habitats
 
-                    float distance = MathHelpers.GetDistance(animalLocalTransform.ValueRO.Position, habitatLocalTransform.ValueRO.Position);
+                    float distance = MathHelpers.GetDistance(animalLocalTransform.ValueRO.Position, habitat.position);
 
 
                     if (distance < minDistance || minDistance == -1) // if current habitat is nearer or just having init value
                     {
                         // update nearest
                         minDistance = distance;
-                        nearestHabitat = habitatProperty.ValueRO;
-                        habitatPosition = habitatLocalTransform.ValueRO.Position;
+                        nearestHabitat = habitat.habitatProperty;
+                        habitatPosition = habitat.position;
 
                     }
                 }
@@ -70,11 +72,28 @@ public partial struct FindHabitatSystem : ISystem
             // update habitat by result if found
             if (nearestHabitat != null && minDistance != -1)
             {
-                ecb.SetComponent(animalEntity, new AnimalHabitatInfo
+                // check & update vacancy
+
+                // Release vacancy
+                AnimalHabitatInfo animalHabitatInfo = SystemAPI.GetComponent<AnimalHabitatInfo>(animalEntity);
+                if (animalHabitatInfo.habitatProperty != null) // if habitat already assigned
                 {
-                    habitatProperty = nearestHabitat,
-                    habitatPosition = habitatPosition,
-                });
+                    ReleaseVacancy((HabitatProperty)animalHabitatInfo.habitatProperty);
+                }
+
+
+                // Update vacancy
+                bool vacancyIsEnough = OccupyVacancy((HabitatProperty)nearestHabitat);
+
+
+                if (vacancyIsEnough)
+                {
+                    ecb.SetComponent(animalEntity, new AnimalHabitatInfo
+                    {
+                        habitatProperty = nearestHabitat,
+                        habitatPosition = habitatPosition,
+                    });
+                }
             }
 
 
@@ -90,4 +109,24 @@ public partial struct FindHabitatSystem : ISystem
 
     }
 
+    private void ReleaseVacancy(HabitatProperty hb)
+    {
+        hb.vacancy -= 1;
+        if (hb.vacancy > hb.capacity)
+        {
+            hb.vacancy = hb.capacity;
+        }
+    }
+
+
+
+    private bool OccupyVacancy(HabitatProperty hb) // return true if vacancy is enough
+    {
+        if (hb.vacancy - 1 >= 0)
+        {
+            hb.vacancy -= 1;
+            return true;
+        }
+        return false;
+    }
 }

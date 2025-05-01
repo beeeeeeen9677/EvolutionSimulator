@@ -62,12 +62,29 @@ public partial struct EnergySystem : ISystem
                 ecb.DestroyEntity(animal.entity);
 
 
+                // Release habitat vacancy
+                ReleaseVacancy(animal.habitatProperty);
+
                 //animal.entity = Entity.Null;
 
                 // add ToBeDestroyed Component and System later
             }
         }
         
+    }
+
+    private void ReleaseVacancy(HabitatProperty? habitatProperty)
+    {
+        if (!habitatProperty.HasValue)
+            return;
+
+        HabitatProperty hb = (HabitatProperty)habitatProperty;
+
+        hb.vacancy -= 1;
+        if (hb.vacancy > hb.capacity)
+        {
+            hb.vacancy = hb.capacity;
+        }
     }
 
     private void AddNutrientToSoil(AnimalAspect animal, ref SystemState state)
@@ -101,6 +118,8 @@ public partial struct EnergySystem : ISystem
             //SetGridCell(buffer, arrayWidth, recordGridCell.Value.X, recordGridCell.Value.Y, recordGridCell.Value.storingObject, modifiedMoisture);
         }
     }
+
+  
 }
 
 

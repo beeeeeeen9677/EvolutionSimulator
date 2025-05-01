@@ -522,6 +522,7 @@ MonoBehaviour:
   interval: 0.3
   maxRadius: 30
   minRadius: 15
+  capacity: 30
   effectOfHiding: 0.5
   domainEffectPrefab: {fileID: 1994633700383872687, guid: 7b779eca26959204792954e05371a25a,
     type: 3}

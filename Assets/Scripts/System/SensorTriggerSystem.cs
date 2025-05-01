@@ -79,8 +79,8 @@ public partial struct SensorTriggerSystem : ISystem
             if (!currentAnimal.IsTargetExist())
             {
 
-                // if energy larger than certain value, no need to eat
-                if (currentAnimal.GetEnergy() >= 0.7f * currentAnimal.maxEnergy)
+                // if this animal is full
+                if (currentAnimal.hungerState == HungerStatusEnum.full)
                 {
                     continue;
                 }

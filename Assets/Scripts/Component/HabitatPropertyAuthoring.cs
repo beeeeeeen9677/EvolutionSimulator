@@ -23,4 +23,6 @@ public struct HabitatProperty : IComponentData
     public float maxSize;
     public float radius; // area of the habitat
     public float effectOfHiding; // a number between 0 - 1 to decide whether can be detected by enemy, larger better
+    public int vacancy; // should be <= than capacity
+    public int capacity; // number of animals that can live here
 }
