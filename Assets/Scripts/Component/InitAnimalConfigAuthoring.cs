@@ -18,16 +18,27 @@ public class InitAnimalConfigAuthoring : MonoBehaviour
 
     public class InitAnimalConfigBaker : Baker<InitAnimalConfigAuthoring>
     {
+
         public override void Bake(InitAnimalConfigAuthoring authoring)
         {
+            int initAnimalNum = PlayerPrefs.GetInt("InitAnimalNum", authoring.initAnimalNumber);
+            PlayerPrefs.SetInt("InitAnimalNum", initAnimalNum);
+            float huntThreshold = PlayerPrefs.GetFloat("HuntThreshold", 0.7f);
+            PlayerPrefs.SetFloat("HuntThreshold", huntThreshold);
+
+
+
+            // Debug.Log("InitAnimalNum: " + initAnimalNum);
+
             Entity entity = GetEntity(TransformUsageFlags.None);
             AddComponent(entity, new InitAnimalConfig
             {
                 animalPrefab = GetEntity(authoring.animalPrefab, TransformUsageFlags.Dynamic),
-                initAnimalNumber = authoring.initAnimalNumber,
+                initAnimalNumber = initAnimalNum,
                 fieldSize = authoring.fieldSize,
                 minInitSize = authoring.minInitSize,
                 maxInitSize = authoring.maxInitSize,
+                huntThreshold = huntThreshold, // for comparing size
             });
         }
     }
@@ -41,4 +52,6 @@ public struct InitAnimalConfig : IComponentData
 
     public float minInitSize;
     public float maxInitSize;
+
+    public float huntThreshold; // for comparing size
 }

@@ -110,6 +110,8 @@ public partial struct InitAnimalConfigSystem : ISystem
                 orangeWeight = UnityEngine.Random.Range(1, 10),
                 purpleWeight = UnityEngine.Random.Range(1, 10),
                 pinkWeight = UnityEngine.Random.Range(1, 10),
+
+                huntThreshod = initAnimalConfig.huntThreshold, // for comparing size
             });
 
 

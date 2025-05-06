@@ -48,12 +48,23 @@ public partial struct FindHabitatSystem : ISystem
 
 
 
+                // check vacancy
+                if(habitat.vacancy <= 0)
+                {
+                    // this habitat is full
+                    continue;
+                }
+
+
+
                 if (habMinSize < animalMaxSize && animalMaxSize < habMaxSize)
                 {
                     // this animal is able to use this habitat
                     // compare the min distance with other habitats
 
                     float distance = MathHelpers.GetDistance(animalLocalTransform.ValueRO.Position, habitat.position);
+
+
 
 
                     if (distance < minDistance || minDistance == -1) // if current habitat is nearer or just having init value

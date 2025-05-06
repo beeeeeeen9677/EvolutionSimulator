@@ -288,7 +288,10 @@ public partial class GridUpdateSystem : SystemBase
                         // the moisture of grid to be diffused should not be higher than moisture of center grid
                         if (surroundingGridCell.soilMoisture_value > centerGridCell.soilMoisture_value)
                             continue;
-                        float diffusionScaler = 0.05f;
+
+                        float diffusionScaler = PlayerPrefs.GetFloat("DiffusionScaler", 0.05f);
+                        PlayerPrefs.SetFloat("DiffusionScaler", diffusionScaler);
+
 
                         moistureToBeAdded = centerGridCell.soilMoisture_flooredValue * diffusionScaler;
                         // decrease water from the source

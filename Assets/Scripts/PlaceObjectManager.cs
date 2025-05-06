@@ -114,7 +114,7 @@ public class PlaceObjectManager : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit))
         {
-            //Debug.Log("Ray Hit:" + hit.collider.gameObject.name);
+            // Debug.Log("Ray Hit:" + hit.collider.gameObject.name);
 
             if (hit.collider.CompareTag("Ground"))
             {
@@ -125,6 +125,7 @@ public class PlaceObjectManager : MonoBehaviour
                 {
                     if (EventSystem.current.IsPointerOverGameObject()) // Pointer Over UI Element
                         return;
+
 
                     CreateNewObject(position);
                 }

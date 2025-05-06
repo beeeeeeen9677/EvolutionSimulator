@@ -30,6 +30,9 @@ public class ShowGridTextMesh : MonoBehaviour
 
     private void InitGridMesh(int width, int height, int gridCellSize, DynamicBuffer<GridCell> gridCellBuffer)
     {
+
+
+
         this.width = width;
         this.height = height;
         this.gridCellSize = gridCellSize;

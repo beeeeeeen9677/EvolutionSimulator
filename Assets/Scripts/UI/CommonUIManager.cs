@@ -1,3 +1,5 @@
+using System;
+using System.Linq.Expressions;
 using Unity.Entities;
 using UnityEngine;
 using UnityEngine.UI;
@@ -30,8 +32,28 @@ public class CommonUIManager : MonoBehaviour
 
     private void UpdateCycleText()
     {
-        AnimalBatch animalBatch = entityManager.GetComponentData<AnimalBatch>(animalBatchEntity);
-        cycleText.text = animalBatch.CycleCount.ToString();
-        dayText.text = (animalBatch.CycleCount / animalBatch.CycleOfDay).ToString(); // 24 cycle as 1 day
+
+
+        try
+        {
+            AnimalBatch animalBatch = entityManager.GetComponentData<AnimalBatch>(animalBatchEntity);
+            cycleText.text = animalBatch.CycleCount.ToString();
+            dayText.text = (animalBatch.CycleCount / animalBatch.CycleOfDay).ToString(); // 24 cycle as 1 day
+        }
+        catch (ArgumentException)
+        {
+            Debug.LogError("Common UI: Batching System ArgumentException");
+
+            try
+            {
+                animalBatchEntity = entityManager.CreateEntityQuery(typeof(AnimalBatch)).GetSingletonEntity();
+            }
+            catch (InvalidOperationException)
+            {
+                Debug.LogError("Common UI: Sub-Scene is still loading");
+            }
+
+        }
+
     }
 }

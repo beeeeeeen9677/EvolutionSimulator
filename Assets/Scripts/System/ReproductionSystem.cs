@@ -130,6 +130,8 @@ public partial struct ReproductionSystem : ISystem
                 orangeWeight = parentSensor.orangeWeight,
                 purpleWeight = parentSensor.purpleWeight,
                 pinkWeight = parentSensor.pinkWeight,
+
+                huntThreshod = parentSensor.huntThreshod,
             });
 
 

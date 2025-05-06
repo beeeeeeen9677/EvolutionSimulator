@@ -12,11 +12,16 @@ public class InitLakeAuthoring : MonoBehaviour
     {
         public override void Bake(InitLakeAuthoring authoring)
         {
+            int initLakeNumber = PlayerPrefs.GetInt("InitLakeNum", authoring.initLakeNumber);
+            PlayerPrefs.SetInt("InitLakeNum", initLakeNumber);
+
+
+
             Entity entity = GetEntity(TransformUsageFlags.None);
             AddComponent(entity, new InitLakeConfig
             {
                 lakePrefab = GetEntity(authoring.lakePrefab, TransformUsageFlags.None),
-                initLakeNumber = authoring.initLakeNumber,
+                initLakeNumber = initLakeNumber,
                 fieldSize = authoring.fieldSize,
             });
         }

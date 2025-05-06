@@ -48,4 +48,6 @@ public struct AnimalSensor : IComponentData
     public int purpleWeight;
     public int pinkWeight;
 
+
+    public float huntThreshod; // for comparing size
 }

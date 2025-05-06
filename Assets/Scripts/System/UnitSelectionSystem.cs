@@ -22,7 +22,7 @@ public partial class UnitSelectionSystem : SystemBase  // SystemBase: other clas
     protected override void OnCreate()
     {
         mainCamera = Camera.main;
-        //RequireForUpdate<PhysicsWorld>();
+        RequireForUpdate<SelectableUnitTag>();
         //physicsWorldSingleton = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
     }
 
@@ -46,6 +46,9 @@ public partial class UnitSelectionSystem : SystemBase  // SystemBase: other clas
     // select the mouse clicked entity
     private void SelectSingleUnit()
     {
+        if(mainCamera == null)
+            mainCamera = Camera.main;
+
         collisionWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().CollisionWorld;
         //collisionWorld = physicsWorldSingleton.CollisionWorld;
 

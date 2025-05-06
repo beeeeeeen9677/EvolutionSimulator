@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Unity.Entities;
 using Unity.Mathematics;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class InitGridSystemAuthoring : MonoBehaviour
@@ -18,24 +19,36 @@ public class InitGridSystemAuthoring : MonoBehaviour
 
     public class InitGridSystemBaker : Baker<InitGridSystemAuthoring>
     {
+
         public override void Bake(InitGridSystemAuthoring authoring)
         {
+            int f_width = PlayerPrefs.GetInt("InitFieldSize", authoring.width);
+            int f_height = PlayerPrefs.GetInt("InitFieldSize", authoring.height);
+
+            PlayerPrefs.SetInt("InitFieldSize", f_width);
+
+
+
+
+            Debug.Log("Init Grid System: " + f_width + " x " + f_height);
+
+
             Entity entity = GetEntity(TransformUsageFlags.None);
             AddComponent(entity, new InitGridSystemConfig
             {
-                width = authoring.width,
-                height = authoring.height,
+                width = f_width,
+                height = f_height,
                 gridCellSize = authoring.gridCellSize,
                 originPosition = authoring.originPosition,
-                remainingGrids = authoring.width * authoring.height, // number of total grids
+                remainingGrids = f_width * f_height, // number of total grids
             });
-            Debug.Log("Total number of grids: " + authoring.width * authoring.height);
+            Debug.Log("Total number of grids: " + f_width * f_height);
 
             // for storing the 2D Grid Cells
             DynamicBuffer<GridCell> buffer = AddBuffer<GridCell>(entity);
-            for (int x = 0; x < authoring.width; x++)
+            for (int x = 0; x < f_width; x++)
             {
-                for (int y = 0; y < authoring.height; y++)
+                for (int y = 0; y < f_height; y++)
                 {
                     buffer.Add(new GridCell { X = x, Y = y, storingObject = Entity.Null, soilMoisture_value = 0, soilNutrient = 0, soilDensity = 1 });
                 }

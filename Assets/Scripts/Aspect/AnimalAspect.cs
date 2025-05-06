@@ -177,6 +177,12 @@ public readonly partial struct AnimalAspect : IAspect
         set => _animalSensor.ValueRW.pinkWeight = value;
     }
 
+
+    private float huntThreshod
+    {
+        get => _animalSensor.ValueRO.huntThreshod;
+        set => _animalSensor.ValueRW.huntThreshod = value;
+    }
     #endregion
 
 
@@ -683,7 +689,7 @@ public readonly partial struct AnimalAspect : IAspect
 
     public bool IsAbleToHuntTarget(AnimalAspect targetEntity) // return True if able to hunt
     {
-        return 0.9f * currentSize >= targetEntity.currentSize; // compare size
+        return huntThreshod * currentSize >= targetEntity.currentSize; // compare size
     }
 
 

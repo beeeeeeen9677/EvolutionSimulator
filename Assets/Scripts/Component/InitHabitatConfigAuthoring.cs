@@ -29,15 +29,24 @@ public class InitHabitatConfigAuthoring : MonoBehaviour
     {
         public override void Bake(InitHabitatConfigAuthoring authoring)
         {
+            int numOfHab = PlayerPrefs.GetInt("NumOfHab", authoring.numberOfHabitat);
+            PlayerPrefs.SetInt("NumOfHab", numOfHab);
+
+            float effectOfHiding = PlayerPrefs.GetFloat("EffectOfHiding", authoring.effectOfHiding);
+            PlayerPrefs.SetFloat("EffectOfHiding", effectOfHiding);
+
+
+
+
             Entity entity = GetEntity(TransformUsageFlags.None);
             AddComponent(entity, new InitHabitatConfig
             {
                 habitatPrefab = GetEntity(authoring.habitatPrefab, TransformUsageFlags.None),
-                numberOfHabitat = authoring.numberOfHabitat,
+                numberOfHabitat = numOfHab,
                 interval = authoring.interval,  
                 maxRadius = authoring.maxRadius,
                 minRadius = authoring.minRadius,
-                effectOfHiding = authoring.effectOfHiding,
+                effectOfHiding = effectOfHiding,
                 domainEffectPrefab = GetEntity(authoring.domainEffectPrefab, TransformUsageFlags.None),
             });
         }
