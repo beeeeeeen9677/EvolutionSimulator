@@ -455,11 +455,46 @@ PrefabInstance:
       propertyPath: startButton
       value: 
       objectReference: {fileID: 471196289}
+    - target: {fileID: 1508296425121978119, guid: ea854f531221d5d4d8096bf8f76d9d05,
+        type: 3}
+      propertyPath: propertyContainers
+      value: 
+      objectReference: {fileID: 1680684238}
     - target: {fileID: 2254779783085347660, guid: ea854f531221d5d4d8096bf8f76d9d05,
         type: 3}
       propertyPath: menuSettingContent
       value: 
       objectReference: {fileID: 1680684238}
+    - target: {fileID: 2254779783085347660, guid: ea854f531221d5d4d8096bf8f76d9d05,
+        type: 3}
+      propertyPath: settingInfoList.Array.data[0].minValue
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2254779783085347660, guid: ea854f531221d5d4d8096bf8f76d9d05,
+        type: 3}
+      propertyPath: settingInfoList.Array.data[1].minValue
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2254779783085347660, guid: ea854f531221d5d4d8096bf8f76d9d05,
+        type: 3}
+      propertyPath: settingInfoList.Array.data[2].minValue
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2254779783085347660, guid: ea854f531221d5d4d8096bf8f76d9d05,
+        type: 3}
+      propertyPath: settingInfoList.Array.data[3].minValue
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2254779783085347660, guid: ea854f531221d5d4d8096bf8f76d9d05,
+        type: 3}
+      propertyPath: settingInfoList.Array.data[4].minValue
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2254779783085347660, guid: ea854f531221d5d4d8096bf8f76d9d05,
+        type: 3}
+      propertyPath: settingInfoList.Array.data[5].minValue
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6185170087041491675, guid: ea854f531221d5d4d8096bf8f76d9d05,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -706,7 +741,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Content: {fileID: 1680684238}
-  m_Horizontal: 1
+  m_Horizontal: 0
   m_Vertical: 1
   m_MovementType: 1
   m_Elasticity: 0.1

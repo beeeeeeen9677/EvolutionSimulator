@@ -96,14 +96,20 @@ public readonly partial struct GrowUpAspect : IAspect
     {
         if(currentStage == AgeStageEnum.infant)
         {
-            cell += (int)(deltaTime * 10000); // deltaTime = 0.004 in most of the time
+
+            float exponent = 1.7f; // Adjust the exponent as needed
+            float powerScaler = Mathf.Pow(currentSize, exponent);
+            cell += (int)(deltaTime * 10000 * currentSize * powerScaler); // deltaTime = 0.004 in most of the time, affected by size
+
+            // cell += (int)(deltaTime * 10000 * currentSize * 0.5f); 
         }
 
+        /*
         if (currentStage != AgeStageEnum.aging) 
         {
             //if()
         }
-
+        */
 
 
         if (currentStage == AgeStageEnum.aging)

@@ -8,6 +8,11 @@ public class MenuManager : MonoBehaviour
 {
     [SerializeField]
     private Button startButton;
+
+
+    [SerializeField]
+    private Transform propertyContainers;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -16,6 +21,17 @@ public class MenuManager : MonoBehaviour
 
     public void StartSimulation() // on start button pressed
     {
+        foreach(Transform child in propertyContainers)
+        {
+            MenuPropContainer container = child.GetComponent<MenuPropContainer>();
+            if (container != null)
+            {
+                container.UpdateSettings();
+            }
+        }
+
+
+
         SceneManager.LoadScene("MainScene");
     }
 }

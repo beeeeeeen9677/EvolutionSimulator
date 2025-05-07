@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startButton: {fileID: 0}
+  propertyContainers: {fileID: 0}
 --- !u!114 &2254779783085347660
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -77,16 +78,16 @@ MonoBehaviour:
     playerPrefName: NumOfHab
     minValue: 0
     maxValue: 0
+  - propertyName: Capacity
+    inputType: 0
+    playerPrefName: Capacity
+    minValue: 0
+    maxValue: 0
   - propertyName: Effect Of Hiding
     inputType: 1
     playerPrefName: EffectOfHiding
     minValue: 0
     maxValue: 1
-  - propertyName: Hunt Threshold
-    inputType: 1
-    playerPrefName: HuntThreshold
-    minValue: 0
-    maxValue: 0
   - propertyName: Initial Lake Number
     inputType: 0
     playerPrefName: InitLakeNum
@@ -97,13 +98,48 @@ MonoBehaviour:
     playerPrefName: DiffusionScaler
     minValue: 0
     maxValue: 0.5
-  - propertyName: ConsumeRate_Moiture
+  - propertyName: Consume Rate (Moiture)
     inputType: 1
     playerPrefName: ConsumeRate_Moi
     minValue: 0
     maxValue: 0.5
-  - propertyName: ConsumeRate_Nutrient
+  - propertyName: Consume Rate(Nutrient)
     inputType: 1
     playerPrefName: ConsumeRate_Ntr
     minValue: 0
     maxValue: 0.5
+  - propertyName: Init Animal Max Size
+    inputType: 1
+    playerPrefName: MaxInitSize
+    minValue: 1
+    maxValue: 5
+  - propertyName: Hunt Threshold
+    inputType: 1
+    playerPrefName: HuntThreshold
+    minValue: 0
+    maxValue: 0
+  - propertyName: Compound Hunt Threshold Rate
+    inputType: 1
+    playerPrefName: CompoundHuntThresholdRate
+    minValue: 0
+    maxValue: 0
+  - propertyName: Muture Age Error
+    inputType: 0
+    playerPrefName: AdultAgeError
+    minValue: 0
+    maxValue: 15
+  - propertyName: Adult Duration
+    inputType: 0
+    playerPrefName: AdultDuration
+    minValue: 1
+    maxValue: 0
+  - propertyName: Aging Error(%)
+    inputType: 1
+    playerPrefName: AgingError
+    minValue: 0.1
+    maxValue: 0.9
+  - propertyName: Reproduction Cost
+    inputType: 1
+    playerPrefName: ReproductionCost
+    minValue: 0
+    maxValue: 1

@@ -55,9 +55,10 @@ public class MenuPropContainer : MonoBehaviour
                 placeholder.text += $"   ({minValue} - {maxValue})";
             }
         }
-
-
-      
+        else
+        {
+            placeholder.text += $"   (min: {minValue})";
+        }
 
 
 
@@ -90,6 +91,24 @@ public class MenuPropContainer : MonoBehaviour
     }
 
 
+    public void UpdateSettings()
+    {
+        // save to PlayerPrefs
+        if (float.TryParse(inputField.text, out float result))
+        {
+            switch (inputField.contentType)
+            {
+                case InputField.ContentType.IntegerNumber:
+                    PlayerPrefs.SetInt(playerPrefName, Mathf.RoundToInt(result));
+                    break;
+                case InputField.ContentType.DecimalNumber:
+                    PlayerPrefs.SetFloat(playerPrefName, result);
+                    break;
+            }
+        }
+    }
+
+
     private void OnInputFieldValueChanged(string value)
     {
         // var value will be default 0 if not init in inspector
@@ -102,7 +121,7 @@ public class MenuPropContainer : MonoBehaviour
                 inputField.text = minValue.ToString();
             }
 
-            if (maxValue != 0 && result > maxValue)
+            if (maxValue != 0 && result > maxValue) // no need to check when maxValue is 0
             {
                 inputField.text = maxValue.ToString();
             }

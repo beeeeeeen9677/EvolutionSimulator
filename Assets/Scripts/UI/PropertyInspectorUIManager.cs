@@ -344,6 +344,8 @@ public class PropertyInspectorUIManager : MonoBehaviour
         propertyContainer.valueUpdateFunc = () => {
             AnimalSensor sensor = entityManager.GetComponentData<AnimalSensor>(selectedEntity);
             return
+            $"threshold: {_animalAspect.compoundHuntThreshold}\n" +
+            $"compound rate: {_animalAspect.compoundHuntThresholdRate}\n" +
             $"size: {_animalAspect.GetSensorSize().ToString("0.0")}\n" +
             $"finding: {sensor.currentSensor}\n" +
             $"warning range: {_animalAspect.GetWarningRange().ToString("0.0")}\n" +

@@ -159,7 +159,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 702b13b181fb5874194cf547a6d09c74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  matureThreshold: 18
+  matureThreshold: 20
   agingThreshold: 65
 --- !u!114 &2520348819980636714
 MonoBehaviour:

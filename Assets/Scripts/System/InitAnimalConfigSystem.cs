@@ -5,6 +5,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Rendering;
 using Unity.Transforms;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 public partial struct InitAnimalConfigSystem : ISystem
@@ -112,7 +113,27 @@ public partial struct InitAnimalConfigSystem : ISystem
                 pinkWeight = UnityEngine.Random.Range(1, 10),
 
                 huntThreshod = initAnimalConfig.huntThreshold, // for comparing size
+                compoundHuntThresholdRate = initAnimalConfig.compoundHuntThresholdRate,
             });
+
+            
+            
+            float preferenceScaler = (grassSensorProbability - 0.5f) / 0.5f; // (-1 to 1)
+            int matureThreshold = (int)(20 + initAnimalConfig.adultAgeError * preferenceScaler); // e.g. 20 + 3 * ((1 - 0.5) / 0.5)
+            SystemAPI.SetComponent(newSpawnedAnimal, new AgeStage
+            {
+                matureThreshold = matureThreshold, 
+                agingThreshold = matureThreshold + (int)Math.Ceiling(initAnimalConfig.adultDuration * (1 + initAnimalConfig.agingError * preferenceScaler)),
+
+                currentStage = AgeStageEnum.infant, // initial stage
+            });
+            
+
+
+
+
+
+
 
 
 
@@ -121,6 +142,9 @@ public partial struct InitAnimalConfigSystem : ISystem
                 interval = 10f,
                 currentCD = 10f,
             });
+
+
+
 
 
             RefRW<Curiosity> curiousity = SystemAPI.GetComponentRW<Curiosity>(newSpawnedAnimal);

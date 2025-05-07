@@ -344,8 +344,8 @@ public readonly partial struct AnimalAspect : IAspect
             deltaTime *= 0.1f;
         }
 
-        // consume energy
-        ModifyEnergy(-deltaTime);
+        // consume more energy if larger size
+        ModifyEnergy(-deltaTime * currentSize);
         /*
         currentEnergy -= deltaTime;
         currentEnergy = Mathf.Clamp(currentEnergy, 0, maxEnergy);
@@ -687,9 +687,22 @@ public readonly partial struct AnimalAspect : IAspect
     }
 
 
+    public float compoundHuntThresholdRate // default is 0.05
+    {
+        get => _animalSensor.ValueRO.compoundHuntThresholdRate;
+    }
+
+    public float compoundHuntThreshold // affected by meat cell
+    {
+        get 
+        {
+            return huntThreshod * (1 + compoundHuntThresholdRate * Mathf.Log(1 + meatCell));
+        }
+    }
+
     public bool IsAbleToHuntTarget(AnimalAspect targetEntity) // return True if able to hunt
     {
-        return huntThreshod * currentSize >= targetEntity.currentSize; // compare size
+        return compoundHuntThreshold * currentSize >= targetEntity.currentSize; // compare size
     }
 
 

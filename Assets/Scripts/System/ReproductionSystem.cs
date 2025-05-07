@@ -1,3 +1,4 @@
+using System;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Rendering;
@@ -14,8 +15,6 @@ public partial struct ReproductionSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
-
-
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(state.WorldUpdateAllocator);
 
         foreach ((GrowUpAspect animal, RefRO<Energy> energy) in SystemAPI.Query<GrowUpAspect, RefRO<Energy>>().WithAll<ReproductionTag>())
@@ -51,12 +50,15 @@ public partial struct ReproductionSystem : ISystem
 
     private void GenerateOffspring(Entity parentEntity, EntityCommandBuffer entityCommandBuffer, ref SystemState state)
     {
+        InitAnimalConfig initAnimalConfig = SystemAPI.GetSingleton<InitAnimalConfig>();
+
+
+
         AnimalAspect parentAnimal = SystemAPI.GetAspect<AnimalAspect>(parentEntity);
 
-        parentAnimal.ConsumeFixedEnergy(0.1f * parentAnimal.maxEnergy);        // Consume 10% energy
+        parentAnimal.ConsumeFixedEnergy(initAnimalConfig.reproductionCost * parentAnimal.maxEnergy);        // Consume 20% energy
 
 
-        InitAnimalConfig initAnimalConfig = SystemAPI.GetSingleton<InitAnimalConfig>();
 
         int numberToSpawn = 2;
 
@@ -132,7 +134,22 @@ public partial struct ReproductionSystem : ISystem
                 pinkWeight = parentSensor.pinkWeight,
 
                 huntThreshod = parentSensor.huntThreshod,
+                compoundHuntThresholdRate = parentSensor.compoundHuntThresholdRate,
             });
+
+
+            
+            float preferenceScaler = (newGrassSensorProb - 0.5f) / 0.5f; // (-1 to 1)
+            int matureThreshold = (int)(20 + initAnimalConfig.adultAgeError * preferenceScaler); // e.g. 20 + 3 * ((1 - 0.5) / 0.5)
+            entityCommandBuffer.SetComponent(newSpawnedAnimal, new AgeStage
+            {
+                matureThreshold = matureThreshold,
+                agingThreshold = matureThreshold + (int)Math.Ceiling(initAnimalConfig.adultDuration * (1 + initAnimalConfig.agingError * preferenceScaler)),
+
+                currentStage = AgeStageEnum.infant, // initial stage
+            });
+
+            
 
 
             // ReproductionCounter Component

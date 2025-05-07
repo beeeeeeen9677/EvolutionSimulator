@@ -106,7 +106,17 @@ public partial class GridUpdateSystem : SystemBase
 
         //Debug.Log("Diffuse Soil Water");
 
-        DynamicBuffer<GridCell> gridCellBuffer = EntityManager.GetBuffer<GridCell>(initGridSystemConfigEntity);
+        DynamicBuffer<GridCell> gridCellBuffer;
+        try
+        {
+            gridCellBuffer = EntityManager.GetBuffer<GridCell>(initGridSystemConfigEntity);
+        }
+        catch (ArgumentException)
+        {
+            Debug.LogError("Grid Update System - UpdateGridCellsInformation: Wait for next update due to ArgumentException. ");
+            return;
+        }
+
 
         // Debug.Log("Grid Cell Buffer Length: " );
         int diffusionMode = 2;

@@ -36,6 +36,9 @@ public class InitHabitatConfigAuthoring : MonoBehaviour
             PlayerPrefs.SetFloat("EffectOfHiding", effectOfHiding);
 
 
+            int capacity = PlayerPrefs.GetInt("Capacity", authoring.capacity);
+            PlayerPrefs.SetInt("Capacity", capacity);
+
 
 
             Entity entity = GetEntity(TransformUsageFlags.None);
@@ -46,6 +49,7 @@ public class InitHabitatConfigAuthoring : MonoBehaviour
                 interval = authoring.interval,  
                 maxRadius = authoring.maxRadius,
                 minRadius = authoring.minRadius,
+                capacity = capacity,
                 effectOfHiding = effectOfHiding,
                 domainEffectPrefab = GetEntity(authoring.domainEffectPrefab, TransformUsageFlags.None),
             });

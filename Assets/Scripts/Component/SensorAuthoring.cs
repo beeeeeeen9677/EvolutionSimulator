@@ -50,4 +50,5 @@ public struct AnimalSensor : IComponentData
 
 
     public float huntThreshod; // for comparing size
+    public float compoundHuntThresholdRate; // use with hunt threshold
 }

@@ -152,7 +152,10 @@ public partial class InitHabitatSystem : SystemBase
             float maxSize = midValue + initHabitatConfig.interval / 2;
 
             float radius = UnityEngine.Random.Range(minRadius, maxRadius);
-            int maxCapacity = initHabitatConfig.capacity * (int)math.floor(radius / maxRadius);
+            int maxCapacity = (int)math.floor((initHabitatConfig.capacity * (radius / maxRadius)));
+
+            // Debug.Log("Capacity: " + maxCapacity);  
+
 
             SystemAPI.SetComponent(newSpawnedHabitat, new HabitatProperty
             {
