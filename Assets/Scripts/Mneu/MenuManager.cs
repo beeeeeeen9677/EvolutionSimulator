@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class MenuManager : MonoBehaviour
 {
     [SerializeField]
-    private Button startButton;
+    private Button startButton, refreshButton;
 
 
     [SerializeField]
@@ -17,6 +17,7 @@ public class MenuManager : MonoBehaviour
     void Start()
     {
         startButton.onClick.AddListener(StartSimulation);
+        refreshButton.onClick.AddListener(ReloadScene);
     }
 
     public void StartSimulation() // on start button pressed
@@ -32,6 +33,26 @@ public class MenuManager : MonoBehaviour
 
 
 
+        StartCoroutine(BufferTime());
+
+
+
         SceneManager.LoadScene("MainScene");
+    }
+
+    IEnumerator BufferTime()
+    {
+        yield return new WaitForSeconds(1f);
+        //Debug.Log("Buffer Time");
+    }
+
+    public void ReloadScene()
+    {
+        // delete all playerprefs data
+        PlayerPrefs.DeleteAll();
+
+        // Reload the current scene
+        Scene currentScene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(currentScene.name);
     }
 }
