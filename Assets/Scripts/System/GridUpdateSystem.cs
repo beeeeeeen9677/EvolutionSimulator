@@ -188,11 +188,21 @@ public partial class GridUpdateSystem : SystemBase
 
 
                 // Consume Moisture and Nutrient
-                float consumeRate_Moi = 0.001f * grassAspect.growthRate_Moisture;
+                float cr_Moi = PlayerPrefs.GetFloat("ConsumeRate_Moi", 0.001f);
+                PlayerPrefs.SetFloat("ConsumeRate_Moi", cr_Moi);
+
+                float consumeRate_Moi = cr_Moi * grassAspect.growthRate_Moisture;
+
                 GridBufferUtils.SetGridCell(gridCellBuffer, gridBufferWidth, centerGridCell.X, centerGridCell.Y, centerGridCell.storingObject, centerGridCell.soilMoisture_value - consumeRate_Moi);
 
 
-                float consumeRate_Ntr = 0.001f * grassAspect.growthRate_Nutrient;
+
+
+                float cr_Ntr = PlayerPrefs.GetFloat("ConsumeRate_Ntr", 0.001f);
+                PlayerPrefs.SetFloat("ConsumeRate_Ntr", cr_Ntr);
+
+                float consumeRate_Ntr = cr_Ntr * grassAspect.growthRate_Nutrient;
+
                 GridBufferUtils.AddGridNutrient(gridCellBuffer, gridBufferWidth, centerGridCell.X, centerGridCell.Y, -1 * consumeRate_Ntr);
 
             }

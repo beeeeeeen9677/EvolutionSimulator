@@ -87,13 +87,23 @@ MonoBehaviour:
     playerPrefName: HuntThreshold
     minValue: 0
     maxValue: 0
-  - propertyName: Init Lake Number
+  - propertyName: Initial Lake Number
     inputType: 0
     playerPrefName: InitLakeNum
     minValue: 0
     maxValue: 0
-  - propertyName: Diffusion Scaler
+  - propertyName: Water Diffusion Scaler
     inputType: 1
     playerPrefName: DiffusionScaler
+    minValue: 0
+    maxValue: 0.5
+  - propertyName: ConsumeRate_Moiture
+    inputType: 1
+    playerPrefName: ConsumeRate_Moi
+    minValue: 0
+    maxValue: 0.5
+  - propertyName: ConsumeRate_Nutrient
+    inputType: 1
+    playerPrefName: ConsumeRate_Ntr
     minValue: 0
     maxValue: 0.5
