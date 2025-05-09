@@ -6,7 +6,7 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
 
-
+[UpdateAfter(typeof(ConfigUpdateSystem))]
 public partial struct BatchingHandleSystem : ISystem
 {
     private int BatchSize;// number of animals to be processed in each batch

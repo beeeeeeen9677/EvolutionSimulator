@@ -3,6 +3,7 @@ using Unity.Transforms;
 using UnityEngine;
 using static UnityEditor.Experimental.GraphView.Port;
 
+[UpdateAfter(typeof(ConfigUpdateSystem))]
 public partial struct FindHabitatSystem : ISystem
 {
     public void OnCreate(ref SystemState state)

@@ -5,6 +5,7 @@ using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
 
+[UpdateAfter(typeof(ConfigUpdateSystem))]
 public partial struct GrassPropertiesSystem : ISystem
 {
     public void OnCreate(ref SystemState state)

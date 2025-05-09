@@ -85,6 +85,7 @@ public class MenuPropContainer : MonoBehaviour
                     break;
             }
 
+            PlayerPrefs.Save(); // Critical for builds!
 
             inputField.text = value;
         }

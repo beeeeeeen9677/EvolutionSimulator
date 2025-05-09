@@ -12,6 +12,7 @@ using Collider = Unity.Physics.Collider;
 
 
 // checking Collision
+[UpdateAfter(typeof(ConfigUpdateSystem))]
 public partial struct EatingSystem : ISystem
 {
     //private PhysicsWorldSingleton physicsWorldSingleton;

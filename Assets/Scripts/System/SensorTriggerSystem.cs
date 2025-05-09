@@ -8,7 +8,7 @@ using Unity.Transforms;
 using UnityEngine;
 
 
-
+[UpdateAfter(typeof(ConfigUpdateSystem))]
 public partial struct SensorTriggerSystem : ISystem
 {
 

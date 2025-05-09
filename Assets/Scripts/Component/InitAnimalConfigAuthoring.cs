@@ -21,6 +21,7 @@ public class InitAnimalConfigAuthoring : MonoBehaviour
 
         public override void Bake(InitAnimalConfigAuthoring authoring)
         {
+            /*
             int initAnimalNum = PlayerPrefs.GetInt("InitAnimalNum", authoring.initAnimalNumber);
             PlayerPrefs.SetInt("InitAnimalNum", initAnimalNum);
             float huntThreshold = PlayerPrefs.GetFloat("HuntThreshold", 0.7f);
@@ -40,7 +41,7 @@ public class InitAnimalConfigAuthoring : MonoBehaviour
 
             float reproductionCost = PlayerPrefs.GetFloat("ReproductionCost", 0.2f);
             PlayerPrefs.SetFloat("ReproductionCost", reproductionCost);
-
+            */
 
 
             // Debug.Log("InitAnimalNum: " + initAnimalNum);
@@ -49,16 +50,16 @@ public class InitAnimalConfigAuthoring : MonoBehaviour
             AddComponent(entity, new InitAnimalConfig
             {
                 animalPrefab = GetEntity(authoring.animalPrefab, TransformUsageFlags.Dynamic),
-                initAnimalNumber = initAnimalNum,
+                initAnimalNumber = authoring.initAnimalNumber,
                 fieldSize = authoring.fieldSize,
                 minInitSize = authoring.minInitSize,
                 maxInitSize = authoring.maxInitSize,
-                huntThreshold = huntThreshold, // for comparing size
-                compoundHuntThresholdRate = compoundHuntThresholdRate,
-                adultAgeError = adultAgeError,
-                adultDuration = adultDuration,
-                agingError = agingError,
-                reproductionCost = reproductionCost,
+                huntThreshold = 0.7f, // Default values
+                compoundHuntThresholdRate = 0.05f,
+                adultAgeError = 3,
+                adultDuration = 45,
+                agingError = 0.25f,
+                reproductionCost = 0.2f
             });
         }
     }

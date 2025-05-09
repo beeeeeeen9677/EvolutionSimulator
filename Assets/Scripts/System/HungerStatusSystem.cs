@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 
+
+[UpdateAfter(typeof(ConfigUpdateSystem))]
 public partial struct HungerStatusSystem : ISystem
 {
     public void OnCreate(ref SystemState state)

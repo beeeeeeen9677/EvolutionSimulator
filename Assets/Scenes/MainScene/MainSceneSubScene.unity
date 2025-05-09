@@ -406,8 +406,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 558491ccb84d3dc438e12a19e466419e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 25
-  height: 25
+  width: 5
+  height: 5
   gridCellSize: 10
 --- !u!4 &913008441
 Transform:

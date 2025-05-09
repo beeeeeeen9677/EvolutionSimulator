@@ -9,7 +9,8 @@ using Unity.Transforms;
 using UnityEngine;
 
 
-[BurstCompile]
+
+[UpdateAfter(typeof(ConfigUpdateSystem))]
 [UpdateAfter(typeof(InitLakeSystem))]
 public partial class GridUpdateSystem : SystemBase
 {
@@ -39,7 +40,6 @@ public partial class GridUpdateSystem : SystemBase
     }
 
 
-    [BurstCompile]
     protected override void OnUpdate()
     {
         Enabled = false;
@@ -94,7 +94,6 @@ public partial class GridUpdateSystem : SystemBase
 
     }
 
-    [BurstCompile]
     public void UpdateGridCellsInformation(int day = 0)
     {
         if (initGridSystemConfigEntity == Entity.Null)
@@ -391,7 +390,6 @@ public partial class GridUpdateSystem : SystemBase
 
 
 
-    [BurstCompile]
     public ExportData CalculateAverageAnimalData(int simulationDay)
     {
         var query = EntityManager.CreateEntityQuery(typeof(AnimalTag)); // Adjust query as needed
@@ -425,7 +423,6 @@ public partial class GridUpdateSystem : SystemBase
         return result;
     }
 
-    [BurstCompile]
     public ExportData RecordSeparateAnimalData(int simulationDay)
     {
         var query = SystemAPI.QueryBuilder().WithAll<AnimalTag>().Build();
@@ -482,7 +479,6 @@ public class ModifyGridMoistureRecord
     }
 }
 
-[BurstCompile]
 public partial struct CalculateAveragesJob : IJobEntity
 {
     public NativeArray<float> Averages;
@@ -496,7 +492,6 @@ public partial struct CalculateAveragesJob : IJobEntity
     }
 }
 
-[BurstCompile]
 partial struct RecordAnimalSeparateDataJob : IJobEntity
 {
     public int Day;

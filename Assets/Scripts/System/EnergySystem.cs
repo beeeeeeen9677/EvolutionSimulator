@@ -5,7 +5,7 @@ using System.Globalization;
 using Unity.Entities;
 using UnityEngine;
 
-
+[UpdateAfter(typeof(ConfigUpdateSystem))]
 public partial struct EnergySystem : ISystem
 {
     public void OnCreate(ref SystemState state)

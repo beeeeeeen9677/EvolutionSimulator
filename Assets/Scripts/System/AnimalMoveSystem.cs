@@ -6,6 +6,7 @@ using Unity.Transforms;
 using UnityEngine;
 
 [BurstCompile]
+[UpdateAfter(typeof(ConfigUpdateSystem))]
 [UpdateAfter(typeof(InitAnimalConfigSystem))]
 public partial struct AnimalMoveSystem : ISystem
 {

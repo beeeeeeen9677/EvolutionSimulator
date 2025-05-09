@@ -4,6 +4,9 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 
+
+
+[UpdateAfter(typeof(ConfigUpdateSystem))]
 public partial class InitHabitatSystem : SystemBase
 {
     protected override void OnCreate()
@@ -48,7 +51,7 @@ public partial class InitHabitatSystem : SystemBase
         InitAnimalConfig initAnimalConfig = SystemAPI.GetSingleton<InitAnimalConfig>();
         float minInitValue = initAnimalConfig.minInitSize * 1.5f;
         float maxInitValue = initAnimalConfig.maxInitSize * 1.5f;
-        Debug.Log($"InitAnimalConfig   min: {minInitValue}  max: {maxInitValue}");
+        Debug.Log($"Habitat size   min: {minInitValue}  max: {maxInitValue}");
 
         InitHabitatConfig initHabitatConfig = SystemAPI.GetSingleton<InitHabitatConfig>();
 

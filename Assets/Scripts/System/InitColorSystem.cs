@@ -5,6 +5,8 @@ using Unity.Mathematics;
 using Unity.Rendering;
 using UnityEngine;
 
+
+[UpdateAfter(typeof(ConfigUpdateSystem))]
 partial struct InitColorSystem : ISystem
 {
     public void OnCreate(ref SystemState state)

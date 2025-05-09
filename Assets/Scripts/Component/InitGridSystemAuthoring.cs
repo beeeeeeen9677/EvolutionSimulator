@@ -19,45 +19,46 @@ public class InitGridSystemAuthoring : MonoBehaviour
 
     public class InitGridSystemBaker : Baker<InitGridSystemAuthoring>
     {
-
         public override void Bake(InitGridSystemAuthoring authoring)
         {
-            int f_width = PlayerPrefs.GetInt("InitFieldSize", authoring.width);
-            int f_height = PlayerPrefs.GetInt("InitFieldSize", authoring.height);
-
-            PlayerPrefs.SetInt("InitFieldSize", f_width);
-
-
-
-
-            Debug.Log("Init Grid System: " + f_width + " x " + f_height);
-
-
             Entity entity = GetEntity(TransformUsageFlags.None);
+
+            // Store the authoring values as defaults
             AddComponent(entity, new InitGridSystemConfig
             {
-                width = f_width,
-                height = f_height,
+                width = authoring.width,
+                height = authoring.height,
                 gridCellSize = authoring.gridCellSize,
                 originPosition = authoring.originPosition,
-                remainingGrids = f_width * f_height, // number of total grids
+                remainingGrids = authoring.width * authoring.height, // number of total grids
             });
-            Debug.Log("Total number of grids: " + f_width * f_height);
 
-            // for storing the 2D Grid Cells
-            DynamicBuffer<GridCell> buffer = AddBuffer<GridCell>(entity);
-            for (int x = 0; x < f_width; x++)
+            // Initialize buffer with authoring size (will be resized if needed in runtime)
+            //DynamicBuffer<GridCell> buffer = AddBuffer<GridCell>(entity);
+            AddBuffer<GridCell>(entity);
+            // InitializeGridBuffer(buffer, authoring.width, authoring.height);
+        }
+        /*
+        private void InitializeGridBuffer(DynamicBuffer<GridCell> buffer, int width, int height)
+        {
+            buffer.Clear();
+            for (int x = 0; x < width; x++)
             {
-                for (int y = 0; y < f_height; y++)
+                for (int y = 0; y < height; y++)
                 {
-                    buffer.Add(new GridCell { X = x, Y = y, storingObject = Entity.Null, soilMoisture_value = 0, soilNutrient = 0, soilDensity = 1 });
+                    buffer.Add(new GridCell
+                    {
+                        X = x,
+                        Y = y,
+                        storingObject = Entity.Null,
+                        soilMoisture_value = 0,
+                        soilNutrient = 0,
+                        soilDensity = 1
+                    });
                 }
             }
-        }
+        }*/
     }
-
-
-
 }
 
 

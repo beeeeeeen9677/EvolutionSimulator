@@ -8,6 +8,8 @@ using Unity.Transforms;
 using UnityEditor.PackageManager;
 using UnityEngine;
 
+
+[UpdateAfter(typeof(ConfigUpdateSystem))]
 public partial struct InitAnimalConfigSystem : ISystem
 {
     public void OnCreate(ref SystemState state)

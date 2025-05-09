@@ -31,7 +31,7 @@ public class ShowGridTextMesh : MonoBehaviour
     private void InitGridMesh(int width, int height, int gridCellSize, DynamicBuffer<GridCell> gridCellBuffer)
     {
 
-
+        Debug.Log($"Init Grid Mesh: {width}x{height}");
 
         this.width = width;
         this.height = height;
@@ -100,7 +100,7 @@ public class ShowGridTextMesh : MonoBehaviour
             }
             catch (Exception)
             {
-                Debug.Log("SetGridText: the moisture value is invalid");
+                // Debug.Log("SetGridText: the moisture value is invalid");
             }
         
 

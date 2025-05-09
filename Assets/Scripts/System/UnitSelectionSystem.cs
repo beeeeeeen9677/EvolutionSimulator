@@ -10,6 +10,9 @@ using UnityEngine.EventSystems;
 using RaycastHit = Unity.Physics.RaycastHit;
 
 
+
+
+[UpdateAfter(typeof(ConfigUpdateSystem))]
 public partial class UnitSelectionSystem : SystemBase  // SystemBase: other class can reference you and use SystemAPI
 {
     private Camera mainCamera;
