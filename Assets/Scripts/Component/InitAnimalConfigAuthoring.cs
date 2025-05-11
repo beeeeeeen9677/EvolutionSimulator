@@ -59,7 +59,7 @@ public class InitAnimalConfigAuthoring : MonoBehaviour
                 adultAgeError = 3,
                 adultDuration = 45,
                 agingError = 0.25f,
-                reproductionCost = 0.2f
+                reproductionCost = 0.1f
             });
         }
     }
