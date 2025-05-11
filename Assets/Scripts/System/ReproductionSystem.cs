@@ -72,7 +72,7 @@ public partial struct ReproductionSystem : ISystem
         }
 
         // animals eat grass generate more offspring
-        if (parentAnimal.grassSensorProbability >= 0.6f)
+        if (parentAnimal.grassSensorProbability >= 0.5f)
         {
             numberToSpawn += 1;
         }

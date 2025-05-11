@@ -15,6 +15,27 @@ public class MenuSettingInit : MonoBehaviour
     [SerializeField]
     private List<SettingInfo> settingInfoList;
 
+
+
+    /*
+    public static MenuSettingInit instance;
+
+    private void Awake()
+    {
+        if(instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+    */
+
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -32,6 +53,12 @@ public class MenuSettingInit : MonoBehaviour
     }
 
 
+
+
+    public List<SettingInfo> GetAllParamSettings()
+    {
+        return settingInfoList;
+    }
 
 }
 

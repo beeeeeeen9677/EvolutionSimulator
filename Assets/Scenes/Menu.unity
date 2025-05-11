@@ -576,6 +576,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2254779783085347660, guid: ea854f531221d5d4d8096bf8f76d9d05,
         type: 3}
+      propertyPath: settingInfoList.Array.data[1].minValue
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2254779783085347660, guid: ea854f531221d5d4d8096bf8f76d9d05,
+        type: 3}
       propertyPath: settingInfoList.Array.data[4].maxValue
       value: 0
       objectReference: {fileID: 0}

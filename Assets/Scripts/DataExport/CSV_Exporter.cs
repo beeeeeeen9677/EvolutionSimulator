@@ -16,16 +16,22 @@ public class CSV_Exporter : MonoBehaviour
 
     private void Start()
     {
-
+        /*
         TimeSpan t = (DateTime.UtcNow - new DateTime(1970, 1, 1)); // record the start time for creating file (use as filename postfix)
         int startTime = (int)t.TotalSeconds;
+        */
+
+        DateTime now = DateTime.Now;
+        string formattedDate = now.ToString("ddMMyyyy_HHmmss");
+
+
 
         // Create directory if it doesn't exist
         string directoryPath = Path.Combine(Application.dataPath, "TestExportData");
         Directory.CreateDirectory(directoryPath);
 
         // Set up file path
-        filePath = Path.Combine(directoryPath, $"EvolData_{startTime}.csv");
+        filePath = Path.Combine(directoryPath, $"EvolData_{formattedDate}.csv");
 
         // Initialize file
         writer = new StreamWriter(filePath, append: true);
@@ -43,6 +49,7 @@ public class CSV_Exporter : MonoBehaviour
         {
             if (!headersWritten)
             {
+                // writer.WriteLine(GetAllParameters());
                 writer.WriteLine(data.GetHeader());
                 headersWritten = true;
 #if UNITY_EDITOR
@@ -78,4 +85,19 @@ public class CSV_Exporter : MonoBehaviour
 #endif
         }
     }
+
+    /*
+    private string GetAllParameters()
+    {
+        // loop through all parameter settings (PlayerPrefs), return Key-Pair value
+        List<SettingInfo> settingInfo = MenuSettingInit.instance.GetAllParamSettings();
+
+        string output = "";
+
+        foreach (SettingInfo setting in settingInfo)
+        {
+            //output += $"{setting.propertyName}: {PlayP},";
+        }
+    }
+    */
 }

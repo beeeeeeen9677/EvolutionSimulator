@@ -100,7 +100,7 @@ public partial class GridUpdateSystem : SystemBase
             return;
 
 
-        var initGridSystemConfig = SystemAPI.GetSingletonRW<InitGridSystemConfig>();
+        RefRW<InitGridSystemConfig> initGridSystemConfig;
 
 
         //Debug.Log("Diffuse Soil Water");
@@ -108,11 +108,17 @@ public partial class GridUpdateSystem : SystemBase
         DynamicBuffer<GridCell> gridCellBuffer;
         try
         {
+            initGridSystemConfig = SystemAPI.GetSingletonRW<InitGridSystemConfig>();
             gridCellBuffer = EntityManager.GetBuffer<GridCell>(initGridSystemConfigEntity);
         }
         catch (ArgumentException)
         {
             Debug.LogError("Grid Update System - UpdateGridCellsInformation: Wait for next update due to ArgumentException. ");
+            return;
+        }
+        catch (Exception)
+        {
+            Debug.LogError("Grid Update System - Unknown Exception. ");
             return;
         }
 
