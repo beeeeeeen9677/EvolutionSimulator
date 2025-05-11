@@ -479,15 +479,16 @@ public class ModifyGridMoistureRecord
     }
 }
 
+// not using
 public partial struct CalculateAveragesJob : IJobEntity
 {
     public NativeArray<float> Averages;
 
     public void Execute(AnimalAspect animal)
     {
-        Averages[0] += animal.GetMoveSpeed();
+        Averages[0] += animal.baseMoveSpeed;
         Averages[1] += animal.maxEnergy;
-        Averages[2] += animal.currentSize;
+        Averages[2] += animal.maxSize;
         Averages[3] += animal.animalSensorProbability;
     }
 }
@@ -502,7 +503,7 @@ partial struct RecordAnimalSeparateDataJob : IJobEntity
     {
         // Format: "day,moveSpeed,maxEnergy,size,sensorProb" per animal
         AnimalData.Add(new FixedString128Bytes(
-            $"{Day},{animal.GetMoveSpeed()},{animal.maxEnergy},{animal.currentSize},{animal.animalSensorProbability},{animal.entity.Index}"
+            $"{Day},{animal.baseMoveSpeed},{animal.maxEnergy},{animal.currentSize},{animal.animalSensorProbability},{animal.sensorSize},{animal.warningRange},{animal.entity.Index}"
         ));
     }
 }

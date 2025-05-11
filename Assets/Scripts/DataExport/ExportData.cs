@@ -12,6 +12,8 @@ public class ExportData
     public float maxEnergy;
     public float size;
     public float animalSensorProb;
+    public float sensorSize;
+    public float warningRange;
 
 
     public string separateData;
@@ -19,7 +21,7 @@ public class ExportData
 
     public string GetHeader()
     {
-        return "Day,MoveSpeed,MaxEnergy,Size,SensorProbability,EntityID";
+        return "Day,MoveSpeed,MaxEnergy,Size,SensorProbability,SensorSize,WarningRange,EntityID";
     }
 
     public string GetRecord()
@@ -27,6 +29,6 @@ public class ExportData
         if (separateData != null)
             return separateData;
         else
-            return $"{day},{moveSpeed},{maxEnergy},{size},{animalSensorProb},0";
+            return $"{day},{moveSpeed},{maxEnergy},{size},{animalSensorProb},{sensorSize},{warningRange},0";
     }
 }

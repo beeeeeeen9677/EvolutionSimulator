@@ -62,7 +62,24 @@ public partial struct ReproductionSystem : ISystem
 
 
 
-        int numberToSpawn = 2;
+        int numberToSpawn = 1; // initial value
+
+        // small animals generate more offspring
+        float sizeRatio = (parentAnimal.currentSize - initAnimalConfig.minInitSize) / (initAnimalConfig.maxInitSize - initAnimalConfig.minInitSize);
+        if(sizeRatio <= 0.4f)
+        {
+            numberToSpawn += 1;
+        }
+
+        // animals eat grass generate more offspring
+        if (parentAnimal.grassSensorProbability >= 0.6f)
+        {
+            numberToSpawn += 1;
+        }
+      
+
+
+
 
         for (int i = 0; i < numberToSpawn; i++)
         {

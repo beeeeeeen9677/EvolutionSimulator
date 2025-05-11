@@ -34,6 +34,8 @@ public readonly partial struct AnimalAspect : IAspect
 
     public readonly RefRW<Curiosity> _curiousity;
 
+    public readonly RefRO<SizeProperty> _sizeProperty;
+
 
     //public readonly RefRO<SizeProperty> _sizeProperty;
 
@@ -46,7 +48,7 @@ public readonly partial struct AnimalAspect : IAspect
 
   
 
-    private float moveSpeed => _movement.ValueRO.speed;
+    public float baseMoveSpeed => _movement.ValueRO.speed;
 
     #region Cell
     // normal cell
@@ -98,17 +100,17 @@ public readonly partial struct AnimalAspect : IAspect
 
 
     #region Animal_Sensor
-    private float sensorSize
+    public float sensorSize
     {
         get => _animalSensor.ValueRO.size;
-        set => _animalSensor.ValueRW.size = value;
+        private set => _animalSensor.ValueRW.size = value;
     }
 
 
-    private float warningRange
+    public float warningRange
     {
         get => _animalSensor.ValueRO.warningRange;
-        set => _animalSensor.ValueRW.warningRange = value;
+        private set => _animalSensor.ValueRW.warningRange = value;
     }
 
 
@@ -247,6 +249,10 @@ public readonly partial struct AnimalAspect : IAspect
     */
     public float currentSize => _localTransform.ValueRO.Scale;
 
+    public float maxSize
+    {
+        get => _sizeProperty.ValueRO.maxSize;
+    }
 
 
     // sprint effect time counter
@@ -294,7 +300,7 @@ public readonly partial struct AnimalAspect : IAspect
 
         
         // Create an instance of the random number generator
-        Unity.Mathematics.Random random = new Unity.Mathematics.Random((uint)(moveSpeed + randSeed * entity.Index));
+        Unity.Mathematics.Random random = new Unity.Mathematics.Random((uint)(baseMoveSpeed + randSeed * entity.Index));
         float rotateResult = random.NextFloat(-maxTurnAngle, maxTurnAngle);
         //Debug.Log("Origin: "+rotateResult+" "+ _localTransform.ValueRO.Rotation.value.y*360);
         // random rotation / turn
@@ -315,7 +321,7 @@ public readonly partial struct AnimalAspect : IAspect
 
     public float GetMoveSpeed()
     {
-        return moveSpeed * cell * 0.00001f;
+        return baseMoveSpeed * cell * 0.00001f;
     }
 
 
