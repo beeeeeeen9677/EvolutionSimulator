@@ -11,12 +11,16 @@ public class MenuPropContainer : MonoBehaviour
     [SerializeField]
     private InputField inputField;
 
+    [SerializeField]
+    private GameObject typeTag;
+
     private string playerPrefName; // PlayerPrefs data will be saved in MenuManager
 
 
     private float minValue;
     private float maxValue;
 
+    private bool isEnv;
 
     public void InitSettingField(SettingInfo valueInfo)
     {
@@ -41,6 +45,7 @@ public class MenuPropContainer : MonoBehaviour
 
         minValue = valueInfo.minValue;
         maxValue = valueInfo.maxValue;
+        isEnv = valueInfo.isEnv;
 
 
         if (maxValue != 0)
@@ -68,6 +73,10 @@ public class MenuPropContainer : MonoBehaviour
         // Set lable
         propertyName.text = valueInfo.propertyName;
         playerPrefName = valueInfo.playerPrefName;
+
+
+        typeTag.SetActive(isEnv);
+
 
 
         // Init value by PlayerPrefs
@@ -119,13 +128,15 @@ public class MenuPropContainer : MonoBehaviour
             // Debug.Log(result);
             if (result < minValue)
             {
-                inputField.text = minValue.ToString();
+                result = minValue;
             }
 
             if (maxValue != 0 && result > maxValue) // no need to check when maxValue is 0
             {
-                inputField.text = maxValue.ToString();
+                result = maxValue;
             }
+
+            inputField.text = result.ToString();
         }
     }
 }

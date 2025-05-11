@@ -43,6 +43,7 @@ public class SettingInfo
     public string playerPrefName;
     public float minValue;
     public float maxValue;
+    public bool isEnv;
 }
 
 public enum SettingValueType

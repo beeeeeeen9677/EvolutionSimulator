@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startButton: {fileID: 0}
+  resetButton: {fileID: 0}
   propertyContainers: {fileID: 0}
 --- !u!114 &2254779783085347660
 MonoBehaviour:
@@ -66,12 +67,12 @@ MonoBehaviour:
   - propertyName: Initial Animal Number
     inputType: 0
     playerPrefName: InitAnimalNum
-    minValue: 0
+    minValue: 1
     maxValue: 0
   - propertyName: Field Size
     inputType: 0
     playerPrefName: InitFieldSize
-    minValue: 0
+    minValue: 10
     maxValue: 0
   - propertyName: Number Of Trees
     inputType: 0
