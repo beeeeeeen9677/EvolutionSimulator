@@ -94,11 +94,12 @@ public partial struct InitAnimalConfigSystem : ISystem
 
 
             float grassSensorProbability = UnityEngine.Random.Range(0f, 1f);
+            float randSensorSizeError = UnityEngine.Random.Range(-5f, 5f);
             SystemAPI.SetComponent(newSpawnedAnimal, new AnimalSensor
             {
-                size = 20f,
+                size = 20f + randSensorSizeError,
 
-                warningRange = 10f,
+                warningRange = 10f + randSensorSizeError,
 
                 maxCooldown = 6,
                 currentCooldown = 3,

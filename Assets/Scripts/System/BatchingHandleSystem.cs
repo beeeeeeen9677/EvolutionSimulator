@@ -121,7 +121,7 @@ public partial struct BatchingHandleSystem : ISystem
                     continue;
 
                 // if current energy more than 50% of max energy, born offspring
-                if (energy.ValueRO.currentEnergy >= 0.5f * energy.ValueRO.maxEnergy)
+                if (energy.ValueRO.currentEnergy >= 0.3f * energy.ValueRO.maxEnergy)
                 {
                     if (animal.IsReadyToGenerateOffspring(SystemAPI.Time.DeltaTime))
                     {
