@@ -62,8 +62,9 @@ public partial struct ReproductionSystem : ISystem
 
 
 
-        int numberToSpawn = 1; // initial value
+        int numberToSpawn = 2; // initial value
 
+        /*
         // small animals generate more offspring
         float sizeRatio = (parentAnimal.currentSize - initAnimalConfig.minInitSize) / (initAnimalConfig.maxInitSize - initAnimalConfig.minInitSize);
         if(sizeRatio <= 0.4f)
@@ -78,14 +79,14 @@ public partial struct ReproductionSystem : ISystem
         {
             numberToSpawn += 1;
         }
-      
+        */
 
 
 
 
         for (int i = 0; i < numberToSpawn; i++)
         {
-            Debug.Log($"{parentEntity.Index} Born offspring: {i + 1} of {numberToSpawn}");
+            // Debug.Log($"{parentEntity.Index} Born offspring: {i + 1} of {numberToSpawn}");
 
 
             // born new animal

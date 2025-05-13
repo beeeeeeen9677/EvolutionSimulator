@@ -104,6 +104,8 @@ public partial struct SensorTriggerSystem : ISystem
 
                 currentAnimal.SetCurrentSensor(TargetCollisionLayers.targetLayers[sensorNumber]);
 
+               
+
                 // stored in static class TargetCollisionLayers
                 //CollisionLayer[] targetLayers = { CollisionLayer.Grass, CollisionLayer.Animal }; // collide with corresponding layer acoording to sensorNumber
 
@@ -121,6 +123,10 @@ public partial struct SensorTriggerSystem : ISystem
 
 
 
+                if (TargetCollisionLayers.targetLayers[sensorNumber] == CollisionLayer.Animal)
+                {
+                    Debug.Log(currentAnimal.entity.Index + " - Find Animal" + " - Count:" + hits.Length);
+                }
 
 
 
@@ -218,15 +224,16 @@ public partial struct SensorTriggerSystem : ISystem
                             float hideEffectRandomNumber = UnityEngine.Random.Range(0, 1);
                             if (hideEffectRandomNumber < targetAnimal.habitatProperty.Value.effectOfHiding)
                             {
-                                Debug.Log("Success to hide from predator"); // Success
+                                Debug.Log("Target Success to hide from predator"); // Success
                                 continue;
                             }
-                            Debug.Log("Failed to hide from predator"); // Failed
+                            Debug.Log("Target Failed to hide from predator"); // Failed
 
 
                         }
 
 
+                        Debug.Log(currentAnimal.entity.Index + " success to lock target"); // Failed
 
                     }
 

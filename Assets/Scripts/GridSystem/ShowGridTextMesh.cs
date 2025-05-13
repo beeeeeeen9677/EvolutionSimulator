@@ -14,6 +14,8 @@ public class ShowGridTextMesh : MonoBehaviour
 
     private TextMesh[,] textMeshArray;
 
+    [SerializeField]    
+    private CommonUIManager commonUIManager;
 
     private void Start()
     {
@@ -43,6 +45,9 @@ public class ShowGridTextMesh : MonoBehaviour
 
 
         GameObject wordTextContainer = new GameObject("Word Text Container");
+
+        commonUIManager.AssignGridMesh(wordTextContainer);
+
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -70,6 +75,11 @@ public class ShowGridTextMesh : MonoBehaviour
         }
         Debug.DrawLine(GetWorldPosition(0, height), GetWorldPosition(width, height), Color.white, 100f);
         Debug.DrawLine(GetWorldPosition(width, 0), GetWorldPosition(width, height), Color.white, 100f);
+
+
+
+
+        // wordTextContainer.SetActive(false);
     }
 
     // convert grid position to world positon

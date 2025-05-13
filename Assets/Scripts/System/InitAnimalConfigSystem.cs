@@ -1,11 +1,9 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
+
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Rendering;
 using Unity.Transforms;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 

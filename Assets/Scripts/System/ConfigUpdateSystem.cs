@@ -182,6 +182,12 @@ public partial struct ConfigUpdateSystem : ISystem
             config.ValueRW.height = fieldSize;
             config.ValueRW.remainingGrids = fieldSize * fieldSize;
         }
+
+        foreach(var config in SystemAPI.Query<RefRW<AnimalBatch>>())
+        {
+            config.ValueRW.CurrentBatchIndex = 0;
+            config.ValueRW.CycleCount = 0;
+        }
     }
 
     // Helper methods for cleaner code

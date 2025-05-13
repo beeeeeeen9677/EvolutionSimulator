@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Transforms;
-using UnityEditorInternal;
 using UnityEngine;
 
 public partial struct RotatingCubeSystem : ISystem

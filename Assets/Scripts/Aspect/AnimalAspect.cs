@@ -589,7 +589,7 @@ public readonly partial struct AnimalAspect : IAspect
             printColor += color.ToString() + "  "; 
         }
 
-        Debug.Log(printColor);
+        // Debug.Log(printColor);
         
 
 

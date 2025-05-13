@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Unity.Entities;
 using Unity.Mathematics;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class InitGridSystemAuthoring : MonoBehaviour
