@@ -31,13 +31,9 @@ public partial struct EnergySystem : ISystem
         foreach (AnimalAspect animal in SystemAPI.Query<AnimalAspect>())
         {
             animal.ConsumeEnergy(deltaTime);
-
-
-            // dead if no more energy
+            // die if no more energy
             if (animal.GetEnergy() <= 0)
             {
-
-
                 // clear target's threat
                 if (animal.IsTargetExist())
                 {

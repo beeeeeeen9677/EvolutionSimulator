@@ -18,8 +18,6 @@ public class MovementAuthoring : MonoBehaviour
             });
         }
     }
-
-
 }
 
 public struct Movement : IComponentData

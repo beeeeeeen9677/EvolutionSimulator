@@ -92,13 +92,6 @@ public partial struct BatchingHandleSystem : ISystem
         int endIndex = math.min(startIndex + BatchSize, totalNumOfAnimals);
 
 
-
-
-
-        //var query = state.EntityManager.CreateEntityQuery(typeof(AnimalTag));
-        //var animalEntities = query.ToEntityArray(Allocator.Temp);
-
-
         for (int ci = startIndex; ci < endIndex && ci < animalEntities.Length; ci++)
         {
             //AnimalAspect currentAnimal = SystemAPI.GetAspect<AnimalAspect>(animalEntities[ci]);
@@ -169,10 +162,6 @@ public partial struct BatchingHandleSystem : ISystem
                 GridUpdateSystem gridUpdateSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<GridUpdateSystem>();
 
                 // Call grid update (water diffusion) function from GridUpdateSystem
-
-
-
-
                 gridUpdateSystem.UpdateGridCellsInformation(animalBatch.ValueRO.CycleCount / animalBatch.ValueRO.CycleOfDay);
                 
 

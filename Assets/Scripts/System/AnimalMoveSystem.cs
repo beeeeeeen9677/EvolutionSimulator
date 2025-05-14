@@ -2,8 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Entities;
+using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 [BurstCompile]
 [UpdateAfter(typeof(ConfigUpdateSystem))]
@@ -24,6 +26,16 @@ public partial struct AnimalMoveSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
+        /*
+        foreach (var (movement, transform, entity) in
+            SystemAPI.Query<RefRO<Movement>, RefRW<LocalTransform>>().WithEntityAccess())
+        {
+            // update transform position ...
+            transform.ValueRW.Position += transform.ValueRO.Forward() * SystemAPI.Time.DeltaTime * movement.ValueRO.speed;
+        }
+        */
+
+
         //var localTransformTypeHandle = state.GetComponentTypeHandle<LocalTransform>(true);
         uint randSeed = (uint)Random.Range(1, 114514);
         //Debug.Log(randSeed);
