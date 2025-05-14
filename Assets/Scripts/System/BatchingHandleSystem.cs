@@ -43,7 +43,7 @@ public partial struct BatchingHandleSystem : ISystem
         if (BatchSize == 0)
         {
             BatchSize = animalBatch.ValueRO.BatchSize;
-            Debug.Log("BatchSize is Assigned ");
+            Debug.Log("BatchSize is Assigned: " + BatchSize);
         }
 
 

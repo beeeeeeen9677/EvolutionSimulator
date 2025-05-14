@@ -551,108 +551,33 @@ PrefabInstance:
       objectReference: {fileID: 1680684238}
     - target: {fileID: 2254779783085347660, guid: ea854f531221d5d4d8096bf8f76d9d05,
         type: 3}
-      propertyPath: settingInfoList.Array.data[0].isEnv
-      value: 1
+      propertyPath: settingInfoList.Array.size
+      value: 17
       objectReference: {fileID: 0}
     - target: {fileID: 2254779783085347660, guid: ea854f531221d5d4d8096bf8f76d9d05,
         type: 3}
-      propertyPath: settingInfoList.Array.data[1].isEnv
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2254779783085347660, guid: ea854f531221d5d4d8096bf8f76d9d05,
-        type: 3}
-      propertyPath: settingInfoList.Array.data[2].isEnv
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2254779783085347660, guid: ea854f531221d5d4d8096bf8f76d9d05,
-        type: 3}
-      propertyPath: settingInfoList.Array.data[3].isEnv
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2254779783085347660, guid: ea854f531221d5d4d8096bf8f76d9d05,
-        type: 3}
-      propertyPath: settingInfoList.Array.data[5].isEnv
+      propertyPath: settingInfoList.Array.data[16].maxValue
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2254779783085347660, guid: ea854f531221d5d4d8096bf8f76d9d05,
         type: 3}
-      propertyPath: settingInfoList.Array.data[1].minValue
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2254779783085347660, guid: ea854f531221d5d4d8096bf8f76d9d05,
-        type: 3}
-      propertyPath: settingInfoList.Array.data[4].maxValue
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2254779783085347660, guid: ea854f531221d5d4d8096bf8f76d9d05,
-        type: 3}
-      propertyPath: settingInfoList.Array.data[5].maxValue
+      propertyPath: settingInfoList.Array.data[16].minValue
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2254779783085347660, guid: ea854f531221d5d4d8096bf8f76d9d05,
         type: 3}
-      propertyPath: settingInfoList.Array.data[4].inputType
+      propertyPath: settingInfoList.Array.data[16].inputType
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2254779783085347660, guid: ea854f531221d5d4d8096bf8f76d9d05,
         type: 3}
-      propertyPath: settingInfoList.Array.data[5].inputType
-      value: 1
+      propertyPath: settingInfoList.Array.data[16].propertyName
+      value: Batch Size
       objectReference: {fileID: 0}
     - target: {fileID: 2254779783085347660, guid: ea854f531221d5d4d8096bf8f76d9d05,
         type: 3}
-      propertyPath: settingInfoList.Array.data[2].propertyName
-      value: Initial Lake Number
-      objectReference: {fileID: 0}
-    - target: {fileID: 2254779783085347660, guid: ea854f531221d5d4d8096bf8f76d9d05,
-        type: 3}
-      propertyPath: settingInfoList.Array.data[3].propertyName
-      value: Number Of Trees
-      objectReference: {fileID: 0}
-    - target: {fileID: 2254779783085347660, guid: ea854f531221d5d4d8096bf8f76d9d05,
-        type: 3}
-      propertyPath: settingInfoList.Array.data[4].propertyName
-      value: Capacity (Tree)
-      objectReference: {fileID: 0}
-    - target: {fileID: 2254779783085347660, guid: ea854f531221d5d4d8096bf8f76d9d05,
-        type: 3}
-      propertyPath: settingInfoList.Array.data[5].propertyName
-      value: Effect Of Hiding (Tree)
-      objectReference: {fileID: 0}
-    - target: {fileID: 2254779783085347660, guid: ea854f531221d5d4d8096bf8f76d9d05,
-        type: 3}
-      propertyPath: settingInfoList.Array.data[7].propertyName
-      value: Consumption Rate (Moiture)
-      objectReference: {fileID: 0}
-    - target: {fileID: 2254779783085347660, guid: ea854f531221d5d4d8096bf8f76d9d05,
-        type: 3}
-      propertyPath: settingInfoList.Array.data[8].propertyName
-      value: Consumption Rate (Nutrient)
-      objectReference: {fileID: 0}
-    - target: {fileID: 2254779783085347660, guid: ea854f531221d5d4d8096bf8f76d9d05,
-        type: 3}
-      propertyPath: settingInfoList.Array.data[12].propertyName
-      value: Mature Age Error
-      objectReference: {fileID: 0}
-    - target: {fileID: 2254779783085347660, guid: ea854f531221d5d4d8096bf8f76d9d05,
-        type: 3}
-      propertyPath: settingInfoList.Array.data[2].playerPrefName
-      value: InitLakeNum
-      objectReference: {fileID: 0}
-    - target: {fileID: 2254779783085347660, guid: ea854f531221d5d4d8096bf8f76d9d05,
-        type: 3}
-      propertyPath: settingInfoList.Array.data[3].playerPrefName
-      value: NumOfHab
-      objectReference: {fileID: 0}
-    - target: {fileID: 2254779783085347660, guid: ea854f531221d5d4d8096bf8f76d9d05,
-        type: 3}
-      propertyPath: settingInfoList.Array.data[4].playerPrefName
-      value: Capacity
-      objectReference: {fileID: 0}
-    - target: {fileID: 2254779783085347660, guid: ea854f531221d5d4d8096bf8f76d9d05,
-        type: 3}
-      propertyPath: settingInfoList.Array.data[5].playerPrefName
-      value: EffectOfHiding
+      propertyPath: settingInfoList.Array.data[16].playerPrefName
+      value: BatchSize
       objectReference: {fileID: 0}
     - target: {fileID: 6185170087041491675, guid: ea854f531221d5d4d8096bf8f76d9d05,
         type: 3}

@@ -8,17 +8,29 @@ public class CameraController : MonoBehaviour
     [SerializeField]
     private float speed;
 
+    private Camera cam;
+
+    private float zoomSpeed = 10f;
+
+    private float minZoom = 30f;
+
+    private float maxZoom = 60f;
+
+
 
 
     // Start is called before the first frame update
     void Start()
     {
         transform = GetComponent<Transform>();
+
+        cam = GetComponent<Camera>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        // Movement
         if (Input.GetAxis("Vertical") != 0)
         {
             if (Input.GetAxis("Vertical") > 0)
@@ -48,7 +60,7 @@ public class CameraController : MonoBehaviour
             transform.position += rotation * direction * Time.deltaTime * speed;
         }
 
-
+        // Rotation 
         if (Input.GetKey(KeyCode.Q))
         {
             transform.Rotate(0, -0.2f, 0, Space.World);
@@ -57,5 +69,22 @@ public class CameraController : MonoBehaviour
         {
             transform.Rotate(0, 0.2f, 0, Space.World);
         }
+
+
+
+        // Zoom with mouse scroll
+        float scroll = Input.GetAxis("Mouse ScrollWheel");
+        if (scroll != 0)
+        {
+            if (cam.orthographic)
+            {
+                cam.orthographicSize = Mathf.Clamp(cam.orthographicSize - scroll * zoomSpeed, minZoom, maxZoom);
+            }
+            else
+            {
+                cam.fieldOfView = Mathf.Clamp(cam.fieldOfView - scroll * zoomSpeed, minZoom, maxZoom);
+            }
+        }
+
     }
 }

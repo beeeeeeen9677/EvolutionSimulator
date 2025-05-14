@@ -96,8 +96,6 @@ public partial class GridUpdateSystem : SystemBase
 
     public void UpdateGridCellsInformation(int day = 0)
     {
-        if (initGridSystemConfigEntity == Entity.Null)
-            return;
 
 
         RefRW<InitGridSystemConfig> initGridSystemConfig;
@@ -106,8 +104,13 @@ public partial class GridUpdateSystem : SystemBase
         //Debug.Log("Diffuse Soil Water");
 
         DynamicBuffer<GridCell> gridCellBuffer;
-        try
+
+        try  // Always crash here
         {
+            if (initGridSystemConfigEntity == Entity.Null)
+            {
+                initGridSystemConfigEntity = SystemAPI.GetSingletonEntity<InitGridSystemConfig>();
+            }
             initGridSystemConfig = SystemAPI.GetSingletonRW<InitGridSystemConfig>();
             gridCellBuffer = EntityManager.GetBuffer<GridCell>(initGridSystemConfigEntity);
         }

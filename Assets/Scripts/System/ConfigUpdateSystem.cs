@@ -140,6 +140,12 @@ public partial struct ConfigUpdateSystem : ISystem
         {
             PlayerPrefs_GetAndSet("InitFieldSize", config.ValueRO.width);
         }
+
+        // For AnimalBatch
+        foreach (var config in SystemAPI.Query<RefRW<AnimalBatch>>())
+        {
+            PlayerPrefs_GetAndSet("BatchSize", config.ValueRO.BatchSize);
+        }
     }
 
     private void UpdateConfigComponents(ref SystemState state)
@@ -185,6 +191,7 @@ public partial struct ConfigUpdateSystem : ISystem
 
         foreach(var config in SystemAPI.Query<RefRW<AnimalBatch>>())
         {
+            config.ValueRW.BatchSize = PlayerPrefs.GetInt("BatchSize", config.ValueRO.BatchSize);
             config.ValueRW.CurrentBatchIndex = 0;
             config.ValueRW.CycleCount = 0;
         }
