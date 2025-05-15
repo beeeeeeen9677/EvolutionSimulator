@@ -26,7 +26,6 @@ public partial class GridUpdateSystem : SystemBase
 
 
 
-    Entity initGridSystemConfigEntity;
     Vector3 gridSystemOrigin;
     int gridBufferWidth;
     int gridCellSize;
@@ -52,7 +51,7 @@ public partial class GridUpdateSystem : SystemBase
 
             // grid system config var
             var initGridSystemConfig = SystemAPI.GetSingleton<InitGridSystemConfig>();
-            initGridSystemConfigEntity = SystemAPI.GetSingletonEntity<InitGridSystemConfig>();
+            Entity initGridSystemConfigEntity = SystemAPI.GetSingletonEntity<InitGridSystemConfig>();
             DynamicBuffer<GridCell> gridCellBuffer = EntityManager.GetBuffer<GridCell>(initGridSystemConfigEntity);
             gridBufferWidth = initGridSystemConfig.width;
             gridCellSize = initGridSystemConfig.gridCellSize;
@@ -97,7 +96,7 @@ public partial class GridUpdateSystem : SystemBase
     public void UpdateGridCellsInformation(int day = 0)
     {
 
-
+        /*
         RefRW<InitGridSystemConfig> initGridSystemConfig;
 
 
@@ -124,240 +123,252 @@ public partial class GridUpdateSystem : SystemBase
             Debug.LogError("Grid Update System - Unknown Exception. ");
             return;
         }
+        */
 
-
-        // Debug.Log("Grid Cell Buffer Length: " );
-        int diffusionMode = 2;
-
-
-
-        // Stack for storing all modification records, excute them outside the loop
-        List<ModifyGridMoistureRecord> modifyMoistureStack = new List<ModifyGridMoistureRecord>();
-
-
-        // loop through all grid cells
-        foreach (GridCell centerGridCell in gridCellBuffer)
+        foreach (var (initGridSystemConfig, initGridSystemConfigEntity) in
+            SystemAPI.Query<RefRW<InitGridSystemConfig>>().WithEntityAccess())
         {
+            // Debug.Log("Diffuse Soil Water, day: "+day);
 
 
-            // Spawn new object on empty grid randomly
-            if (centerGridCell.storingObject == Entity.Null) // storing nothing
+
+            DynamicBuffer<GridCell> gridCellBuffer = EntityManager.GetBuffer<GridCell>(initGridSystemConfigEntity);
+
+
+
+            // Debug.Log("Grid Cell Buffer Length: " );
+            int diffusionMode = 2;
+
+
+
+            // Stack for storing all modification records, excute them outside the loop
+            List<ModifyGridMoistureRecord> modifyMoistureStack = new List<ModifyGridMoistureRecord>();
+
+
+            // loop through all grid cells
+            foreach (GridCell centerGridCell in gridCellBuffer)
             {
 
-                int maxProbNum = 100000; // probability for spawning a new grass
-                if (UnityEngine.Random.Range(0, maxProbNum) < 1 && initGridSystemConfig.ValueRO.remainingGrids > 0) // spawn a new grass if fulfill probability and grid remains
+
+                // Spawn new object on empty grid randomly
+                if (centerGridCell.storingObject == Entity.Null) // storing nothing
                 {
-                    initGridSystemConfig.ValueRW.remainingGrids--;
-                    //Debug.Log("Placed new object (Grass)");
 
-
-                    InitGrassConfig initGrassConfig = SystemAPI.GetSingleton<InitGrassConfig>();
-                    Entity initGrassConfigEntity = SystemAPI.GetSingletonEntity<InitGrassConfig>();
-                    var grassTypeBuffer = EntityManager.GetBuffer<GrassPrefabElement>(initGrassConfigEntity);
-
-                    // get random type of grasses
-                    int grassIndex = UnityEngine.Random.Range(0, grassTypeBuffer.Length);
-                    Entity newSpawnedGrass = EntityManager.Instantiate(grassTypeBuffer[grassIndex].grassPrefabs);
-
-                    // Set the new grass into the grid storing object property
-                    GridBufferUtils.SetGridCell(gridCellBuffer, gridBufferWidth, centerGridCell.X, centerGridCell.Y, newSpawnedGrass);
-
-                    Vector3 newGrassPosition = GridBufferUtils.GetWorldPosition(centerGridCell.X, centerGridCell.Y, gridCellSize, gridSystemOrigin);
-
-                    SystemAPI.SetComponent(newSpawnedGrass, new LocalTransform
+                    int maxProbNum = 100000; // probability for spawning a new grass
+                    if (UnityEngine.Random.Range(0, maxProbNum) < 1 && initGridSystemConfig.ValueRO.remainingGrids > 0) // spawn a new grass if fulfill probability and grid remains
                     {
-                        Position = newGrassPosition,
-                        Rotation = quaternion.identity,
-                        Scale = 1
-                    });
-
-                    // set grass property
-                    GrassProperties grassPropertyData = SystemAPI.GetComponent<GrassProperties>(newSpawnedGrass);
-                    float randomMaxSize = UnityEngine.Random.Range(0.7f, 1f);
-
-                    RefRW<GrassProperties> grassProperties = SystemAPI.GetComponentRW<GrassProperties>(newSpawnedGrass);
-                    grassProperties.ValueRW.currentSize = 0;
-                    grassProperties.ValueRW.maxSize = randomMaxSize;
-                    grassProperties.ValueRW.provideEnergy = grassPropertyData.provideEnergy;
-                    grassProperties.ValueRW.activated = grassPropertyData.activated;
-
-                }
-            }
+                        initGridSystemConfig.ValueRW.remainingGrids--;
+                        //Debug.Log("Placed new object (Grass)");
 
 
+                        InitGrassConfig initGrassConfig = SystemAPI.GetSingleton<InitGrassConfig>();
+                        Entity initGrassConfigEntity = SystemAPI.GetSingletonEntity<InitGrassConfig>();
+                        var grassTypeBuffer = EntityManager.GetBuffer<GrassPrefabElement>(initGrassConfigEntity);
 
+                        // get random type of grasses
+                        int grassIndex = UnityEngine.Random.Range(0, grassTypeBuffer.Length);
+                        Entity newSpawnedGrass = EntityManager.Instantiate(grassTypeBuffer[grassIndex].grassPrefabs);
 
+                        // Set the new grass into the grid storing object property
+                        GridBufferUtils.SetGridCell(gridCellBuffer, gridBufferWidth, centerGridCell.X, centerGridCell.Y, newSpawnedGrass);
 
+                        Vector3 newGrassPosition = GridBufferUtils.GetWorldPosition(centerGridCell.X, centerGridCell.Y, gridCellSize, gridSystemOrigin);
 
+                        SystemAPI.SetComponent(newSpawnedGrass, new LocalTransform
+                        {
+                            Position = newGrassPosition,
+                            Rotation = quaternion.identity,
+                            Scale = 1
+                        });
 
+                        // set grass property
+                        GrassProperties grassPropertyData = SystemAPI.GetComponent<GrassProperties>(newSpawnedGrass);
+                        float randomMaxSize = UnityEngine.Random.Range(0.7f, 1f);
 
-
-
-
-            // Update grass variables     AND     Consume Moisture and Nutrient
-            if (SystemAPI.HasComponent<GrassProperties>(centerGridCell.storingObject))  // check if there is grass on the grid cell
-            {
-                // if yes, update the moisture and nutrient of the grass
-
-                GrassAspect grassAspect = SystemAPI.GetAspect<GrassAspect>(centerGridCell.storingObject);
-
-                grassAspect.grid_Moisture = centerGridCell.soilMoisture_value;
-                grassAspect.grid_Nutrient = centerGridCell.soilNutrient;
-
-
-                // Consume Moisture and Nutrient
-                float cr_Moi = PlayerPrefs.GetFloat("ConsumeRate_Moi", 0.001f);
-                PlayerPrefs.SetFloat("ConsumeRate_Moi", cr_Moi);
-
-                float consumeRate_Moi = cr_Moi * grassAspect.growthRate_Moisture;
-
-                GridBufferUtils.SetGridCell(gridCellBuffer, gridBufferWidth, centerGridCell.X, centerGridCell.Y, centerGridCell.storingObject, centerGridCell.soilMoisture_value - consumeRate_Moi);
-
-
-
-
-                float cr_Ntr = PlayerPrefs.GetFloat("ConsumeRate_Ntr", 0.001f);
-                PlayerPrefs.SetFloat("ConsumeRate_Ntr", cr_Ntr);
-
-                float consumeRate_Ntr = cr_Ntr * grassAspect.growthRate_Nutrient;
-
-                GridBufferUtils.AddGridNutrient(gridCellBuffer, gridBufferWidth, centerGridCell.X, centerGridCell.Y, -1 * consumeRate_Ntr);
-
-            }
-
-
-
-            // Assign nutrient to grids from Tree (shelter)
-            if (SystemAPI.HasComponent<HabitatProperty>(centerGridCell.storingObject))
-            {
-                // if yes, update the nutrient of surrounding grids
-                int range = 3;
-                List<GridCell> surroundingGridList = GridBufferUtils.GetSurroundingGridCellsInSquare(gridCellBuffer, gridBufferWidth, range, centerGridCell.X, centerGridCell.Y);
-                foreach (GridCell cell in surroundingGridList)
-                {
-                    // add nutrient for grids having less than 1 of nutrient only
-                    if (cell.soilNutrient >= 1)
-                        continue;
-
-                    GridBufferUtils.AddGridNutrient(gridCellBuffer, gridBufferWidth, cell.X, cell.Y, 0.001f);
-                }
-
-                // Debug.Log("Tree: Assign Nutrient");
-            }
-
-
-
-
-            // Update moisture when higher/lower than 0.6 density
-            float modifyRate = 0.0001f;
-            if (centerGridCell.soilMoisture_value <= centerGridCell.soilDensity * 0.6f)
-            {
-                // decrease density if lower than
-                modifyRate *= -10;
-            }
-            // else increase
-            GridBufferUtils.ModifyGridDensity(gridCellBuffer, gridBufferWidth, centerGridCell.X, centerGridCell.Y, modifyRate + centerGridCell.soilDensity);
-            // Debug.Log("Update Density: " + modifyRate);
-
-
-
-
-
-            float diffusionThreshold = centerGridCell.soilDensity + centerGridCell.soilNutrient * 0.1f;
-
-            // Diffusion
-
-            if (IsValidToDiffuse(diffusionMode, centerGridCell.soilMoisture_value, diffusionThreshold)) // at least larger than threshold to diffuse
-            {
-                // get surrounding grids of the lake (center grid) by lake range
-                List<GridCell> surroundingGridList = GridBufferUtils.GetSurroundingGridCells(gridCellBuffer, gridBufferWidth, 1, centerGridCell.X, centerGridCell.Y);
-
-                //Debug.Log("Moisture: " + centerGridCell.soilMoisture_value + "   " + surroundingGridList.Count);
-
-
-
-
-
-
-                // Set the soil moisture of surrounding grids to half of center grid
-                foreach (GridCell surroundingGridCell in surroundingGridList)
-                {
-
-
-                    float moistureToBeAdded = 0;
-
-
-                    #region Diffusion Mode 1 
-                    if (diffusionMode == 1)
-                    {
-                        // Minecraft water diffusion logic, water of source grid will NOT be decreased
-
-                        // the moisture of grid to be diffused should not be higher than half of moisture of center grid
-                        if (surroundingGridCell.soilMoisture_value > centerGridCell.soilMoisture_flooredValue / 2)
-                            continue;
-                        // if moisture of surrounding ?? half of center
-                        //  = :  add 1/4 center moisture
-                        //  < :  add 1/2 center moisture
-                        moistureToBeAdded = centerGridCell.soilMoisture_flooredValue /
-                            ((surroundingGridCell.soilMoisture_value == centerGridCell.soilMoisture_flooredValue / 2) ? 4 : 2);
+                        RefRW<GrassProperties> grassProperties = SystemAPI.GetComponentRW<GrassProperties>(newSpawnedGrass);
+                        grassProperties.ValueRW.currentSize = 0;
+                        grassProperties.ValueRW.maxSize = randomMaxSize;
+                        grassProperties.ValueRW.provideEnergy = grassPropertyData.provideEnergy;
+                        grassProperties.ValueRW.activated = grassPropertyData.activated;
 
                     }
-                    #endregion
+                }
 
 
 
-                    #region Diffusion Mode 2
-                    if (diffusionMode == 2)
+
+
+
+
+
+
+
+
+                // Update grass variables     AND     Consume Moisture and Nutrient
+                if (SystemAPI.HasComponent<GrassProperties>(centerGridCell.storingObject))  // check if there is grass on the grid cell
+                {
+                    // if yes, update the moisture and nutrient of the grass
+
+                    GrassAspect grassAspect = SystemAPI.GetAspect<GrassAspect>(centerGridCell.storingObject);
+
+                    grassAspect.grid_Moisture = centerGridCell.soilMoisture_value;
+                    grassAspect.grid_Nutrient = centerGridCell.soilNutrient;
+
+
+                    // Consume Moisture and Nutrient
+                    float cr_Moi = PlayerPrefs.GetFloat("ConsumeRate_Moi", 0.001f);
+                    PlayerPrefs.SetFloat("ConsumeRate_Moi", cr_Moi);
+
+                    float consumeRate_Moi = cr_Moi * grassAspect.growthRate_Moisture;
+
+                    GridBufferUtils.SetGridCell(gridCellBuffer, gridBufferWidth, centerGridCell.X, centerGridCell.Y, centerGridCell.storingObject, centerGridCell.soilMoisture_value - consumeRate_Moi);
+
+
+
+
+                    float cr_Ntr = PlayerPrefs.GetFloat("ConsumeRate_Ntr", 0.001f);
+                    PlayerPrefs.SetFloat("ConsumeRate_Ntr", cr_Ntr);
+
+                    float consumeRate_Ntr = cr_Ntr * grassAspect.growthRate_Nutrient;
+
+                    GridBufferUtils.AddGridNutrient(gridCellBuffer, gridBufferWidth, centerGridCell.X, centerGridCell.Y, -1 * consumeRate_Ntr);
+
+                }
+
+
+
+                // Assign nutrient to grids from Tree (shelter)
+                if (SystemAPI.HasComponent<HabitatProperty>(centerGridCell.storingObject))
+                {
+                    // if yes, update the nutrient of surrounding grids
+                    int range = 3;
+                    List<GridCell> surroundingGridList = GridBufferUtils.GetSurroundingGridCellsInSquare(gridCellBuffer, gridBufferWidth, range, centerGridCell.X, centerGridCell.Y);
+                    foreach (GridCell cell in surroundingGridList)
                     {
-                        // water of source grid will be decreased
-
-
-
-                        // the moisture of grid to be diffused should not be higher than moisture of center grid
-                        if (surroundingGridCell.soilMoisture_value > centerGridCell.soilMoisture_value)
+                        // add nutrient for grids having less than 1 of nutrient only
+                        if (cell.soilNutrient >= 1)
                             continue;
 
-                        float diffusionScaler = PlayerPrefs.GetFloat("DiffusionScaler", 0.05f);
-                        PlayerPrefs.SetFloat("DiffusionScaler", diffusionScaler);
-
-
-                        moistureToBeAdded = centerGridCell.soilMoisture_flooredValue * diffusionScaler;
-                        // decrease water from the source
-                        modifyMoistureStack.Add(new ModifyGridMoistureRecord(centerGridCell.X, centerGridCell.Y, -1 * moistureToBeAdded));
-                    }
-                    #endregion
-
-
-                    if (moistureToBeAdded == 0)
-                    {
-                        Debug.Log("moisture To Be Added = 0");
+                        GridBufferUtils.AddGridNutrient(gridCellBuffer, gridBufferWidth, cell.X, cell.Y, 0.001f);
                     }
 
-
-                    //GridBufferUtils.SetGridCell(gridCellBuffer, gridBufferWidth, surroundingGridCell.X, surroundingGridCell.Y, surroundingGridCell.storingObject, centerGridCell.soilMoisture_flooredValue / 2);
-
-                    // add water to the surrounding grid
-                    modifyMoistureStack.Add(new ModifyGridMoistureRecord(surroundingGridCell.X, surroundingGridCell.Y, moistureToBeAdded));
-
-                    //OnOneGridCellValueChanged?.Invoke(surroundingGridCell.X, surroundingGridCell.Y, (centerGridCell.soilMoisture_flooredValue / 2).ToString());
+                    // Debug.Log("Tree: Assign Nutrient");
                 }
 
+
+
+
+                // Update moisture when higher/lower than 0.6 density
+                float modifyRate = 0.0001f;
+                if (centerGridCell.soilMoisture_value <= centerGridCell.soilDensity * 0.6f)
+                {
+                    // decrease density if lower than
+                    modifyRate *= -10;
+                }
+                // else increase
+                GridBufferUtils.ModifyGridDensity(gridCellBuffer, gridBufferWidth, centerGridCell.X, centerGridCell.Y, modifyRate + centerGridCell.soilDensity);
+                // Debug.Log("Update Density: " + modifyRate);
+
+
+
+
+
+                float diffusionThreshold = centerGridCell.soilDensity + centerGridCell.soilNutrient * 0.1f;
+
+                // Diffusion
+
+                if (IsValidToDiffuse(diffusionMode, centerGridCell.soilMoisture_value, diffusionThreshold)) // at least larger than threshold to diffuse
+                {
+                    // get surrounding grids of the lake (center grid) by lake range
+                    List<GridCell> surroundingGridList = GridBufferUtils.GetSurroundingGridCells(gridCellBuffer, gridBufferWidth, 1, centerGridCell.X, centerGridCell.Y);
+
+                    //Debug.Log("Moisture: " + centerGridCell.soilMoisture_value + "   " + surroundingGridList.Count);
+
+
+
+
+
+
+                    // Set the soil moisture of surrounding grids to half of center grid
+                    foreach (GridCell surroundingGridCell in surroundingGridList)
+                    {
+
+
+                        float moistureToBeAdded = 0;
+
+
+                        #region Diffusion Mode 1 
+                        if (diffusionMode == 1)
+                        {
+                            // Minecraft water diffusion logic, water of source grid will NOT be decreased
+
+                            // the moisture of grid to be diffused should not be higher than half of moisture of center grid
+                            if (surroundingGridCell.soilMoisture_value > centerGridCell.soilMoisture_flooredValue / 2)
+                                continue;
+                            // if moisture of surrounding ?? half of center
+                            //  = :  add 1/4 center moisture
+                            //  < :  add 1/2 center moisture
+                            moistureToBeAdded = centerGridCell.soilMoisture_flooredValue /
+                                ((surroundingGridCell.soilMoisture_value == centerGridCell.soilMoisture_flooredValue / 2) ? 4 : 2);
+
+                        }
+                        #endregion
+
+
+
+                        #region Diffusion Mode 2
+                        if (diffusionMode == 2)
+                        {
+                            // water of source grid will be decreased
+
+
+
+                            // the moisture of grid to be diffused should not be higher than moisture of center grid
+                            if (surroundingGridCell.soilMoisture_value > centerGridCell.soilMoisture_value)
+                                continue;
+
+                            float diffusionScaler = PlayerPrefs.GetFloat("DiffusionScaler", 0.05f);
+                            PlayerPrefs.SetFloat("DiffusionScaler", diffusionScaler);
+
+
+                            moistureToBeAdded = centerGridCell.soilMoisture_flooredValue * diffusionScaler;
+                            // decrease water from the source
+                            modifyMoistureStack.Add(new ModifyGridMoistureRecord(centerGridCell.X, centerGridCell.Y, -1 * moistureToBeAdded));
+                        }
+                        #endregion
+
+
+                        if (moistureToBeAdded == 0)
+                        {
+                            Debug.Log("moisture To Be Added = 0");
+                        }
+
+
+                        //GridBufferUtils.SetGridCell(gridCellBuffer, gridBufferWidth, surroundingGridCell.X, surroundingGridCell.Y, surroundingGridCell.storingObject, centerGridCell.soilMoisture_flooredValue / 2);
+
+                        // add water to the surrounding grid
+                        modifyMoistureStack.Add(new ModifyGridMoistureRecord(surroundingGridCell.X, surroundingGridCell.Y, moistureToBeAdded));
+
+                        //OnOneGridCellValueChanged?.Invoke(surroundingGridCell.X, surroundingGridCell.Y, (centerGridCell.soilMoisture_flooredValue / 2).ToString());
+                    }
+
+                }
             }
-        }
 
 
-        // execute all stacked modification records
-        GridBufferUtils.ExecuteStackedRecord(gridCellBuffer, gridBufferWidth, modifyMoistureStack);
+            // execute all stacked modification records
+            GridBufferUtils.ExecuteStackedRecord(gridCellBuffer, gridBufferWidth, modifyMoistureStack);
 
-        OnAllGridCellValueChanged?.Invoke(gridCellBuffer);
+            OnAllGridCellValueChanged?.Invoke(gridCellBuffer);
 
 
 
-        if (day % 100 == 0) // export for every 100 days
-        {
-            ExportData exportData = RecordSeparateAnimalData(day);
-            // Debug.Log($"Day: {exportData.day}   Speed: {exportData.moveSpeed}");
-            OnAvgDataExport?.Invoke(exportData);
+            if (day % 100 == 0) // export for every 100 days
+            {
+                ExportData exportData = RecordSeparateAnimalData(day);
+                // Debug.Log($"Day: {exportData.day}   Speed: {exportData.moveSpeed}");
+                OnAvgDataExport?.Invoke(exportData);
+            }
         }
     }
 

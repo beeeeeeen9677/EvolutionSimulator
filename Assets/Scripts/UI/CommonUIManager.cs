@@ -73,13 +73,13 @@ public class CommonUIManager : MonoBehaviour
         }
         catch (ArgumentException)
         {
-            Debug.LogError("Common UI: Batching System ArgumentException");
-            cycleText.text = "Common UI: Batching System ArgumentException";         
+            Debug.LogError("Batching System ArgumentException");
+            cycleText.text = "Batching System ArgumentException";         
         }
         catch (InvalidOperationException)
         {
-            Debug.LogError("Common UI: Sub-Scene is still loading");
-            cycleText.text = "Common UI: Sub-Scene is still loading";
+            Debug.LogError("Sub-Scene is still loading");
+            cycleText.text = "Sub-Scene is still loading";
         }
     }
 
