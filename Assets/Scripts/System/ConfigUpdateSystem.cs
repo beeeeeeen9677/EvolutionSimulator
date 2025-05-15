@@ -106,7 +106,7 @@ public partial struct ConfigUpdateSystem : ISystem
         }
     }
 
-    private void InitializeMissingPlayerPrefs(ref SystemState state)
+    private void InitializeMissingPlayerPrefs(ref SystemState state) // update empty player pref with default value 
     {
         // For InitAnimalConfig
         foreach (var config in SystemAPI.Query<RefRO<InitAnimalConfig>>())
