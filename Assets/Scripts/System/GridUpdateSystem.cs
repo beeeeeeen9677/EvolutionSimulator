@@ -512,7 +512,7 @@ partial struct RecordAnimalSeparateDataJob : IJobEntity
     {
         // Format: "day,moveSpeed,maxEnergy,size,sensorProb" per animal
         AnimalData.Add(new FixedString128Bytes(
-            $"{Day},{animal.baseMoveSpeed},{animal.maxEnergy},{animal.currentSize},{animal.animalSensorProbability},{animal.sensorSize},{animal.warningRange},{animal.entity.Index}"
+            $"{Day},{animal.baseMoveSpeed},{animal.maxEnergy},{animal.maxSize},{animal.animalSensorProbability},{animal.sensorSize},{animal.warningRange},{animal.entity.Index}"
         ));
     }
 }
