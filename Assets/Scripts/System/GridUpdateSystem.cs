@@ -35,6 +35,7 @@ public partial class GridUpdateSystem : SystemBase
     protected override void OnCreate()
     {
         RequireForUpdate<InitGridSystemConfig>();
+        RequireForUpdate<AnimalBatch>();
         initialized = false;
     }
 

@@ -464,7 +464,7 @@ public partial struct SensorTriggerSystem : ISystem
                     //Debug.Log(currentAnimal.entity.Index + " End of update sensed target");
 
                 }
-                catch (ArgumentException e)
+                catch (ArgumentException)
                 {
                     Debug.Log("ArgumentException: Target Entity Destroyed (Sensor Trigger System)");
                     currentAnimal.ClearTarget(false);
