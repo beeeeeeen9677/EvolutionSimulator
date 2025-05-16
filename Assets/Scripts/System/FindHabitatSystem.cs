@@ -49,7 +49,7 @@ public partial struct FindHabitatSystem : ISystem
 
 
                 // check vacancy
-                if(habitat.vacancy <= 0)
+                if (habitat.vacancy <= 0)
                 {
                     // this habitat is full
                     continue;

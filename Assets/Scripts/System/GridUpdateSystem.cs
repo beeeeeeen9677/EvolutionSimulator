@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
@@ -374,7 +373,7 @@ public partial class GridUpdateSystem : SystemBase
         }
 
         // update UI cycle & day
-        foreach(var animalBatch in SystemAPI.Query<RefRO<AnimalBatch>>())
+        foreach (var animalBatch in SystemAPI.Query<RefRO<AnimalBatch>>())
         {
             OnCycleExecuted?.Invoke(animalBatch.ValueRO.CycleCount, animalBatch.ValueRO.CycleOfDay);
         }

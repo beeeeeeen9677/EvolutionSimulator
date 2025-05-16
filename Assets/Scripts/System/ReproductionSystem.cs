@@ -1,9 +1,7 @@
 using System;
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Rendering;
 using Unity.Transforms;
-using UnityEngine;
 
 
 [UpdateAfter(typeof(ConfigUpdateSystem))]
@@ -160,7 +158,7 @@ public partial struct ReproductionSystem : ISystem
             });
 
 
-            
+
             float preferenceScaler = (newGrassSensorProb - 0.5f) / 0.5f; // (-1 to 1)
             int matureThreshold = (int)(20 + initAnimalConfig.adultAgeError * preferenceScaler); // e.g. 20 + 3 * ((1 - 0.5) / 0.5)
             entityCommandBuffer.SetComponent(newSpawnedAnimal, new AgeStage
@@ -171,7 +169,7 @@ public partial struct ReproductionSystem : ISystem
                 currentStage = AgeStageEnum.infant, // initial stage
             });
 
-            
+
 
 
             // ReproductionCounter Component

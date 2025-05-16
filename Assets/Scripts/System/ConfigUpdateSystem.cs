@@ -1,4 +1,3 @@
-using System;
 using Unity.Entities;
 using UnityEngine;
 
@@ -189,7 +188,7 @@ public partial struct ConfigUpdateSystem : ISystem
             config.ValueRW.remainingGrids = fieldSize * fieldSize;
         }
 
-        foreach(var config in SystemAPI.Query<RefRW<AnimalBatch>>())
+        foreach (var config in SystemAPI.Query<RefRW<AnimalBatch>>())
         {
             config.ValueRW.BatchSize = PlayerPrefs.GetInt("BatchSize", config.ValueRO.BatchSize);
             config.ValueRW.CurrentBatchIndex = 0;

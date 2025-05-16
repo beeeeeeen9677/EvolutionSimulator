@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.Burst.CompilerServices;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -35,11 +32,11 @@ public partial struct EatingSystem : ISystem
         //state.Enabled = false;
 
 
-        foreach(var(target, animalSensor, physicsCollider, transform, entity) in 
+        foreach (var (target, animalSensor, physicsCollider, transform, entity) in
             SystemAPI.Query<RefRO<Target>, RefRO<AnimalSensor>, RefRO<PhysicsCollider>, RefRO<LocalTransform>>().WithEntityAccess())
         {
 
-            if(target.ValueRO.targetEntity == Entity.Null)
+            if (target.ValueRO.targetEntity == Entity.Null)
             {
                 // current animal no locked target, check next animal
                 continue;
@@ -60,13 +57,13 @@ public partial struct EatingSystem : ISystem
             float3 targetPosition = SystemAPI.GetComponent<LocalTransform>(target.ValueRO.targetEntity).Position;
 
 
-            
-            if(MathHelpers.GetDistance(entityPosition, targetPosition) > 3)
+
+            if (MathHelpers.GetDistance(entityPosition, targetPosition) > 3)
             {
                 // if distance between current animal and target is larger than 5, do not check collision
                 continue;
             }
-            
+
 
             //Debug.Log(entity.Index + " Eating: Ready");
 
@@ -79,7 +76,7 @@ public partial struct EatingSystem : ISystem
 
 
             // if not collided with any entity, check next animal
-            if(collidedEntity == Entity.Null)
+            if (collidedEntity == Entity.Null)
             {
                 //Debug.Log("Eating: Noting Hitted");
                 continue;
@@ -108,7 +105,7 @@ public partial struct EatingSystem : ISystem
                 GrassAspect grass = SystemAPI.GetAspect<GrassAspect>(collidedEntity);
 
                 // if this grass is not activated (was eaten by others)
-                if(grass.activated == false)
+                if (grass.activated == false)
                     continue;
 
 
@@ -145,7 +142,7 @@ public partial struct EatingSystem : ISystem
                 }
 
                 // if the grass has color tag
-                if(grassColor != "")
+                if (grassColor != "")
                 {
                     animal.IncreaseColorCell(Mathf.FloorToInt(grass.currentSize * 20), grassColor);
                 }
@@ -301,7 +298,7 @@ public partial struct EatingSystem : ISystem
         //bool haveHit = collisionWorld.CastCollider(input, out hit);
 
         NativeList<ColliderCastHit> hits = new NativeList<ColliderCastHit>(Allocator.Temp);
-        bool haveHit = collisionWorld.CastCollider(input,ref hits);
+        bool haveHit = collisionWorld.CastCollider(input, ref hits);
 
 
         // reset filter
@@ -320,23 +317,23 @@ public partial struct EatingSystem : ISystem
         // check if collided with target entity
         if (haveHit)
         {
-            
-            foreach(ColliderCastHit hit in hits)
+
+            foreach (ColliderCastHit hit in hits)
             {
                 // Debug.Log("Collision ID: "+hit.Entity.Index);
-                if(hit.Entity == targetEntity) // collided with target entity
+                if (hit.Entity == targetEntity) // collided with target entity
                 {
                     hittedTargetEntity = hit.Entity;
                     break;
                 }
             }
-            
+
         }
-        
+
         hits.Dispose();
 
 
-        
+
         //physicsColliderBlob.Dispose();
 
         return hittedTargetEntity; // if not hitted, return Entity.Null;

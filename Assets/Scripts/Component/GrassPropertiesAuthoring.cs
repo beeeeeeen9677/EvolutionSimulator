@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 
@@ -105,7 +102,7 @@ public struct GrassProperties : IComponentData
     public float growthRate_Nutrient;
 
 
-    public float GetGrowthRate() 
+    public float GetGrowthRate()
     {
 
 

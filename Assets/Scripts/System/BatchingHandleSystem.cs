@@ -1,8 +1,6 @@
 using System;
-using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -37,6 +35,136 @@ public partial struct BatchingHandleSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
+        RefRW<AnimalBatch> animalBatch = SystemAPI.GetSingletonRW<AnimalBatch>();
+        if (BatchSize == 0)
+        {
+            BatchSize = animalBatch.ValueRO.BatchSize;
+            Debug.Log("BatchSize is Assigned: " + BatchSize);
+        }
+
+        // ==== ADDED SAFETY CHECK ====
+        if (!animalEntities.IsCreated)
+        {
+            animalBatch.ValueRW.CurrentBatchIndex = 0;
+            return;
+        }
+
+        // update batching parameters in the start of every Cycle
+        if (animalBatch.ValueRO.CurrentBatchIndex == 0)
+        {
+            totalNumOfAnimals = state.EntityManager.CreateEntityQuery(typeof(AnimalTag)).CalculateEntityCount();
+            totalNumOfBatches = (totalNumOfAnimals + BatchSize - 1) / BatchSize;
+
+            if (totalNumOfAnimals != 0)
+            {
+                // ==== MODIFIED: SAFER ARRAY RECREATION ====
+                using (var query = state.EntityManager.CreateEntityQuery(typeof(AnimalTag)))
+                {
+                    var newEntities = query.ToEntityArray(Allocator.Persistent);
+                    if (animalEntities.IsCreated)
+                    {
+                        animalEntities.Dispose();
+                    }
+                    animalEntities = newEntities;
+                    ShuffleArray(); // shuffle animalEntities
+                }
+            }
+            else
+            {
+                animalBatch.ValueRW.CurrentBatchIndex = 0;
+                return;
+            }
+        }
+
+        // ==== ADDED BOUNDS CHECKING ====
+        int startIndex = animalBatch.ValueRO.CurrentBatchIndex * BatchSize;
+        if (startIndex >= animalEntities.Length)
+        {
+            animalBatch.ValueRW.CurrentBatchIndex = 0;
+            return;
+        }
+
+        int endIndex = math.min(startIndex + BatchSize, totalNumOfAnimals);
+        endIndex = math.min(endIndex, animalEntities.Length); // Additional safety check
+
+        // ==== MODIFIED PROCESSING LOOP WITH MORE CHECKS ====
+        for (int ci = startIndex; ci < endIndex; ci++)
+        {
+            Entity currentEntity = animalEntities[ci];
+
+            // Skip if entity is invalid
+            if (!state.EntityManager.Exists(currentEntity))
+                continue;
+
+            try
+            {
+                SystemAPI.SetComponentEnabled<SensorTriggerTag>(currentEntity, true);
+
+                // ==== ADDED NULL CHECK ====
+                if (!SystemAPI.HasComponent<Age>(currentEntity) ||
+                    !SystemAPI.HasComponent<Energy>(currentEntity))
+                    continue;
+
+                GrowUpAspect animal = SystemAPI.GetAspect<GrowUpAspect>(currentEntity);
+                RefRO<Energy> energy = SystemAPI.GetComponentRO<Energy>(currentEntity);
+
+                if (animal.currentStage == AgeStageEnum.infant)
+                    continue;
+
+                if (energy.ValueRO.currentEnergy >= 0.3f * energy.ValueRO.maxEnergy)
+                {
+                    if (animal.IsReadyToGenerateOffspring(SystemAPI.Time.DeltaTime))
+                    {
+                        SystemAPI.SetComponentEnabled<ReproductionTag>(currentEntity, true);
+                    }
+                }
+            }
+            catch (ArgumentException e)
+            {
+                Debug.LogError($"Batching System Error: {e.Message}");
+                continue;
+            }
+        }
+
+        // ==== MODIFIED BATCH INDEX UPDATE WITH SAFETY ====
+        if (totalNumOfBatches > 0 && animalEntities.Length > 0)
+        {
+            animalBatch.ValueRW.CurrentBatchIndex = (animalBatch.ValueRO.CurrentBatchIndex + 1) % totalNumOfBatches;
+        }
+        else
+        {
+            animalBatch.ValueRW.CurrentBatchIndex = 0;
+        }
+
+        // Rest of the cycle/day logic 
+        // if finished one cycle
+        if (animalBatch.ValueRO.CurrentBatchIndex == 0)
+        {
+            animalBatch.ValueRW.CycleCount++;
+
+
+
+            // if finished one day
+            if (animalBatch.ValueRO.CycleCount % animalBatch.ValueRO.CycleOfDay == 0) // 24 cycles = 1 day
+            {
+                // water diffusion
+
+                // Get a reference to GridUpdateSystem
+                GridUpdateSystem gridUpdateSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<GridUpdateSystem>();
+
+                // Call grid update (water diffusion) function from GridUpdateSystem
+                gridUpdateSystem.UpdateGridCellsInformation(animalBatch.ValueRO.CycleCount / animalBatch.ValueRO.CycleOfDay);
+
+
+                // plant growth
+                //var grassFlag = SystemAPI.GetSingletonRW<GrassGrowUpSystemFlag>();
+                //grassFlag.ValueRW.flag = true;
+            }
+        }
+    }
+    /* Deprecated Update function
+    public void OnUpdate(ref SystemState state)
+    {
         //return;
 
         RefRW<AnimalBatch> animalBatch = SystemAPI.GetSingletonRW<AnimalBatch>();
@@ -59,11 +187,11 @@ public partial struct BatchingHandleSystem : ISystem
             if (totalNumOfAnimals != 0)
             {
 
-                /*
-                Debug.Log("BatchSize: " + BatchSize);
-                Debug.Log("totalNumOfAnimals: " + totalNumOfAnimals);
-                Debug.Log("totalNumOfBatches: " + totalNumOfBatches);
-                */
+                
+                //Debug.Log("BatchSize: " + BatchSize);
+                //Debug.Log("totalNumOfAnimals: " + totalNumOfAnimals);
+                //Debug.Log("totalNumOfBatches: " + totalNumOfBatches);
+                
 
 
                 // Recreate and shuffle the animalEntities array at the start of each cycle
@@ -81,12 +209,12 @@ public partial struct BatchingHandleSystem : ISystem
                 ShuffleArray();
             }
         }
-        /*
-        else
-        {
-            //Debug.Log("Batching: No animal exist in current update, wait for next update ");
-        }
-        */
+        
+        //else
+        //{
+         //   //Debug.Log("Batching: No animal exist in current update, wait for next update ");
+        //}
+        
 
         int startIndex = animalBatch.ValueRO.CurrentBatchIndex * BatchSize;
         int endIndex = math.min(startIndex + BatchSize, totalNumOfAnimals);
@@ -163,7 +291,7 @@ public partial struct BatchingHandleSystem : ISystem
 
                 // Call grid update (water diffusion) function from GridUpdateSystem
                 gridUpdateSystem.UpdateGridCellsInformation(animalBatch.ValueRO.CycleCount / animalBatch.ValueRO.CycleOfDay);
-                
+
 
                 // plant growth
                 //var grassFlag = SystemAPI.GetSingletonRW<GrassGrowUpSystemFlag>();
@@ -174,7 +302,7 @@ public partial struct BatchingHandleSystem : ISystem
         //Debug.Log(animalBatch.ValueRO.CycleCount);
 
     }
-
+    */
 
     private void ShuffleArray()
     {

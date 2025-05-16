@@ -117,18 +117,18 @@ public partial struct InitAnimalConfigSystem : ISystem
                 compoundHuntThresholdRate = initAnimalConfig.compoundHuntThresholdRate,
             });
 
-            
-            
+
+
             float preferenceScaler = (grassSensorProbability - 0.5f) / 0.5f; // (-1 to 1)
             int matureThreshold = (int)(20 + initAnimalConfig.adultAgeError * preferenceScaler); // e.g. 20 + 3 * ((1 - 0.5) / 0.5)
             SystemAPI.SetComponent(newSpawnedAnimal, new AgeStage
             {
-                matureThreshold = matureThreshold, 
+                matureThreshold = matureThreshold,
                 agingThreshold = matureThreshold + (int)Math.Ceiling(initAnimalConfig.adultDuration * (1 + initAnimalConfig.agingError * preferenceScaler)),
 
                 currentStage = AgeStageEnum.infant, // initial stage
             });
-            
+
 
 
 

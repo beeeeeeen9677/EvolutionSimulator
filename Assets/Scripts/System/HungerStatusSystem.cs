@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Entities;
-using UnityEngine;
 
 
 [UpdateAfter(typeof(ConfigUpdateSystem))]
@@ -19,10 +16,10 @@ public partial struct HungerStatusSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
-        foreach(var(hungerStatus, energy) in SystemAPI.Query<RefRW<HungerStatus>, RefRO<Energy>>())
+        foreach (var (hungerStatus, energy) in SystemAPI.Query<RefRW<HungerStatus>, RefRO<Energy>>())
         {
             // if current energy larger than certain value -> full, else hungry
-            if(energy.ValueRO.currentEnergy >= hungerStatus.ValueRO.hungryThreshold * energy.ValueRO.maxEnergy)
+            if (energy.ValueRO.currentEnergy >= hungerStatus.ValueRO.hungryThreshold * energy.ValueRO.maxEnergy)
             {
                 hungerStatus.ValueRW.currentState = HungerStatusEnum.full;
             }

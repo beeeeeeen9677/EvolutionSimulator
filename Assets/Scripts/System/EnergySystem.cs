@@ -1,7 +1,4 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using Unity.Entities;
 using UnityEngine;
 
@@ -25,8 +22,8 @@ public partial struct EnergySystem : ISystem
         }.ScheduleParallel();
         */
 
-        
-        var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged); 
+
+        var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>().CreateCommandBuffer(state.WorldUnmanaged);
         float deltaTime = SystemAPI.Time.DeltaTime;
         foreach (AnimalAspect animal in SystemAPI.Query<AnimalAspect>())
         {
@@ -44,7 +41,7 @@ public partial struct EnergySystem : ISystem
                         targetAnimal.ClearThreat(animal.entity);
                         Debug.Log("Threat clear since threat died");
                     }
-                        
+
 
                 }
 
@@ -66,7 +63,7 @@ public partial struct EnergySystem : ISystem
                 // add ToBeDestroyed Component and System later
             }
         }
-        
+
     }
 
     private void ReleaseVacancy(HabitatProperty? habitatProperty)
@@ -104,7 +101,7 @@ public partial struct EnergySystem : ISystem
         // get surrounding grid cells in square shape range
         List<GridCell> surroundingGridList = GridBufferUtils.GetSurroundingGridCellsInSquare(gridCellBuffer, gridBufferWidth, range, x, z);
 
-        Debug.Log("Length: "+ surroundingGridList.Count);
+        Debug.Log("Length: " + surroundingGridList.Count);
 
         // Set the soil nutrient of surrounding grids according to the animal's size
         foreach (GridCell surroundingGridCell in surroundingGridList)
@@ -115,7 +112,7 @@ public partial struct EnergySystem : ISystem
         }
     }
 
-  
+
 }
 
 
@@ -139,6 +136,6 @@ public partial struct EnergyHandleJob : IJobEntity
             // add ToBeDestroyed Component and System later
         }
 
-   
+
     }
 }

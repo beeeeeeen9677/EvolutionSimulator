@@ -1,11 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Entities;
-using Unity.Physics;
-using Unity.Transforms;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 [BurstCompile]
 [UpdateAfter(typeof(ConfigUpdateSystem))]
@@ -17,13 +12,12 @@ public partial struct AnimalMoveSystem : ISystem
         state.RequireForUpdate<Movement>();
     }
 
-    public void OnDestroy(ref SystemState state) 
+    public void OnDestroy(ref SystemState state)
     {
     }
 
 
 
-    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         /*
@@ -121,13 +115,13 @@ public partial struct MoveAnimalJob : IJobEntity
 
     private bool TakeRest(AnimalAspect animal)
     {
-        if(animal.IsHabitatExist() && animal.hungerState == HungerStatusEnum.full)
+        if (animal.IsHabitatExist() && animal.hungerState == HungerStatusEnum.full)
         {
             float heading = MathHelpers.GetHeading(animal.position, animal.habitatPosition);
             animal.FaceTarget(heading);
 
             // whether inside/arrived habitat
-            if(animal.IsInsideHabitat())
+            if (animal.IsInsideHabitat())
             {
                 return true;
             }

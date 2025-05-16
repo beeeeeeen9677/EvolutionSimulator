@@ -1,10 +1,7 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
-using Unity.Physics.Systems;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using RaycastHit = Unity.Physics.RaycastHit;
@@ -19,7 +16,7 @@ public partial class UnitSelectionSystem : SystemBase  // SystemBase: other clas
     private CollisionWorld collisionWorld;
     //private PhysicsWorldSingleton physicsWorldSingleton;
     public Action<Entity> OnAnimalSelected;
-    
+
 
 
     protected override void OnCreate()
@@ -41,7 +38,7 @@ public partial class UnitSelectionSystem : SystemBase  // SystemBase: other clas
         }
 
 
-       
+
 
     }
 
@@ -49,7 +46,7 @@ public partial class UnitSelectionSystem : SystemBase  // SystemBase: other clas
     // select the mouse clicked entity
     private void SelectSingleUnit()
     {
-        if(mainCamera == null)
+        if (mainCamera == null)
             mainCamera = Camera.main;
 
         collisionWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().CollisionWorld;
@@ -83,7 +80,7 @@ public partial class UnitSelectionSystem : SystemBase  // SystemBase: other clas
 
 
     // RaycastHit is under Unity.Physics for DOTS
-    private bool MouseRaycast(float3 rayStart, float3 rayEnd, out RaycastHit raycastHit )
+    private bool MouseRaycast(float3 rayStart, float3 rayEnd, out RaycastHit raycastHit)
     {
         RaycastInput raycastInput = new RaycastInput
         {

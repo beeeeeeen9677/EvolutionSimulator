@@ -104,7 +104,7 @@ public partial struct SensorTriggerSystem : ISystem
 
                 currentAnimal.SetCurrentSensor(TargetCollisionLayers.targetLayers[sensorNumber]);
 
-               
+
 
                 // stored in static class TargetCollisionLayers
                 //CollisionLayer[] targetLayers = { CollisionLayer.Grass, CollisionLayer.Animal }; // collide with corresponding layer acoording to sensorNumber

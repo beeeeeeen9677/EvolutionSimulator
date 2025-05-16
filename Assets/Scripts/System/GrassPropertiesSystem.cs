@@ -1,9 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Entities;
-using Unity.Physics;
-using Unity.Transforms;
-using UnityEngine;
 
 [UpdateAfter(typeof(ConfigUpdateSystem))]
 public partial struct GrassPropertiesSystem : ISystem
@@ -35,12 +30,12 @@ public partial struct GrassPropertiesSystem : ISystem
         }
         */
 
-        
+
         new GrassPropertiesJob
         {
             deltaTime = SystemAPI.Time.DeltaTime,
         }.ScheduleParallel();
-        
+
     }
 }
 

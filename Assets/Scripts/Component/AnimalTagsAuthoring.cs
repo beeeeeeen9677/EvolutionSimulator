@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 
@@ -31,7 +29,7 @@ public class AnimalTagsAuthoring : MonoBehaviour
 public struct AnimalTag : IComponentData
 {
 }
-public struct SensorTriggerTag: IComponentData, IEnableableComponent
+public struct SensorTriggerTag : IComponentData, IEnableableComponent
 {
 }
 public struct ReproductionTag : IComponentData, IEnableableComponent

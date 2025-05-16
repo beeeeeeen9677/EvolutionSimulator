@@ -1,10 +1,6 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine;
 
 
 // Deprecated
@@ -41,7 +37,7 @@ public partial struct InitGrassConfigSystem : ISystem
         }
 
 
-        for(int i = 0; i < initGrassConfig.initGrassNumber; i++)
+        for (int i = 0; i < initGrassConfig.initGrassNumber; i++)
         {
             // get random type of grasses
             var buffer = state.EntityManager.GetBuffer<GrassPrefabElement>(initGrassConfigEntity);
