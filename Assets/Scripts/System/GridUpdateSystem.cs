@@ -22,6 +22,7 @@ public partial class GridUpdateSystem : SystemBase
     public Action<DynamicBuffer<GridCell>> OnAllGridCellValueChanged;
     public Action<ExportData> OnAvgDataExport;
     public Action<ExportData> OnSeperrateDataExport;
+    public Action<int, int> OnCycleExecuted;
 
 
 
@@ -370,6 +371,12 @@ public partial class GridUpdateSystem : SystemBase
                 // Debug.Log($"Day: {exportData.day}   Speed: {exportData.moveSpeed}");
                 OnAvgDataExport?.Invoke(exportData);
             }
+        }
+
+        // update UI cycle & day
+        foreach(var animalBatch in SystemAPI.Query<RefRO<AnimalBatch>>())
+        {
+            OnCycleExecuted?.Invoke(animalBatch.ValueRO.CycleCount, animalBatch.ValueRO.CycleOfDay);
         }
     }
 

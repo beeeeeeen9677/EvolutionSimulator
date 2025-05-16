@@ -21,6 +21,12 @@ public class CommonUIManager : MonoBehaviour
 
 
 
+
+
+    private GridUpdateSystem gridUpdateSystem;
+
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -47,19 +53,24 @@ public class CommonUIManager : MonoBehaviour
         cycleTextContainer = cycleText.transform.parent.gameObject;
         dayTextContainer = dayText.transform.parent.gameObject;
 
-        cycleText.text = "start3";
+
+        gridUpdateSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<GridUpdateSystem>();
+        gridUpdateSystem.OnCycleExecuted += UpdateCycleText;
+
+
+        cycleText.text = "starting";
 
 
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        UpdateCycleText();
-    }
 
-    private void UpdateCycleText()
+    private void UpdateCycleText(int cycleCount, int cycleOfDay)
     {
+
+        cycleText.text = cycleCount.ToString();
+        dayText.text = (cycleCount / cycleOfDay).ToString(); // 24 cycle as 1 day
+
+        /*
         try
         {
             if (animalBatchEntity == Entity.Null)
@@ -81,6 +92,7 @@ public class CommonUIManager : MonoBehaviour
             Debug.LogError("Sub-Scene is still loading");
             cycleText.text = "Sub-Scene is still loading";
         }
+        */
     }
 
     public void AssignGridMesh(GameObject go)
